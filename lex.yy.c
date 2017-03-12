@@ -2171,7 +2171,8 @@ void abrirArq()
   yyin = fopen("entrada.txt", "r");
 }
 
-/*Name: Semantic Analysis functions*/
+/*Semantic Analysis functions*/
+
 /*Role: Checks Existance of void variables*/
 int checkVoid(TipoLista *list, int index){
 TipoID *p = list[index].start;
@@ -2181,25 +2182,56 @@ while(p!=NULL){
       if (!strcmp(p->tipoID, "var")&&!strcmp(p->tipoData,"void")) {
         return p->linhas[0];
       }
-      printf("\n");
     }
       p = p->prox;
     }
     return 0;
 }
 
+
+/*Role: Checks Existance the Main function*/
+// last declaration must be a function void main(void)
+// ______declaration
+// ________fun-declaration
+// __________type-specifier
+// ____________VOID
+// __________ID
+// __________LPAREN
+// __________params
+// ____________VOID
+// __________RPAREN
+int checkMain(TipoLista *list, int index){
+TipoID *p = list[index].start;
+while(p!=NULL){
+    if(p->linhas[0] != 0) {
+      //p->nomeID, p->tipoID, p->tipoData, p->escopo);
+      if (!strcmp(p->tipoID, "func")&&
+          !strcmp(p->tipoData,"void")&&
+          !strcmp(p->nomeID, "main")&&
+          p->linhas[1]==0)
+        return 0;
+    }
+      p = p->prox;
+    }
+    return 1;
+}
+
 int semanticAnalysis(TipoLista *hashList){
   int i;
+  int checkMainFlag = 1;
   for(i = 0;i<211;i++){
       if(&hashList[i]!=NULL){
         // Check Existance of void variables
         int checkVoidFlag;
         checkVoidFlag = checkVoid(hashList, i);
-        if (checkVoidFlag) {
+        if (checkVoidFlag)
           printf("Semantic error at line %d: Variable declared as void\n ", checkVoidFlag);
+       if (!checkMain(hashList, i))
+         checkMainFlag = 0;
       }
     }
-  }
+    if (checkMainFlag)
+      printf("Semantic error: main function not present or different from 'void main(void)'\n ");
   return 0;
 }
 
@@ -2367,11 +2399,11 @@ i = 0;
 
   printf("Running Semantic Analysis...\n");
   if(semanticAnalysis(vetor) ==0)
-    printf("Semantic Analysis OK");
+    printf("Semantic Analysis OK\n");
   else
     printf("Errors found in Semantic Analysis\n");
 
-  printf("Finalizou...\n");
+  printf("Finished.\n");
 
   return 0;
 }
