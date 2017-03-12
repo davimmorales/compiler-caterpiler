@@ -1,10 +1,10 @@
-/* gdc com erro semantico - variável void */
+/* gdc com erro léxico - token inexistente */
 
 /* teste de função com parâmetros e corpo sem declarações */
 int gdc (int u, int v)
 {
     /* teste de seleção, expressões, return e chamada de função */
-    if (v == 0) return u; 
+    if (v == 0) return u;
     else return gdc(v,u-u/v*v);
 }
 
@@ -25,8 +25,11 @@ void main(void)
    /* teste de diferentes tipos de variáveis, incluindo vetor */
    int x;
    int y;
-   void u; /* erro semântico - não pode declarar como void*/
+   int u;
    int v[10];
+
+   /* erro léxico - token inexistente */
+   x = &u;
 
    /* chamadas de funções */
    x = input();

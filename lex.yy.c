@@ -2055,11 +2055,11 @@ typedef struct TipoID{
 }TipoID;
 
 typedef struct{
-    TipoID *inicio;
+    TipoID *start;
 }TipoLista;
 
 void inicializaLista(TipoLista *lista){
-    lista->inicio = NULL;
+    lista->start = NULL;
 }
 
 int contaChar(const char *str)
@@ -2113,10 +2113,10 @@ void insere(TipoLista *lista, char scope[], char nameID[], char typeID[], char t
     strcpy(novoNo->nomeID, nameID);
     strcpy(novoNo->tipoID, typeID);
     /*printf("%s\n", novoNo->escopo);*/
-    TipoID *p = lista[index].inicio;
+    TipoID *p = lista[index].start;
 
     if(p == NULL) { // Lista vazia
-        lista[index].inicio = novoNo;
+        lista[index].start = novoNo;
     } else {  // Lista não vazia. Insere no final
         while(p->prox!=NULL){
             p = p->prox;
@@ -2127,7 +2127,7 @@ void insere(TipoLista *lista, char scope[], char nameID[], char typeID[], char t
 
 int checkExistence(TipoLista *Lista, char s[], int noline, int index, char scope[], int flag){
     int i;
-    TipoID *c = Lista[index].inicio;
+    TipoID *c = Lista[index].start;
     if(flag)
       return 0;
     while(c!=NULL){
@@ -2149,7 +2149,7 @@ int checkExistence(TipoLista *Lista, char s[], int noline, int index, char scope
 
 void printWTable(TipoLista *lista, int index) {
   int i;
-  TipoID *p = lista[index].inicio;
+  TipoID *p = lista[index].start;
   while(p!=NULL){
       i = 0;
       if(p->linhas[0] != 0) {
@@ -2169,6 +2169,38 @@ void printWTable(TipoLista *lista, int index) {
 void abrirArq()
 {
   yyin = fopen("entrada.txt", "r");
+}
+
+/*Name: Semantic Analysis functions*/
+/*Role: Checks Existance of void variables*/
+int checkVoid(TipoLista *list, int index){
+TipoID *p = list[index].start;
+while(p!=NULL){
+    if(p->linhas[0] != 0) {
+      //p->nomeID, p->tipoID, p->tipoData, p->escopo);
+      if (!strcmp(p->tipoID, "var")&&!strcmp(p->tipoData,"void")) {
+        return p->linhas[0];
+      }
+      printf("\n");
+    }
+      p = p->prox;
+    }
+    return 0;
+}
+
+int semanticAnalysis(TipoLista *hashList){
+  int i;
+  for(i = 0;i<211;i++){
+      if(&hashList[i]!=NULL){
+        // Check Existance of void variables
+        int checkVoidFlag;
+        checkVoidFlag = checkVoid(hashList, i);
+        if (checkVoidFlag) {
+          printf("Semantic error at line %d: Variable declared as void\n ", checkVoidFlag);
+      }
+    }
+  }
+  return 0;
 }
 
 int main() {
@@ -2193,7 +2225,7 @@ int hash = 0;
 TipoLista vetor[211]; //lista de listas
 
 for(i = 0; i < 211; i++) {
-  vetor[i].inicio = NULL;
+  vetor[i].start = NULL;
 }
 
 for (i=0;i<=100000;i++) buf[i] = 0;
@@ -2332,6 +2364,12 @@ i = 0;
   else printf("\nAnálise sintática apresenta ERRO\n");
 
   printTree();
+
+  printf("Running Semantic Analysis...\n");
+  if(semanticAnalysis(vetor) ==0)
+    printf("Semantic Analysis OK");
+  else
+    printf("Errors found in Semantic Analysis\n");
 
   printf("Finalizou...\n");
 

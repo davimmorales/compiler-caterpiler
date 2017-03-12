@@ -1,4 +1,4 @@
-/* gdc com erro semantico - variável void */
+/* gdc com erro semantico - programa sem main */
 
 /* teste de função com parâmetros e corpo sem declarações */
 int gdc (int u, int v)
@@ -19,13 +19,13 @@ void output(int x)
 }
 
 /* teste de função sem parâmetro e com corpo completo */
-void main(void)
+void main_diferente(void) /* erro semantico - sem main */
 {
 
    /* teste de diferentes tipos de variáveis, incluindo vetor */
    int x;
    int y;
-   void u; /* erro semântico - não pode declarar como void*/
+   int u;
    int v[10];
 
    /* chamadas de funções */

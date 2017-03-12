@@ -1,4 +1,4 @@
-/* gdc com erro semantico - variável void */
+/* gdc com erro semantico - declaração dupla de variável */
 
 /* teste de função com parâmetros e corpo sem declarações */
 int gdc (int u, int v)
@@ -25,8 +25,9 @@ void main(void)
    /* teste de diferentes tipos de variáveis, incluindo vetor */
    int x;
    int y;
-   void u; /* erro semântico - não pode declarar como void*/
+   int u;
    int v[10];
+   int u; /* erro semântico - declaração dupla*/	
 
    /* chamadas de funções */
    x = input();

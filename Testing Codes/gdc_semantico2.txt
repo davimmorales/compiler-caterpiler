@@ -1,4 +1,4 @@
-/* gdc com erro semantico - variável void */
+/* gdc com erro semantico - verificação de tipos */
 
 /* teste de função com parâmetros e corpo sem declarações */
 int gdc (int u, int v)
@@ -25,8 +25,10 @@ void main(void)
    /* teste de diferentes tipos de variáveis, incluindo vetor */
    int x;
    int y;
-   void u; /* erro semântico - não pode declarar como void*/
+   int u;
    int v[10];
+
+   u = output(x); /* erro semântico: valor de retorno de função é void */
 
    /* chamadas de funções */
    x = input();
