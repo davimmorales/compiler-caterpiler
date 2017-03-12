@@ -1,0 +1,7 @@
+• Verificar se variável foi declarada antes de uso;
+• Verificação de tipos (variável inteira não pode receber retorno de função void);
+• [Não pode ter variáveis void;]
+• Não podem haver declarações duplas no mesmo escopo;
+• Função tem que ter sido definida antes de uso;
+• Todo programa tem que ter main;
+• Nomes de variáveis e funções não podem ser duplicados.
