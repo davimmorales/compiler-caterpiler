@@ -226,7 +226,7 @@ while(p!=NULL){
 }
 
 
-/*Role: Checks Existance the Main function*/
+/*Role: Checks Existance of Main function*/
 // last declaration must be a function void main(void)
 // ______declaration
 // ________fun-declaration
@@ -253,9 +253,44 @@ while(p!=NULL){
     return 1;
 }
 
+/*Semantic Analysis functions*/
+/*Role: Checks Existance double declarations in a same scope*/
+int checkDecScope(TipoLista *list, int index){
+  TipoID *p = list[index].start;
+  int j;
+   while(p!=NULL){
+    if(p->linhas[0] != 0) {
+	for(j=0;j<211;j++{
+		 TipoID *w = list[j].start;
+		 while(w!=NULL){
+			if(w->linhas[0]!=0){
+				if(!strcmp(p->nomeID,w->nomeID)&&!strcmp(p->escopo,w->escopo)){
+					return p->linhas[0];
+				}
+			}
+		w = w->prox;
+		}
+	}
+	}
+	p = p->prox
+     }
+     return 0;
+}	
+
+      //p->nomeID, p->tipoID, p->tipoData, p->escopo);
+      if (!strcmp(p->tipoID, "var")&&!strcmp(p->tipoData,"void")) {
+        return p->linhas[0];
+      }
+    }
+      p = p->prox;
+    }
+}
+
 int semanticAnalysis(TipoLista *hashList){
   int i;
+  int j;
   int checkMainFlag = 1;
+  int checkDecScopeFlag;
   for(i = 0;i<211;i++){
       if(&hashList[i]!=NULL){
         // Check Existance of void variables
@@ -263,8 +298,13 @@ int semanticAnalysis(TipoLista *hashList){
         checkVoidFlag = checkVoid(hashList, i);
         if (checkVoidFlag)
           printf("Semantic error at line %d: Variable declared as void\n ", checkVoidFlag);
+	//Check Existance of main function
        if (!checkMain(hashList, i))
          checkMainFlag = 0;
+	//Check double declarations in a same scope
+	checkDecScopeFlag = checkDecScope(hashlist, int index);
+	if(checkDecScopeFlag)
+          printf("Semantic error at line %d: double declaration at a same scope\n ", checkVoidFlag);
       }
     }
     if (checkMainFlag)
