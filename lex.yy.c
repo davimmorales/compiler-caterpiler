@@ -2236,40 +2236,36 @@ int checkDecScope(TipoLista *list, int index){
     return 0;
   }
 
-//   while(p!=NULL&&(!strcmp(p->tipoID,"var")||!strcmp(p->tipoID,"vet"))){
-//     if(p->linhas[0] != 0) {
-//       for(j=0;j<211;j++){
-//         TipoID *w = list[j].start;
-//         while(w!=NULL&&(!strcmp(p->tipoID,"var")||!strcmp(p->tipoID,"vet"))){
-//           if(w->linhas[0]!=0){
-//             if(!strcmp(p->escopo,w->escopo)){
-//             printf("%s %s\n", w->nomeID, p->nomeID);
-//               return p->linhas[0];
-//             }
-//           }
-//           w = w->prox;
-//         }
-//       }
-//     }
-//     p = p->prox;
-//   }
-//   return 0;
-// }
-
-      //p->nomeID, p->tipoID, p->tipoData, p->escopo);
-      /*if (!strcmp(p->tipoID, "var")&&!strcmp(p->tipoData,"void")) {
-        return p->linhas[0];
+/*Role: Checks Existance of variables and functions with similar names*/
+int checkSameVarFunc(TipoLista *list, int index){
+  TipoID *p = list[index].start;
+  TipoID *w;
+  while (p!=NULL) {
+    if (p->linhas[0] != 0) {
+      w = p->prox;
+      while (w!=NULL) {
+        if (!strcmp(w->nomeID,p->nomeID)&&((
+            (!strcmp(w->tipoID,"var")||!strcmp(w->tipoID,"vet"))&&
+            !strcmp(p->tipoID,"func"))||
+            ((!strcmp(p->tipoID,"var")||!strcmp(p->tipoID,"vet"))&&
+            !strcmp(w->tipoID,"func"))))
+              return w->linhas[0];
+            w = w->prox;
       }
     }
-      p = p->prox;
-    }
-}*/
+    p = p->prox;
+  }
+  return 0;
+}
+
 
 int semanticAnalysis(TipoLista *hashList){
   int i;
   int j;
   int checkMainFlag = 1;
   int checkDecScopeFlag;
+  int checkSameVarFuncFlag;
+
   for(i = 0;i<211;i++){
       if(&hashList[i]!=NULL){
         // Check Existance of void variables
@@ -2280,10 +2276,14 @@ int semanticAnalysis(TipoLista *hashList){
 	//Check Existance of main function
        if (!checkMain(hashList, i))
          checkMainFlag = 0;
-	//Check double declarations in a same scope
+	//Check doubl  e var/vet declarations in a same scope
        checkDecScopeFlag = checkDecScope(hashList,i);
        if(checkDecScopeFlag)
             printf("Semantic error at line %d: double declaration at a same scope\n ", checkDecScopeFlag);
+  //Check variables and functions with similar names
+       checkSameVarFuncFlag = checkSameVarFunc(hashList,i);
+       if(checkSameVarFuncFlag)
+            printf("Semantic error at line %d: variable and function with same name\n ", checkSameVarFuncFlag);
       }
     }
     if (checkMainFlag)
