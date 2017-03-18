@@ -162,7 +162,7 @@ void insere(TipoLista *lista, char scope[], char nameID[], char typeID[], char t
     }
 }
 
-int checkExistence(TipoLista *Lista, char s[], int noline, int index, char scope[], int flag){
+int checkExistance(TipoLista *Lista, char s[], int noline, int index, char scope[], int flag){
     int i;
     TipoID *c = Lista[index].start;
     if(flag)
@@ -253,38 +253,54 @@ while(p!=NULL){
     return 1;
 }
 
-/*Semantic Analysis functions*/
-/*Role: Checks Existance double declarations in a same scope*/
+/*Role: Checks Existance of equal declarations in a same scope*/
 int checkDecScope(TipoLista *list, int index){
   TipoID *p = list[index].start;
-  int j;
-   while(p!=NULL){
+  TipoID *w;
+
+  while(p!=NULL&&(!strcmp(p->tipoID,"var")||!strcmp(p->tipoID,"vet"))){
     if(p->linhas[0] != 0) {
-	for(j=0;j<211;j++{
-		 TipoID *w = list[j].start;
-		 while(w!=NULL){
-			if(w->linhas[0]!=0){
-				if(!strcmp(p->nomeID,w->nomeID)&&!strcmp(p->escopo,w->escopo)){
-					return p->linhas[0];
-				}
-			}
-		w = w->prox;
-		}
-	}
-	}
-	p = p->prox
-     }
-     return 0;
-}	
+      w = p->prox;
+      while (w!=NULL&&(!strcmp(p->tipoID,"var")||!strcmp(p->tipoID,"vet"))){
+        if(!strcmp(w->nomeID,p->nomeID)&&!strcmp(p->escopo,w->escopo)){
+          return w->linhas[0];
+        }
+        w = w->prox;
+      }
+    }
+      p = p->prox;
+    }
+    return 0;
+  }
+
+//   while(p!=NULL&&(!strcmp(p->tipoID,"var")||!strcmp(p->tipoID,"vet"))){
+//     if(p->linhas[0] != 0) {
+//       for(j=0;j<211;j++){
+//         TipoID *w = list[j].start;
+//         while(w!=NULL&&(!strcmp(p->tipoID,"var")||!strcmp(p->tipoID,"vet"))){
+//           if(w->linhas[0]!=0){
+//             if(!strcmp(p->escopo,w->escopo)){
+//             printf("%s %s\n", w->nomeID, p->nomeID);
+//               return p->linhas[0];
+//             }
+//           }
+//           w = w->prox;
+//         }
+//       }
+//     }
+//     p = p->prox;
+//   }
+//   return 0;
+// }
 
       //p->nomeID, p->tipoID, p->tipoData, p->escopo);
-      if (!strcmp(p->tipoID, "var")&&!strcmp(p->tipoData,"void")) {
+      /*if (!strcmp(p->tipoID, "var")&&!strcmp(p->tipoData,"void")) {
         return p->linhas[0];
       }
     }
       p = p->prox;
     }
-}
+}*/
 
 int semanticAnalysis(TipoLista *hashList){
   int i;
@@ -302,9 +318,9 @@ int semanticAnalysis(TipoLista *hashList){
        if (!checkMain(hashList, i))
          checkMainFlag = 0;
 	//Check double declarations in a same scope
-	checkDecScopeFlag = checkDecScope(hashlist, int index);
-	if(checkDecScopeFlag)
-          printf("Semantic error at line %d: double declaration at a same scope\n ", checkVoidFlag);
+       checkDecScopeFlag = checkDecScope(hashList,i);
+       if(checkDecScopeFlag)
+            printf("Semantic error at line %d: double declaration at a same scope\n ", checkDecScopeFlag);
       }
     }
     if (checkMainFlag)
@@ -418,7 +434,7 @@ while ((token=yylex()) != '\0') {
         }
 
         hash = string2int(nomeID)%211;
-        if(!checkExistence(vetor, nomeID, lineno, hash, escopo, flag))
+        if(!checkExistance(vetor, nomeID, lineno, hash, escopo, flag))
           insere(vetor, escopo, nomeID, tipoID, tipoData, lineno, hash);
           flag = 0;
       break;

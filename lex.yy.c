@@ -2125,7 +2125,7 @@ void insere(TipoLista *lista, char scope[], char nameID[], char typeID[], char t
     }
 }
 
-int checkExistence(TipoLista *Lista, char s[], int noline, int index, char scope[], int flag){
+int checkExistance(TipoLista *Lista, char s[], int noline, int index, char scope[], int flag){
     int i;
     TipoID *c = Lista[index].start;
     if(flag)
@@ -2189,7 +2189,7 @@ while(p!=NULL){
 }
 
 
-/*Role: Checks Existance the Main function*/
+/*Role: Checks Existance of Main function*/
 // last declaration must be a function void main(void)
 // ______declaration
 // ________fun-declaration
@@ -2216,9 +2216,60 @@ while(p!=NULL){
     return 1;
 }
 
+/*Role: Checks Existance of equal declarations in a same scope*/
+int checkDecScope(TipoLista *list, int index){
+  TipoID *p = list[index].start;
+  TipoID *w;
+
+  while(p!=NULL&&(!strcmp(p->tipoID,"var")||!strcmp(p->tipoID,"vet"))){
+    if(p->linhas[0] != 0) {
+      w = p->prox;
+      while (w!=NULL&&(!strcmp(p->tipoID,"var")||!strcmp(p->tipoID,"vet"))){
+        if(!strcmp(w->nomeID,p->nomeID)&&!strcmp(p->escopo,w->escopo)){
+          return w->linhas[0];
+        }
+        w = w->prox;
+      }
+    }
+      p = p->prox;
+    }
+    return 0;
+  }
+
+//   while(p!=NULL&&(!strcmp(p->tipoID,"var")||!strcmp(p->tipoID,"vet"))){
+//     if(p->linhas[0] != 0) {
+//       for(j=0;j<211;j++){
+//         TipoID *w = list[j].start;
+//         while(w!=NULL&&(!strcmp(p->tipoID,"var")||!strcmp(p->tipoID,"vet"))){
+//           if(w->linhas[0]!=0){
+//             if(!strcmp(p->escopo,w->escopo)){
+//             printf("%s %s\n", w->nomeID, p->nomeID);
+//               return p->linhas[0];
+//             }
+//           }
+//           w = w->prox;
+//         }
+//       }
+//     }
+//     p = p->prox;
+//   }
+//   return 0;
+// }
+
+      //p->nomeID, p->tipoID, p->tipoData, p->escopo);
+      /*if (!strcmp(p->tipoID, "var")&&!strcmp(p->tipoData,"void")) {
+        return p->linhas[0];
+      }
+    }
+      p = p->prox;
+    }
+}*/
+
 int semanticAnalysis(TipoLista *hashList){
   int i;
+  int j;
   int checkMainFlag = 1;
+  int checkDecScopeFlag;
   for(i = 0;i<211;i++){
       if(&hashList[i]!=NULL){
         // Check Existance of void variables
@@ -2226,8 +2277,13 @@ int semanticAnalysis(TipoLista *hashList){
         checkVoidFlag = checkVoid(hashList, i);
         if (checkVoidFlag)
           printf("Semantic error at line %d: Variable declared as void\n ", checkVoidFlag);
+	//Check Existance of main function
        if (!checkMain(hashList, i))
          checkMainFlag = 0;
+	//Check double declarations in a same scope
+       checkDecScopeFlag = checkDecScope(hashList,i);
+       if(checkDecScopeFlag)
+            printf("Semantic error at line %d: double declaration at a same scope\n ", checkDecScopeFlag);
       }
     }
     if (checkMainFlag)
@@ -2341,7 +2397,7 @@ while ((token=yylex()) != '\0') {
         }
 
         hash = string2int(nomeID)%211;
-        if(!checkExistence(vetor, nomeID, lineno, hash, escopo, flag))
+        if(!checkExistance(vetor, nomeID, lineno, hash, escopo, flag))
           insere(vetor, escopo, nomeID, tipoID, tipoData, lineno, hash);
           flag = 0;
       break;

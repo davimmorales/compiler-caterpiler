@@ -1,49 +1,50 @@
-/* gdc com erro semantico - programa sem main */
+/* gdc com erro semantico - declaraÃ§Ã£o dupla de variÃ¡vel */
 
-/* teste de função com parâmetros e corpo sem declarações */
+/* teste de funÃ§Ã£o com parÃ¢metros e corpo sem declaraÃ§Ãµes */
 int gdc (int u, int v)
 {
-    /* teste de seleção, expressões, return e chamada de função */
-    if (v == 0) return u; 
+    /* teste de seleÃ§Ã£o, expressÃµes, return e chamada de funÃ§Ã£o */
+    if (v == 0) return u;
     else return gdc(v,u-u/v*v);
 }
 
-/* teste de função sem parâmetros e sem corpo */
+/* teste de funÃ§Ã£o sem parÃ¢metros e sem corpo */
 int input(void)
 {
 }
 
-/* teste de função com parâmetro e sem corpo */
+/* teste de funÃ§Ã£o com parÃ¢metro e sem corpo */
 void output(int x)
 {
 }
 
-/* teste de função sem parâmetro e com corpo completo */
-void main_diferente(void) /* erro semantico - sem main */
+/* teste de funÃ§Ã£o sem parÃ¢metro e com corpo completo */
+void main(void)
 {
 
-   /* teste de diferentes tipos de variáveis, incluindo vetor */
+   /* teste de diferentes tipos de variÃ¡veis, incluindo vetor */
    int x;
    int y;
    int u;
    int v[10];
+   int u; /* erro semÃ¢ntico - declaraÃ§Ã£o dupla*/
 
-   /* chamadas de funções */
+   /* chamadas de funÃ§Ãµes */
    x = input();
    y = input();
    output(gdc(x,y));
 
-   /* teste atribuição e repetição */
+   /* teste atribuiÃ§Ã£o e repetiÃ§Ã£o */
    u = 0;
    x = 1;
    while (x <= 10)
    {
-      u = u + 1;  
+      u = u + 1;
       v[i] = u;
-      x = x + 1; 
+      x = x + 1;
    }
 
-   /* teste return simples */   
+   /* teste return simples */
    return;
 
 }
