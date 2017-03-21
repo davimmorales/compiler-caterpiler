@@ -263,7 +263,10 @@ int checkDecScope(TipoLista *list, int index){
       w = p->prox;
       while (w!=NULL&&(!strcmp(p->tipoID,"var")||!strcmp(p->tipoID,"vet"))){
         if(!strcmp(w->nomeID,p->nomeID)&&!strcmp(p->escopo,w->escopo)){
-          return w->linhas[0];
+          if (w->linhas[0])
+            w->linhas[0];
+          else
+            return p->linhas[0];
         }
         w = w->prox;
       }
@@ -281,12 +284,16 @@ int checkSameVarFunc(TipoLista *list, int index){
     if (p->linhas[0] != 0) {
       w = p->prox;
       while (w!=NULL) {
-        if (!strcmp(w->nomeID,p->nomeID)&&((
-            (!strcmp(w->tipoID,"var")||!strcmp(w->tipoID,"vet"))&&
-            !strcmp(p->tipoID,"func"))||
-            ((!strcmp(p->tipoID,"var")||!strcmp(p->tipoID,"vet"))&&
-            !strcmp(w->tipoID,"func"))))
-              return w->linhas[0];
+        if (!strcmp(w->nomeID,p->nomeID)&&(((!strcmp(w->tipoID,"var")||!strcmp(w->tipoID,"vet"))
+            &&!strcmp(p->tipoID,"func"))||((!strcmp(p->tipoID,"var")||!strcmp(w->tipoID,"vet"))
+            &&!strcmp(w->tipoID,"func"))
+          )){
+            if (w->linhas[0])
+              w->linhas[0];
+            else
+              return p->linhas[0];
+        }
+
             w = w->prox;
       }
     }
@@ -294,6 +301,7 @@ int checkSameVarFunc(TipoLista *list, int index){
   }
   return 0;
 }
+
 
 
 int semanticAnalysis(TipoLista *hashList){
