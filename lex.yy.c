@@ -2173,6 +2173,24 @@ void abrirArq()
 
 /*Semantic Analysis functions*/
 
+/*Checks existance of a given variable*/
+int buscaVariavel(TipoLista *list, char nomeID[], char escopo[]) {
+    int hash = string2int(nomeID)%211;
+    TipoID *c = list[hash].start;
+    while(c != NULL) {
+      if((!strcmp(nomeID, c->nomeID)) && (!strcmp(escopo, c->escopo)) || (!strcmp("global", c->escopo))) {
+        return 1;
+      }
+      c = c->prox;
+    }
+    if(c == NULL) {
+      /*printf("\nVariável %s não encontrada no escopo %s\n", nomeID, escopo);*/
+      return 0;
+    }
+}
+
+
+/*Checks existance of a given function*/
 int functionLookup(TipoLista *list, char nomeID[]) {
     int hash = string2int(nomeID)%211;
     TipoID *c = list[hash].start;
@@ -2344,8 +2362,8 @@ w = 0;
 
 
 // Inserindo funções predefinidas int input() e void output()
-/*insere(vetor, escopo, "input", "func", "int", -1, 39);*/
-/*insere(vetor, escopo, "output", "func", "void", -1, 34);*/
+insere(vetor, escopo, "input", "func", "int", -1, 39);
+insere(vetor, escopo, "output", "func", "void", -1, 34);
 
 while ((token=yylex()) != '\0') {
   buf[w] = token;
@@ -2401,11 +2419,15 @@ while ((token=yylex()) != '\0') {
             // vetor
             // printf("Vetor\n");
             strcpy(tipoID, "vet");
+            if(flag == 0 && !(buscaVariavel(vetor, nomeID, escopo)))
+              printf("\nErro Semântico: Variável '%s' não teve o tipo declarado. Linha %d\n", nomeID, lineno);
 
 
           } else {
             // variavel
             strcpy(tipoID, "var");
+            if(flag == 0 && !(buscaVariavel(vetor, nomeID, escopo)))
+              printf("\nErro Semântico: Variável '%s' não teve o tipo declarado. Linha %d\n", nomeID, lineno);
 
           }
         }

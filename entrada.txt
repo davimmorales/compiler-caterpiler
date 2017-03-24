@@ -1,4 +1,4 @@
-/* gdc com erro semantico - chamada de função não declarada */
+/* gdc com erro semantico - variável não declarada */
 
 /* teste de função com parâmetros e corpo sem declarações */
 int gdc (int u, int v)
@@ -13,6 +13,11 @@ int input(void)
 {
 }
 
+/* teste de função com parâmetro e sem corpo */
+void output(int x)
+{
+}
+
 /* teste de função sem parâmetro e com corpo completo */
 void main(void)
 {
@@ -20,16 +25,15 @@ void main(void)
    /* teste de diferentes tipos de variáveis, incluindo vetor */
    int x;
    int y;
-   int u;
    int v[10];
 
    /* chamadas de funções */
    x = input();
    y = input();
-   inputs(gdc(x,y)); /* erro semântico: chamada de função não declarada */
+   output(gdc(x,y));
 
    /* teste atribuição e repetição */
-   u = 0;
+   u = 0; /* erro semântico: variável não declarada */
    x = 1;
    while (x <= 10)
    {
