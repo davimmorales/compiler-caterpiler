@@ -405,9 +405,9 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[70] =
     {   0,
-        0,    0,   35,   33,   29,   28,   34,   34,   21,   22,
-       10,    8,   20,    9,   33,   11,   30,   19,   12,   18,
-       14,   32,   23,   24,   32,   32,   32,   32,   32,   32,
+        0,    0,   35,   33,   29,   28,   34,   34,   22,   21,
+       10,    8,   20,    9,   33,   12,   30,   19,   11,   18,
+       14,   32,   24,   23,   32,   32,   32,   32,   32,   32,
        25,   26,   29,   17,    0,   31,   27,   31,   30,   13,
        16,   15,   32,   32,   32,    3,   32,   32,   32,   32,
        31,   31,   32,   32,    1,   32,   32,   32,   31,    4,
@@ -847,132 +847,132 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 37 "cminus.l"
-{printf("INT "); return INT;}
+{/*printf("INT ");*/ return INT;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 38 "cminus.l"
-{printf("FLOAT "); return FLOAT;}
+{/*printf("FLOAT ");*/ return FLOAT;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 39 "cminus.l"
-{printf("IF "); return IF;}
+{/*printf("IF ");*/ return IF;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 40 "cminus.l"
-{printf("ELSE "); return ELSE;}
+{/*printf("ELSE ");*/ return ELSE;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 41 "cminus.l"
-{printf("RETURN "); return RETURN;}
+{/*printf("RETURN ");*/ return RETURN;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 42 "cminus.l"
-{printf("VOID ");return VOID;}
+{/*printf("VOID ");*/return VOID;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 43 "cminus.l"
-{printf("WHILE "); return WHILE;}
+{/*printf("WHILE ");*/ return WHILE;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 44 "cminus.l"
-{printf("PLUS "); return PLUS;}
+{/*printf("PLUS ");*/ return PLUS;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 45 "cminus.l"
-{printf("MINUS "); return MINUS;}
+{/*printf("MINUS ");*/ return MINUS;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 46 "cminus.l"
-{printf("TIMES "); return TIMES;}
+{/*printf("TIMES ");*/ return TIMES;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 47 "cminus.l"
-{printf("OVER "); return OVER;}
+{/*printf("LT ");*/ return LT;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 48 "cminus.l"
-{printf("LT "); return LT;}
+{/*printf("OVER ");*/ return OVER;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 49 "cminus.l"
-{printf("LET "); return LET;}
+{/*printf("LET ");*/ return LET;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 50 "cminus.l"
-{printf("HT "); return HT;}
+{/*printf("HT ");*/ return HT;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 51 "cminus.l"
-{printf("HET "); return HET;}
+{/*printf("HET ");*/ return HET;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 52 "cminus.l"
-{printf("EQ "); return EQ;}
+{/*printf("EQ ");*/ return EQ;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 53 "cminus.l"
-{printf("NEQ "); return NEQ;}
+{/*printf("NEQ ");*/ return NEQ;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 54 "cminus.l"
-{printf("ASSIGN "); return ASSIGN;}
+{/*printf("ASSIGN ");*/ return ASSIGN;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 55 "cminus.l"
-{printf("SEMI "); return SEMI;}
+{/*printf("SEMI ");*/ return SEMI;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 56 "cminus.l"
-{printf("COMMA "); return COMMA;}
+{/*printf("COMMA ");*/ return COMMA;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 57 "cminus.l"
-{printf("LPAREN "); return LPAREN;}
+{/*printf("RPAREN ");*/ return RPAREN;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 58 "cminus.l"
-{printf("RPAREN "); return RPAREN;}
+{/*printf("LPAREN ");*/ return LPAREN;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 59 "cminus.l"
-{printf("LBRACK "); return LBRACK;}
+{/*printf("RBRACK ");*/ return RBRACK;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 60 "cminus.l"
-{printf("RBRACK "); return RBRACK;}
+{/*printf("LBRACK ");*/ return LBRACK;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 61 "cminus.l"
-{printf("LCAPSULE "); return LCAPSULE;}
+{/*printf("LCAPSULE ");*/ return LCAPSULE;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 62 "cminus.l"
-{printf("RCAPSULE "); return RCAPSULE;}
+{/*printf("RCAPSULE ");*/ return RCAPSULE;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
@@ -993,7 +993,7 @@ case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
 #line 74 "cminus.l"
-{ lineno++; printf("\t%d\n", lineno);}
+{ lineno++; /*printf("\t%d\n", lineno);*/}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
@@ -1003,17 +1003,17 @@ YY_RULE_SETUP
 case 30:
 YY_RULE_SETUP
 #line 76 "cminus.l"
-{printf("NUMI "); return NUMI;}
+{ /*printf("NUMI "); strcpy(id,yytext);*/ return NUMI;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
 #line 77 "cminus.l"
-{printf("NUMF "); return NUMF;}
+{/*printf("NUMF "); strcpy(id,yytext);*/ return NUMF;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
 #line 78 "cminus.l"
-{printf("ID ");return ID;}
+{/*printf("ID "); strcpy(id,yytext);*/ return ID;}
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 #line 79 "cminus.l"
@@ -2173,6 +2173,21 @@ void abrirArq()
 
 /*Semantic Analysis functions*/
 
+int functionLookup(TipoLista *list, char nomeID[]) {
+    int hash = string2int(nomeID)%211;
+    TipoID *c = list[hash].start;
+    char function[] = "func";
+    while(c != NULL) {
+      if((!strcmp(nomeID, c->nomeID)) && (!strcmp(function, c->tipoID))) {
+        return 1;
+      }
+      c = c->prox;
+    }
+    /*if(c == NULL) {*/
+      return 0;
+    /*}*/
+}
+
 /*Role: Checks Existance of void variables*/
 int checkVoid(TipoLista *list, int index){
 TipoID *p = list[index].start;
@@ -2190,16 +2205,6 @@ while(p!=NULL){
 
 
 /*Role: Checks Existance of Main function*/
-// last declaration must be a function void main(void)
-// ______declaration
-// ________fun-declaration
-// __________type-specifier
-// ____________VOID
-// __________ID
-// __________LPAREN
-// __________params
-// ____________VOID
-// __________RPAREN
 int checkMain(TipoLista *list, int index){
 TipoID *p = list[index].start;
 while(p!=NULL){
@@ -2339,17 +2344,18 @@ w = 0;
 
 
 // Inserindo funções predefinidas int input() e void output()
-insere(vetor, escopo, "input", "func", "int", -1, 39);
-insere(vetor, escopo, "output", "func", "void", -1, 34);
+/*insere(vetor, escopo, "input", "func", "int", -1, 39);*/
+/*insere(vetor, escopo, "output", "func", "void", -1, 34);*/
 
 while ((token=yylex()) != '\0') {
   buf[w] = token;
-  printf("%d\t", token);
+  /*printf("%d\t", token);*/
   w++;
     switch(token) {
 
       case VOID:
         strcpy(tipoData, "void");
+        flag = 2;
     //    puts(tipoData);
       break;
 
@@ -2367,6 +2373,7 @@ while ((token=yylex()) != '\0') {
 
       case LCAPSULE:
         cont++;
+        flag = 0;
       break;
 
       case RCAPSULE:
@@ -2379,17 +2386,16 @@ while ((token=yylex()) != '\0') {
         strcpy(nomeID, yytext);
         token = yylex();
         buf[w] = token;
-        printf("%d\t", token);
+        /*printf("%d\t", token);*/
         w++;
         // IDS.linhas[0] = noline;
         if(token == LPAREN) {
           strcpy(tipoID, "func");
-
           if(strcmp(escopo,"global") == 0) {
             strcpy(escopo, nomeID);
-
-
           }
+          if(flag==0&&!(functionLookup(vetor, nomeID)))
+            printf("\nErro Semântico: Chamada de função não declarada, '%s()'. Linha %d\n", nomeID, lineno);
         } else {
           if(token == LBRACK) {
             // vetor
@@ -2405,10 +2411,16 @@ while ((token=yylex()) != '\0') {
         }
 
         hash = string2int(nomeID)%211;
-        if(!checkExistance(vetor, nomeID, lineno, hash, escopo, flag))
+        int newID = checkExistance(vetor, nomeID, lineno, hash, escopo, flag);
+        if(!newID){
           insere(vetor, escopo, nomeID, tipoID, tipoData, lineno, hash);
-          flag = 0;
+        }
+        if(token==SEMI) flag = 0;
       break;
+
+      case SEMI:
+        flag = 0;
+        break;
     }
 }
 printf("Nome(ID)  Tipo(ID)  Tipo(Dado)   Escopo    Linhas em que aparece\n");
@@ -2459,7 +2471,7 @@ i = 0;
   if (yyparse()==0) printf("\nAnálise sintática OK\n");
   else printf("\nAnálise sintática apresenta ERRO\n");
 
-  printTree();
+  /*printTree();*/
 
   printf("Running Semantic Analysis...\n");
   if(semanticAnalysis(vetor) ==0)

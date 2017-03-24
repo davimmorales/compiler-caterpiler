@@ -640,7 +640,7 @@ TreeNode * allocateNode(char const *node)
 
 	newNode->child = NULL;
 	newNode->sibling = NULL;
-  printf("alocou no str->%s\n", newNode->str);
+  /*printf("alocou no str->%s\n", newNode->str);*/
 	return newNode;
 }
 

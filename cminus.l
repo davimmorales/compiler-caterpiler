@@ -34,32 +34,32 @@ other	[^0-9a-zA-Z;/=\-"+""*""("")""\n"\[\]\,\{\}\<\>|!=\==\<=\>=]
 %option yylineno
 %%
 
-"int"		     {printf("INT "); return INT;}
-"float"		   {printf("FLOAT "); return FLOAT;}
-"if"         {printf("IF "); return IF;}
-"else"		   {printf("ELSE "); return ELSE;}
-"return"	   {printf("RETURN "); return RETURN;}
-"void"		   {printf("VOID ");return VOID;}
-"while"		   {printf("WHILE "); return WHILE;}
-"+"			     {printf("PLUS "); return PLUS;}
-"-"			     {printf("MINUS "); return MINUS;}
-"*"			     {printf("TIMES "); return TIMES;}
-"/"			     {printf("OVER "); return OVER;}
-"<"			     {printf("LT "); return LT;}
-"<="         {printf("LET "); return LET;}
-">"			     {printf("HT "); return HT;}
-">="         {printf("HET "); return HET;}
-"=="         {printf("EQ "); return EQ;}
-"!="         {printf("NEQ "); return NEQ;}
-"="			     {printf("ASSIGN "); return ASSIGN;}
-";"			     {printf("SEMI "); return SEMI;}
-","			     {printf("COMMA "); return COMMA;}
-"("			     {printf("LPAREN "); return LPAREN;}
-")"          {printf("RPAREN "); return RPAREN;}
-"["			     {printf("LBRACK "); return LBRACK;}
-"]"			     {printf("RBRACK "); return RBRACK;}
-"{"			     {printf("LCAPSULE "); return LCAPSULE;}
-"}"			     {printf("RCAPSULE "); return RCAPSULE;}
+"int"		     {/*printf("INT ");*/ return INT;}
+"float"		   {/*printf("FLOAT ");*/ return FLOAT;}
+"if"         {/*printf("IF ");*/ return IF;}
+"else"		   {/*printf("ELSE ");*/ return ELSE;}
+"return"	   {/*printf("RETURN ");*/ return RETURN;}
+"void"		   {/*printf("VOID ");*/return VOID;}
+"while"		   {/*printf("WHILE ");*/ return WHILE;}
+"+"			     {/*printf("PLUS ");*/ return PLUS;}
+"-"			     {/*printf("MINUS ");*/ return MINUS;}
+"*"			     {/*printf("TIMES ");*/ return TIMES;}
+"<"			     {/*printf("LT ");*/ return LT;}
+"/"			     {/*printf("OVER ");*/ return OVER;}
+"<="         {/*printf("LET ");*/ return LET;}
+">"			     {/*printf("HT ");*/ return HT;}
+">="         {/*printf("HET ");*/ return HET;}
+"=="         {/*printf("EQ ");*/ return EQ;}
+"!="         {/*printf("NEQ ");*/ return NEQ;}
+"="			     {/*printf("ASSIGN ");*/ return ASSIGN;}
+";"			     {/*printf("SEMI ");*/ return SEMI;}
+","			     {/*printf("COMMA ");*/ return COMMA;}
+")"          {/*printf("RPAREN ");*/ return RPAREN;}
+"("			     {/*printf("LPAREN ");*/ return LPAREN;}
+"]"			     {/*printf("RBRACK ");*/ return RBRACK;}
+"["			     {/*printf("LBRACK ");*/ return LBRACK;}
+"{"			     {/*printf("LCAPSULE ");*/ return LCAPSULE;}
+"}"			     {/*printf("RCAPSULE ");*/ return RCAPSULE;}
 "/*"            { 	char c, d;
                         c = input();
                         do
@@ -71,11 +71,11 @@ other	[^0-9a-zA-Z;/=\-"+""*""("")""\n"\[\]\,\{\}\<\>|!=\==\<=\>=]
                                 c = d;
                   } while (1);
                 }
-{newline}       { lineno++; printf("\t%d\n", lineno);}
-{whitespace}    ;
-{numberi}       {printf("NUMI "); return NUMI;}
-{numberf}		    {printf("NUMF "); return NUMF;}
-{identifier}    {printf("ID ");return ID;}
+              {newline}       { lineno++; /*printf("\t%d\n", lineno);*/}
+              {whitespace}    ;
+              {numberi}       { /*printf("NUMI "); strcpy(id,yytext);*/ return NUMI;}
+              {numberf}		    {/*printf("NUMF "); strcpy(id,yytext);*/ return NUMF;}
+              {identifier}    {/*printf("ID "); strcpy(id,yytext);*/ return ID;}
 <<EOF>>         return(0);
 {other}		{ printf("Lexical Error at line %d\n", lineno);}
 
@@ -210,6 +210,21 @@ void abrirArq()
 
 /*Semantic Analysis functions*/
 
+int functionLookup(TipoLista *list, char nomeID[]) {
+    int hash = string2int(nomeID)%211;
+    TipoID *c = list[hash].start;
+    char function[] = "func";
+    while(c != NULL) {
+      if((!strcmp(nomeID, c->nomeID)) && (!strcmp(function, c->tipoID))) {
+        return 1;
+      }
+      c = c->prox;
+    }
+    /*if(c == NULL) {*/
+      return 0;
+    /*}*/
+}
+
 /*Role: Checks Existance of void variables*/
 int checkVoid(TipoLista *list, int index){
 TipoID *p = list[index].start;
@@ -227,16 +242,6 @@ while(p!=NULL){
 
 
 /*Role: Checks Existance of Main function*/
-// last declaration must be a function void main(void)
-// ______declaration
-// ________fun-declaration
-// __________type-specifier
-// ____________VOID
-// __________ID
-// __________LPAREN
-// __________params
-// ____________VOID
-// __________RPAREN
 int checkMain(TipoLista *list, int index){
 TipoID *p = list[index].start;
 while(p!=NULL){
@@ -381,12 +386,13 @@ insere(vetor, escopo, "output", "func", "void", -1, 34);
 
 while ((token=yylex()) != '\0') {
   buf[w] = token;
-  printf("%d\t", token);
+  /*printf("%d\t", token);*/
   w++;
     switch(token) {
 
       case VOID:
         strcpy(tipoData, "void");
+        flag = 2;
     //    puts(tipoData);
       break;
 
@@ -404,6 +410,7 @@ while ((token=yylex()) != '\0') {
 
       case LCAPSULE:
         cont++;
+        flag = 0;
       break;
 
       case RCAPSULE:
@@ -416,17 +423,16 @@ while ((token=yylex()) != '\0') {
         strcpy(nomeID, yytext);
         token = yylex();
         buf[w] = token;
-        printf("%d\t", token);
+        /*printf("%d\t", token);*/
         w++;
         // IDS.linhas[0] = noline;
         if(token == LPAREN) {
           strcpy(tipoID, "func");
-
           if(strcmp(escopo,"global") == 0) {
             strcpy(escopo, nomeID);
-
-
           }
+          if(flag==0&&!(functionLookup(vetor, nomeID)))
+            printf("\nErro Semântico: Chamada de função não declarada, '%s()'. Linha %d\n", nomeID, lineno);
         } else {
           if(token == LBRACK) {
             // vetor
@@ -442,10 +448,16 @@ while ((token=yylex()) != '\0') {
         }
 
         hash = string2int(nomeID)%211;
-        if(!checkExistance(vetor, nomeID, lineno, hash, escopo, flag))
+        int newID = checkExistance(vetor, nomeID, lineno, hash, escopo, flag);
+        if(!newID){
           insere(vetor, escopo, nomeID, tipoID, tipoData, lineno, hash);
-          flag = 0;
+        }
+        if(token==SEMI) flag = 0;
       break;
+
+      case SEMI:
+        flag = 0;
+        break;
     }
 }
 printf("Nome(ID)  Tipo(ID)  Tipo(Dado)   Escopo    Linhas em que aparece\n");
@@ -496,7 +508,7 @@ i = 0;
   if (yyparse()==0) printf("\nAnálise sintática OK\n");
   else printf("\nAnálise sintática apresenta ERRO\n");
 
-  printTree();
+  /*printTree();*/
 
   printf("Running Semantic Analysis...\n");
   if(semanticAnalysis(vetor) ==0)
