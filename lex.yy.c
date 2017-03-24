@@ -2044,6 +2044,11 @@ void yyfree (void * ptr )
 
 
 
+char L_side[20];
+char R_side[20];
+int verState = 0;
+int voidFlag = 0;
+
 typedef struct TipoID{
     char nomeID[20];
     char tipoID[20];
@@ -2189,6 +2194,16 @@ int buscaVariavel(TipoLista *list, char nomeID[], char escopo[]) {
     }
 }
 
+int functionType(TipoLista *list, char nomeID[]){
+  int hash = string2int(nomeID)%211;
+  TipoID *c = list[hash].start;
+  while(c != NULL){
+    if(!strcmp(nomeID, c->nomeID)&&!strcmp(c->tipoData, "void"))
+      return 0;
+    else
+      return 1;
+  }
+}
 
 /*Checks existance of a given function*/
 int functionLookup(TipoLista *list, char nomeID[]) {
@@ -2413,21 +2428,21 @@ while ((token=yylex()) != '\0') {
             strcpy(escopo, nomeID);
           }
           if(flag==0&&!(functionLookup(vetor, nomeID)))
-            printf("\nErro Semântico: Chamada de função não declarada, '%s()'. Linha %d\n", nomeID, lineno);
+            printf("\nSemantic Error: Non declared function called, '%s()'. Line %d\n", nomeID, lineno);
         } else {
           if(token == LBRACK) {
             // vetor
             // printf("Vetor\n");
             strcpy(tipoID, "vet");
             if(flag == 0 && !(buscaVariavel(vetor, nomeID, escopo)))
-              printf("\nErro Semântico: Variável '%s' não teve o tipo declarado. Linha %d\n", nomeID, lineno);
+              printf("\nSemantic error: bad declaration for Variable '%s'. Line %d\n", nomeID, lineno);
 
 
           } else {
             // variavel
             strcpy(tipoID, "var");
             if(flag == 0 && !(buscaVariavel(vetor, nomeID, escopo)))
-              printf("\nErro Semântico: Variável '%s' não teve o tipo declarado. Linha %d\n", nomeID, lineno);
+              printf("\nSemantic error: bad declaration for Variable '%s'. Line %d\n", nomeID, lineno);
 
           }
         }
@@ -2445,11 +2460,7 @@ while ((token=yylex()) != '\0') {
         break;
     }
 }
-printf("Nome(ID)  Tipo(ID)  Tipo(Dado)   Escopo    Linhas em que aparece\n");
-for(i = 0;i<211;i++){
-    if(&vetor[i]!=NULL)
-    printWTable(vetor, i);
-}
+
 
 f_out = fopen("out.txt", "w");
 i = 0;
@@ -2488,20 +2499,74 @@ i = 0;
   i++;
   }
 
-  printf("\nParser em execução...\n");
+  // Verificação de atribuições
   abrirArq();
-  if (yyparse()==0) printf("\nAnálise sintática OK\n");
-  else printf("\nAnálise sintática apresenta ERRO\n");
+  lineno = 1;
+  strcpy(escopo, "global"); //  inicia laço com escopo global
+  while ((token=yylex()) != '\0') {
+
+      switch(token) {
+
+        case ASSIGN:
+            if(verState == 0) {
+              verState = 1; // passa a procurar lado direito
+            }
+        break;
+
+        case SEMI:
+            if(verState == 1) {
+              verState = 0; // volta a procurar lado esquerdo
+            }
+
+        break;
+
+        case ID:
+            if(verState == 0) {
+              strcpy(L_side,yytext);
+              if(functionLookup(vetor, L_side)) {
+                strcpy(escopo, yytext);
+              }
+            } else {
+              if(verState == 1) {
+                while(token != SEMI && token != LPAREN) {
+                  strcpy(R_side,yytext);
+                  if(functionLookup(vetor, R_side)){
+                    if(!functionType(vetor, R_side))
+                      voidFlag = 1;
+                  }
+
+                  token = yylex();
+                  if((token == MINUS) || (token == PLUS) || (token == TIMES) || (token == OVER)) token == yylex();
+                }
+                verState = 0;
+              }
+            }
+        break;
+      }
+  }
+
+
+  printf("\nParser running...\n");
+  abrirArq();
+  if (yyparse()==0) printf("\nSyntax Analysis OK\n");
+  else printf("\nERROR in Syntax Analysis\n");
 
   /*printTree();*/
+  if(voidFlag)
+    printf("Semantic error: Void attribution to variable\n");
 
   printf("Running Semantic Analysis...\n");
-  if(semanticAnalysis(vetor) ==0)
-    printf("Semantic Analysis OK\n");
-  else
-    printf("Errors found in Semantic Analysis\n");
+  semanticAnalysis(vetor);
+    printf("Semantic Analysis Finished\n");
+
 
   printf("Finished.\n");
+
+  printf("Name(ID)  Type(ID)  Type(Data)   Scope    Appears in lines\n");
+  for(i = 0;i<211;i++){
+      if(&vetor[i]!=NULL)
+      printWTable(vetor, i);
+  }
 
   return 0;
 }
