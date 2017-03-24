@@ -3,10 +3,7 @@
 • Não podem haver declarações duplas no mesmo escopo; OK
 • Nomes de variáveis e funções não podem ser duplicados. OK
 • Função tem que ter sido definida antes de uso; OK
-
-• Verificar se variável foi declarada antes de uso;
-
-
-• Verificação de tipos (variável inteira não pode receber retorno de função void);
+• Verificar se variável foi declarada antes de uso; OK
+• Verificação de tipos (variável inteira não pode receber retorno de função void); OK
 
 

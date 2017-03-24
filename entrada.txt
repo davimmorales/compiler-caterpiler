@@ -1,4 +1,4 @@
-/* gdc com erro semantico - verificação de tipos */
+/* gdc com erro semantico - nome de variável duplicado com função */
 
 /* teste de função com parâmetros e corpo sem declarações */
 int gdc (int u, int v)
@@ -19,16 +19,15 @@ void output(int x)
 }
 
 /* teste de função sem parâmetro e com corpo completo */
-void main(void)
+void main(void) 
 {
 
    /* teste de diferentes tipos de variáveis, incluindo vetor */
+   int input; /* erro semantico - nome duplicado com de função */
    int x;
    int y;
    int u;
    int v[10];
-
-   u = output(x); /* erro semântico: valor de retorno de função é void */
 
    /* chamadas de funções */
    x = input();

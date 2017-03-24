@@ -2264,10 +2264,7 @@ int checkDecScope(TipoLista *list, int index){
       w = p->prox;
       while (w!=NULL&&(!strcmp(p->tipoID,"var")||!strcmp(p->tipoID,"vet"))){
         if(!strcmp(w->nomeID,p->nomeID)&&!strcmp(p->escopo,w->escopo)){
-          if (w->linhas[0])
-            w->linhas[0];
-          else
-            return p->linhas[0];
+          return w->linhas[0];
         }
         w = w->prox;
       }
