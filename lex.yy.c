@@ -2548,7 +2548,7 @@ i = 0;
   if (yyparse()==0) printf("\nSyntax Analysis OK\n");
   else printf("\nERROR in Syntax Analysis\n");
 
-  /*printTree();*/
+  printTree();
   if(voidFlag)
     printf("Semantic error: Void attribution to variable\n");
 
