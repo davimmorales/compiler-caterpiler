@@ -23,6 +23,9 @@ typedef struct treeNode{
   struct treeNode *sibling;
 }TreeNode;
 
+int line_flag = 0;
+int reference_line = 0;
+
 TreeNode * tree;// Declaração da árvore
 TreeNode * allocateToken(char const* token);
 TreeNode * allocateNode(char const* node);
@@ -632,8 +635,13 @@ TreeNode * allocateToken(char const *token)
 TreeNode * allocateNode(char const *node)
 {
 
+  if(line_flag==0){
+    reference_line = yylineno;
+    line_flag = 1;
+  }
+
 	TreeNode *newNode = (TreeNode*)malloc(sizeof(TreeNode));
-	newNode->lineno = yylineno;
+	newNode->lineno = yylineno - reference_line;
 
 	newNode->str = (char*) calloc(sizeof(char),20);
 	strcpy(newNode->str, node);
@@ -692,7 +700,7 @@ void effPrintTree(TreeNode * tree)
 	{
 		printSpaces();
 		//fprintf(arq, "%s\n",tree->str);
-    printf("%s\n",tree->str);
+    printf("%s %d\n",tree->str, tree->lineno);
 
 		tree = tree->child;
 
