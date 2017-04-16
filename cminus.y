@@ -18,6 +18,7 @@
 
 typedef struct treeNode{
   char *str;
+  char *name;
   int lineno;
   struct treeNode *child;
   struct treeNode *sibling;
@@ -642,6 +643,7 @@ TreeNode * allocateNode(char const *node)
 
 	TreeNode *newNode = (TreeNode*)malloc(sizeof(TreeNode));
 	newNode->lineno = yylineno - reference_line;
+  /*newNode->name = strcpy(newNode->name, yylex());*/
 
 	newNode->str = (char*) calloc(sizeof(char),20);
 	strcpy(newNode->str, node);

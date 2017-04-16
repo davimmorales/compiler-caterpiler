@@ -26,9 +26,8 @@ void main(void)
    int x;
    int y;
    int u;
-   int v[10];
    int i;
-  int input;
+   int v[10];
 
    /* chamadas de funções */
    x = input();

@@ -1003,7 +1003,7 @@ YY_RULE_SETUP
 case 30:
 YY_RULE_SETUP
 #line 76 "cminus.l"
-{ /*printf("NUMI "); strcpy(id,yytext);*/ return NUMI;}
+{ /*printf("NUMI ");* strcpy(id,yytext);*/ return NUMI;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
@@ -2174,6 +2174,7 @@ void printWTable(TipoLista *lista, int index) {
 void abrirArq()
 {
   yyin = fopen("entrada.txt", "r");
+
 }
 
 /*Semantic Analysis functions*/
@@ -2380,6 +2381,7 @@ insere(vetor, escopo, "output", "func", "void", -1, 34);
 while ((token=yylex()) != '\0') {
   buf[w] = token;
   /*printf("%d\t", token);*/
+  printf("%s\n", yytext);
   w++;
     switch(token) {
 

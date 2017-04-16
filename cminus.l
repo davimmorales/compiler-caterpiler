@@ -73,7 +73,7 @@ other	[^0-9a-zA-Z;/=\-"+""*""("")""\n"\[\]\,\{\}\<\>|!=\==\<=\>=]
                 }
               {newline}       { lineno++; /*printf("\t%d\n", lineno);*/}
               {whitespace}    ;
-              {numberi}       { /*printf("NUMI "); strcpy(id,yytext);*/ return NUMI;}
+              {numberi}       { /*printf("NUMI ");* strcpy(id,yytext);*/ return NUMI;}
               {numberf}		    {/*printf("NUMF "); strcpy(id,yytext);*/ return NUMF;}
               {identifier}    {/*printf("ID "); strcpy(id,yytext);*/ return ID;}
 <<EOF>>         return(0);
@@ -211,6 +211,7 @@ void printWTable(TipoLista *lista, int index) {
 void abrirArq()
 {
   yyin = fopen("entrada.txt", "r");
+
 }
 
 /*Semantic Analysis functions*/
@@ -417,6 +418,7 @@ insere(vetor, escopo, "output", "func", "void", -1, 34);
 while ((token=yylex()) != '\0') {
   buf[w] = token;
   /*printf("%d\t", token);*/
+  printf("%s\n", yytext);
   w++;
     switch(token) {
 
