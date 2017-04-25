@@ -108,6 +108,10 @@ typedef struct{
     TipoID *start;
 }TipoLista;
 
+typedef struct{
+  TypeSync *start;
+}SyncList;
+
 void inicializaLista(TipoLista *lista){
     lista->start = NULL;
 }
@@ -130,23 +134,23 @@ int string2int(const char *num)
   return result;
 }
 
-void insert(TipoLista list, char nameID[], char typeID[]){
+void insert(SyncList *list, char nameID[], char typeID[]){
   TypeSync *new_node = malloc(sizeof(TypeSync));
   if(!strcmp(typeID,"func"))
-  new_node->type = 3;
+    new_node->type = 3;
   else if(!strcmp(typeID,"var"))
-  new_node->type = 1;
+    new_node->type = 1;
   else
-  new_node->type = 2;
+    new_node->type = 2;
   strcpy(new_node->name,nameID);
-
-  TypeSync *p = list.start;
+  TypeSync *p = list->start;
   if(p==NULL)
-  list.start = new_node;
+    list->start = new_node;
   else{
     while(p->next!=NULL)
-    p = p->next;
+      p = p->next;
     p->next = new_node;
+    /*printf("%s\n", ->name);*/
   }
 }
 
@@ -237,12 +241,10 @@ void printWTable(TipoLista *lista, int index) {
   }
 }
 
-void printIDList(TipoLista list) {
-  int i;
-  TypeSync *p = list.start;
+void printIDList(SyncList *list) {
+  TypeSync *p = list->start;
   while(p!=NULL){
-      i = 0;
-      printf("%s, %d\n", p->name, p->type);
+      printf("%s %d\n", p->name, p->type);
       p = p->next;
   }
 }
@@ -431,7 +433,7 @@ int line = 1;
 int hash = 0;
 // Alocando o vetor estático e inicializando ponteiros com NULL
 TipoLista vetor[211]; //lista de listas
-TipoLista id_list;
+SyncList id_list;
 
 for(i = 0; i < 211; i++) {
   vetor[i].start = NULL;
@@ -530,7 +532,7 @@ while ((token=yylex()) != '\0') {
         if(!newID){
           insere(vetor, escopo, nomeID, tipoID, tipoData, lineno, hash);
         }
-        insert(id_list,nomeID,tipoID);
+        insert(&id_list,nomeID,tipoID);
         if(token==SEMI) flag = 0;
       break;
 
@@ -624,7 +626,6 @@ i = 0;
       }
   }
 
-
   printf("\nParser running...\n");
   abrirArq();
   if (yyparse()==0) printf("\nSyntax Analysis OK\n");
@@ -636,7 +637,7 @@ i = 0;
 
   printf("Running Semantic Analysis...\n");
   semanticAnalysis(vetor);
-    printf("Semantic Analysis Finished\n");
+  printf("Semantic Analysis Finished\n");
 
 
   printf("Finished.\n");
@@ -647,7 +648,9 @@ i = 0;
       printWTable(vetor, i);
   }
 
-  printIDList(id_list);
+  printIDList(&id_list);
+
+
 
   return 0;
 }
