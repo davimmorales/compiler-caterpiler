@@ -146,13 +146,13 @@ declaration		: var-declaration
                addChild($$,$1);}
 							;
 
-var-declaration	: type-specifier ID SEMI
+var-declaration	: INT ID SEMI
                 {$$ = allocateNode("var-declaration");
                  /*addChild($$,$1);*/
                  addChild($$,$2);
                  /*$3 = allocateNode("SEMI");
                  addChild($$,$3);}*/
-               }| type-specifier ID LBRACK NUMI RBRACK SEMI{
+               }| INT ID LBRACK NUMI RBRACK SEMI{
                  $$ = allocateNode("var-declaration");
                  addChild($$,$2);
                }
@@ -189,7 +189,7 @@ var-declaration	: type-specifier ID SEMI
           ;*/
 
 
-type-specifier	: INT
+/*type-specifier	: INT
                 {$$ = allocateNode("type-specifier");
                  $1 = allocateNode("INT");
                  addChild($$,$1);}
@@ -201,9 +201,9 @@ type-specifier	: INT
                 {$$ = allocateNode("type-specifier");
                  $1 = allocateNode("VOID");
                  addChild($$,$1);}
-								;
+								;*/
 
-fun-declaration : type-specifier ID LPAREN params RPAREN compound-stmt
+fun-declaration : VOID ID LPAREN params RPAREN compound-stmt
                 {$$ = allocateNode("fun-declaration");
                  addChild($$,$1);
                  $2 = allocateToken("ID");
@@ -213,17 +213,19 @@ fun-declaration : type-specifier ID LPAREN params RPAREN compound-stmt
                  addChild($$,$4);
                  $5 = allocateNode("RPAREN");
                  addChild($$,$5);
-                 addChild($$,$6);}
-                | type-specifier ID LPAREN RPAREN compound-stmt
-                {$$ = allocateNode("fun-declaration");
-                 addChild($$,$1);
-                 $2 = allocateToken("ID");
-                 $3 = allocateNode("LPAREN");
-                 $4 = allocateNode("RPAREN");
-                 addChild($$,$2);
-                 addChild($$,$3);
-                 addChild($$,$4);
-                 addChild($$,$5);}
+                 addChild($$,$6);
+               }
+              |INT ID LPAREN params RPAREN compound-stmt
+                                 {$$ = allocateNode("fun-declaration");
+                                  addChild($$,$1);
+                                  $2 = allocateToken("ID");
+                                  $3 = allocateNode("LPAREN");
+                                  addChild($$,$2);
+                                  addChild($$,$3);
+                                  addChild($$,$4);
+                                  $5 = allocateNode("RPAREN");
+                                  addChild($$,$5);
+                                  addChild($$,$6);}
                 ;
 
 params  : param-list
@@ -246,12 +248,12 @@ param-list  : param-list COMMA param
              addChild($$,$1);}
             ;
 
-param       : type-specifier ID
+param       : INT ID
             {$$ = allocateNode("param");
              addChild($$,$1);
              $2 = allocateToken("ID");
              addChild($$,$2);}
-            | type-specifier ID LBRACK RBRACK
+            | INT ID LBRACK RBRACK
             {$$ = allocateNode("param");
              addChild($$,$1);
              $2 = allocateToken("ID");
