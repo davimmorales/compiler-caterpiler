@@ -4,7 +4,6 @@
 /* Trabalho Prático de Compiladores                 */
 /* Davi Morales and Mateus Franco                   */
 /****************************************************/
-/*there was, formerly, an optional minus on numberi and numberf*/
 %{
 #include <stdio.h>
 #include <ctype.h>
@@ -97,7 +96,8 @@ typedef struct TipoID{
 }TipoID;
 
 typedef struct TypeSync{
-  char name[30];
+  char name[45];
+  char scope[45];
   int type;//where 1 stands for var, 2 for array and 3 for function
   int value;
   int top;
@@ -134,14 +134,21 @@ int string2int(const char *num)
   return result;
 }
 
-void insert(SyncList *list, char nameID[], char typeID[]){
+void insert(SyncList *list, char scope[], char nameID[], char typeID[]){
   TypeSync *new_node = malloc(sizeof(TypeSync));
-  if(!strcmp(typeID,"func"))
+  if(!strcmp(typeID,"func")){
     new_node->type = 3;
-  else if(!strcmp(typeID,"var"))
+    strcpy(new_node->scope, "none");
+  }
+  else if(!strcmp(typeID,"var")){
     new_node->type = 1;
-  else
+    strcpy(new_node->scope, scope);
+  }
+  else{
     new_node->type = 2;
+    strcpy(new_node->scope, scope);
+
+  }
   strcpy(new_node->name,nameID);
   TypeSync *p = list->start;
   if(p==NULL)
@@ -157,8 +164,6 @@ void insert(SyncList *list, char nameID[], char typeID[]){
 
 void insere(TipoLista *lista, char scope[], char nameID[], char typeID[], char typeData[], int nline, int index)
 {
-
-
     // Alocação do nó que será indexado
     TipoID *novoNo = malloc(sizeof(TipoID));
     // Inicialização do vetor de linhas
@@ -244,7 +249,7 @@ void printWTable(TipoLista *lista, int index) {
 void printIDList(SyncList *list) {
   TypeSync *p = list->start;
   while(p!=NULL){
-      printf("%s %d\n", p->name, p->type);
+      printf("%s %s %d\n", p->name, p->scope, p->type);
       p = p->next;
   }
 }
@@ -532,7 +537,7 @@ while ((token=yylex()) != '\0') {
         if(!newID){
           insere(vetor, escopo, nomeID, tipoID, tipoData, lineno, hash);
         }
-        insert(&id_list,nomeID,tipoID);
+        insert(&id_list, escopo, nomeID,tipoID);
         if(token==SEMI) flag = 0;
       break;
 
@@ -632,6 +637,7 @@ i = 0;
   else printf("\nERROR in Syntax Analysis\n");
 
   printTree();
+  
   if(voidFlag)
     printf("Semantic error: Void attribution to variable\n");
 
@@ -654,3 +660,4 @@ i = 0;
 
   return 0;
 }
+

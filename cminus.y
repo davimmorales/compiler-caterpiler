@@ -16,10 +16,24 @@
 /***********   Syntax tree for parsing ************/
 /**************************************************/
 
+typedef enum {statementK, expK} node_kind;
+typedef enum {ifK, whileK, assignK, returnK, varK, vecK, funcK, funcvarK, funcvecK} statement_kind;
+typedef enum {TypeK, RelOpK, ArithOpK, ConstK, IdK, VecIndexK, CallK} expression_kind;
+
+union treeKind{
+    statement_kind stmt;
+    expression_kind exp;
+};
+
 typedef struct treeNode{
   char *str;
   char *name;
+  int type;
+  int value;
   int lineno;
+  node_kind nodekind;
+  char * scope;
+  union treeKind kind;
   struct treeNode *child;
   struct treeNode *sibling;
 }TreeNode;

@@ -539,8 +539,7 @@ char *yytext;
 /* Trabalho Prático de Compiladores                 */
 /* Davi Morales and Mateus Franco                   */
 /****************************************************/
-/*there was, formerly, an optional minus on numberi and numberf*/
-#line 9 "cminus.l"
+#line 8 "cminus.l"
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -556,7 +555,7 @@ void printTree();
 
 int lineno = 1;
 
-#line 560 "lex.yy.c"
+#line 559 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -774,10 +773,10 @@ YY_DECL
 		}
 
 	{
-#line 35 "cminus.l"
+#line 34 "cminus.l"
 
 
-#line 781 "lex.yy.c"
+#line 780 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -846,137 +845,137 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 37 "cminus.l"
+#line 36 "cminus.l"
 {/*printf("INT ");*/ return INT;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 38 "cminus.l"
+#line 37 "cminus.l"
 {/*printf("FLOAT ");*/ return FLOAT;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 39 "cminus.l"
+#line 38 "cminus.l"
 {/*printf("IF ");*/ return IF;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 40 "cminus.l"
+#line 39 "cminus.l"
 {/*printf("ELSE ");*/ return ELSE;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 41 "cminus.l"
+#line 40 "cminus.l"
 {/*printf("RETURN ");*/ return RETURN;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 42 "cminus.l"
+#line 41 "cminus.l"
 {/*printf("VOID ");*/return VOID;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 43 "cminus.l"
+#line 42 "cminus.l"
 {/*printf("WHILE ");*/ return WHILE;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 44 "cminus.l"
+#line 43 "cminus.l"
 {/*printf("PLUS ");*/ return PLUS;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 45 "cminus.l"
+#line 44 "cminus.l"
 {/*printf("MINUS ");*/ return MINUS;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 46 "cminus.l"
+#line 45 "cminus.l"
 {/*printf("TIMES ");*/ return TIMES;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 47 "cminus.l"
+#line 46 "cminus.l"
 {/*printf("LT ");*/ return LT;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 48 "cminus.l"
+#line 47 "cminus.l"
 {/*printf("OVER ");*/ return OVER;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 49 "cminus.l"
+#line 48 "cminus.l"
 {/*printf("LET ");*/ return LET;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 50 "cminus.l"
+#line 49 "cminus.l"
 {/*printf("HT ");*/ return HT;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 51 "cminus.l"
+#line 50 "cminus.l"
 {/*printf("HET ");*/ return HET;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 52 "cminus.l"
+#line 51 "cminus.l"
 {/*printf("EQ ");*/ return EQ;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 53 "cminus.l"
+#line 52 "cminus.l"
 {/*printf("NEQ ");*/ return NEQ;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 54 "cminus.l"
+#line 53 "cminus.l"
 {/*printf("ASSIGN ");*/ return ASSIGN;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 55 "cminus.l"
+#line 54 "cminus.l"
 {/*printf("SEMI ");*/ return SEMI;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 56 "cminus.l"
+#line 55 "cminus.l"
 {/*printf("COMMA ");*/ return COMMA;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 57 "cminus.l"
+#line 56 "cminus.l"
 {/*printf("RPAREN ");*/ return RPAREN;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 58 "cminus.l"
+#line 57 "cminus.l"
 {/*printf("LPAREN ");*/ return LPAREN;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 59 "cminus.l"
+#line 58 "cminus.l"
 {/*printf("RBRACK ");*/ return RBRACK;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 60 "cminus.l"
+#line 59 "cminus.l"
 {/*printf("LBRACK ");*/ return LBRACK;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 61 "cminus.l"
+#line 60 "cminus.l"
 {/*printf("LCAPSULE ");*/ return LCAPSULE;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 62 "cminus.l"
+#line 61 "cminus.l"
 {/*printf("RCAPSULE ");*/ return RCAPSULE;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 63 "cminus.l"
+#line 62 "cminus.l"
 { 	char c, d;
                         c = input();
                         do
@@ -992,44 +991,44 @@ YY_RULE_SETUP
 case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
-#line 74 "cminus.l"
+#line 73 "cminus.l"
 { lineno++; /*printf("\t%d\n", lineno);*/}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 75 "cminus.l"
+#line 74 "cminus.l"
 ;
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 76 "cminus.l"
+#line 75 "cminus.l"
 { /*printf("NUMI ");* strcpy(id,yytext);*/ return NUMI;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 77 "cminus.l"
+#line 76 "cminus.l"
 {/*printf("NUMF "); strcpy(id,yytext);*/ return NUMF;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 78 "cminus.l"
+#line 77 "cminus.l"
 {/*printf("ID "); strcpy(id,yytext);*/ return ID;}
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 79 "cminus.l"
+#line 78 "cminus.l"
 return(0);
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 80 "cminus.l"
+#line 79 "cminus.l"
 { printf("Lexical Error at line %d\n", lineno);}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 82 "cminus.l"
+#line 81 "cminus.l"
 ECHO;
 	YY_BREAK
-#line 1033 "lex.yy.c"
+#line 1032 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2040,7 +2039,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 82 "cminus.l"
+#line 81 "cminus.l"
 
 
 
@@ -2060,7 +2059,8 @@ typedef struct TipoID{
 }TipoID;
 
 typedef struct TypeSync{
-  char name[30];
+  char name[45];
+  char scope[45];
   int type;//where 1 stands for var, 2 for array and 3 for function
   int value;
   int top;
@@ -2097,14 +2097,21 @@ int string2int(const char *num)
   return result;
 }
 
-void insert(SyncList *list, char nameID[], char typeID[]){
+void insert(SyncList *list, char scope[], char nameID[], char typeID[]){
   TypeSync *new_node = malloc(sizeof(TypeSync));
-  if(!strcmp(typeID,"func"))
+  if(!strcmp(typeID,"func")){
     new_node->type = 3;
-  else if(!strcmp(typeID,"var"))
+    strcpy(new_node->scope, "none");
+  }
+  else if(!strcmp(typeID,"var")){
     new_node->type = 1;
-  else
+    strcpy(new_node->scope, scope);
+  }
+  else{
     new_node->type = 2;
+    strcpy(new_node->scope, scope);
+
+  }
   strcpy(new_node->name,nameID);
   TypeSync *p = list->start;
   if(p==NULL)
@@ -2120,8 +2127,6 @@ void insert(SyncList *list, char nameID[], char typeID[]){
 
 void insere(TipoLista *lista, char scope[], char nameID[], char typeID[], char typeData[], int nline, int index)
 {
-
-
     // Alocação do nó que será indexado
     TipoID *novoNo = malloc(sizeof(TipoID));
     // Inicialização do vetor de linhas
@@ -2207,7 +2212,7 @@ void printWTable(TipoLista *lista, int index) {
 void printIDList(SyncList *list) {
   TypeSync *p = list->start;
   while(p!=NULL){
-      printf("%s %d\n", p->name, p->type);
+      printf("%s %s %d\n", p->name, p->scope, p->type);
       p = p->next;
   }
 }
@@ -2495,7 +2500,7 @@ while ((token=yylex()) != '\0') {
         if(!newID){
           insere(vetor, escopo, nomeID, tipoID, tipoData, lineno, hash);
         }
-        insert(&id_list,nomeID,tipoID);
+        insert(&id_list, escopo, nomeID,tipoID);
         if(token==SEMI) flag = 0;
       break;
 
@@ -2595,6 +2600,7 @@ i = 0;
   else printf("\nERROR in Syntax Analysis\n");
 
   printTree();
+  
   if(voidFlag)
     printf("Semantic error: Void attribution to variable\n");
 
@@ -2617,4 +2623,5 @@ i = 0;
 
   return 0;
 }
+
 
