@@ -146,16 +146,19 @@ declaration		: var-declaration
                addChild($$,$1);}
 							;
 
-var-declaration	: type-specifier var-list SEMI
+var-declaration	: type-specifier ID SEMI
                 {$$ = allocateNode("var-declaration");
-                 addChild($$,$1);
+                 /*addChild($$,$1);*/
                  addChild($$,$2);
-                 $3 = allocateNode("SEMI");
-                 addChild($$,$3);}
+                 /*$3 = allocateNode("SEMI");
+                 addChild($$,$3);}*/
+               }| type-specifier ID LBRACK NUMI RBRACK SEMI{
+                 $$ = allocateNode("var-declaration");
+                 addChild($$,$2);
+               }
 								;
 
-
-var-list: var-list COMMA variable
+/*var-list: var-list COMMA variable
            {$$ = allocateNode("var-list");
             addChild($$,$1);
             $2 = allocateNode("COMMA");
@@ -164,13 +167,16 @@ var-list: var-list COMMA variable
            | variable
            {$$ = allocateNode("var-list");
             addChild($$,$1);}
-           ;
+           ;*/
 
-variable: ID
+/*variable:*/
+/*ID
           {$$ = allocateNode("variable");
            $1 = allocateToken("ID");
            addChild($$,$1);}
-          | ID LBRACK NUMI RBRACK
+          |*/
+
+           /*ID LBRACK NUMI RBRACK
           {$$ = allocateNode("variable");
            $1 = allocateToken("ID");
            $2 = allocateNode("LBRACK");
@@ -180,7 +186,7 @@ variable: ID
            addChild($$,$2);
            addChild($$,$3);
            addChild($$,$4);}
-          ;
+          ;*/
 
 
 type-specifier	: INT

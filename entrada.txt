@@ -1,15 +1,15 @@
 /* gdc sem erros */
 
 /* teste de função com parâmetros e corpo sem declarações */
-int gdc (int u, int v)
+void gdc (int u, int v)
 {
     /* teste de seleção, expressões, return e chamada de função */
     if (v == 0) return u;
-    else return gdc(v,u-u/v*v);
+ /*   else return gdc(v,u-u/v*v);*/
 }
 
 /* teste de função sem parâmetros e sem corpo */
-int input(void)
+void input(void)
 {
 }
 

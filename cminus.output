@@ -4,7 +4,7 @@ Terminais sem uso na gramática
    ERROR
 
 
-Estado 108 conflitos: 1 de deslocamento/redução
+Estado 105 conflitos: 1 de deslocamento/redução
 
 
 Gramática
@@ -20,134 +20,129 @@ Gramática
     5 declaration: var-declaration
     6            | fun-declaration
 
-    7 var-declaration: type-specifier var-list SEMI
+    7 var-declaration: type-specifier ID SEMI
+    8                | type-specifier ID LBRACK NUMI RBRACK SEMI
 
-    8 var-list: var-list COMMA variable
-    9         | variable
+    9 type-specifier: INT
+   10               | FLOAT
+   11               | VOID
 
-   10 variable: ID
-   11         | ID LBRACK NUMI RBRACK
+   12 fun-declaration: type-specifier ID LPAREN params RPAREN compound-stmt
+   13                | type-specifier ID LPAREN RPAREN compound-stmt
 
-   12 type-specifier: INT
-   13               | FLOAT
-   14               | VOID
+   14 params: param-list
+   15       | VOID
 
-   15 fun-declaration: type-specifier ID LPAREN params RPAREN compound-stmt
-   16                | type-specifier ID LPAREN RPAREN compound-stmt
+   16 param-list: param-list COMMA param
+   17           | param
 
-   17 params: param-list
-   18       | VOID
+   18 param: type-specifier ID
+   19      | type-specifier ID LBRACK RBRACK
 
-   19 param-list: param-list COMMA param
-   20           | param
+   20 compound-stmt: LCAPSULE local-declarations statement-list RCAPSULE
 
-   21 param: type-specifier ID
-   22      | type-specifier ID LBRACK RBRACK
+   21 local-declarations: local-declarations var-declaration
+   22                   | %empty
 
-   23 compound-stmt: LCAPSULE local-declarations statement-list RCAPSULE
+   23 statement-list: statement-list statement
+   24               | %empty
 
-   24 local-declarations: local-declarations var-declaration
-   25                   | %empty
+   25 statement: expression-stmt
+   26          | compound-stmt
+   27          | selection-stmt
+   28          | iteration-stmt
+   29          | return-stmt
 
-   26 statement-list: statement-list statement
-   27               | %empty
+   30 expression-stmt: expression SEMI
+   31                | SEMI
 
-   28 statement: expression-stmt
-   29          | compound-stmt
-   30          | selection-stmt
-   31          | iteration-stmt
-   32          | return-stmt
+   32 selection-stmt: IF LPAREN comparative-expression RPAREN statement
+   33               | IF LPAREN comparative-expression RPAREN statement ELSE statement
 
-   33 expression-stmt: expression SEMI
-   34                | SEMI
+   34 iteration-stmt: WHILE LPAREN comparative-expression RPAREN statement
 
-   35 selection-stmt: IF LPAREN comparative-expression RPAREN statement
-   36               | IF LPAREN comparative-expression RPAREN statement ELSE statement
+   35 return-stmt: RETURN SEMI
+   36            | RETURN expression SEMI
 
-   37 iteration-stmt: WHILE LPAREN comparative-expression RPAREN statement
+   37 expression: var ASSIGN expression
+   38           | simple-expression
 
-   38 return-stmt: RETURN SEMI
-   39            | RETURN expression SEMI
+   39 var: ID
+   40    | ID LBRACK expression RBRACK
 
-   40 expression: var ASSIGN expression
-   41           | simple-expression
+   41 simple-expression: comparative-expression
+   42                  | additive-expression
 
-   42 var: ID
-   43    | ID LBRACK expression RBRACK
+   43 comparative-expression: additive-expression relop additive-expression
 
-   44 simple-expression: comparative-expression
-   45                  | additive-expression
+   44 relop: LET
+   45      | LT
+   46      | HT
+   47      | HET
+   48      | EQ
+   49      | NEQ
 
-   46 comparative-expression: additive-expression relop additive-expression
+   50 additive-expression: additive-expression addop term
+   51                    | addop term
+   52                    | term
 
-   47 relop: LET
-   48      | LT
-   49      | HT
-   50      | HET
-   51      | EQ
-   52      | NEQ
+   53 addop: PLUS
+   54      | MINUS
 
-   53 additive-expression: additive-expression addop term
-   54                    | addop term
-   55                    | term
+   55 term: term mulop factor
+   56     | factor
 
-   56 addop: PLUS
-   57      | MINUS
+   57 mulop: TIMES
+   58      | OVER
 
-   58 term: term mulop factor
-   59     | factor
+   59 factor: LPAREN expression RPAREN
+   60       | var
+   61       | call
+   62       | NUMI
+   63       | NUMF
 
-   60 mulop: TIMES
-   61      | OVER
+   64 call: ID LPAREN args RPAREN
 
-   62 factor: LPAREN expression RPAREN
-   63       | var
-   64       | call
-   65       | NUMI
-   66       | NUMF
+   65 args: arg-list
+   66     | %empty
 
-   67 call: ID LPAREN args RPAREN
-
-   68 args: arg-list
-   69     | %empty
-
-   70 arg-list: arg-list COMMA expression
-   71         | expression
+   67 arg-list: arg-list COMMA expression
+   68         | expression
 
 
 Terminais, com as regras onde eles aparecem
 
 $end (0) 0
 error (256)
-INT (300) 12
-FLOAT (301) 13
-IF (302) 35 36
-ELSE (303) 36
-RETURN (304) 38 39
-VOID (305) 14 18
-WHILE (306) 37
-PLUS (307) 56
-MINUS (308) 57
-TIMES (309) 60
-OVER (310) 61
-LT (311) 48
-LET (312) 47
-HT (313) 49
-HET (314) 50
-EQ (315) 51
-NEQ (316) 52
-ASSIGN (317) 40
-SEMI (318) 7 33 34 38 39
-COMMA (319) 8 19 70
-LPAREN (320) 15 16 35 36 37 62 67
-RPAREN (321) 15 16 35 36 37 62 67
-LBRACK (322) 11 22 43
-RBRACK (323) 11 22 43
-LCAPSULE (324) 23
-RCAPSULE (325) 23
-NUMI (326) 11 65
-NUMF (327) 66
-ID (328) 10 11 15 16 21 22 42 43 67
+INT (300) 9
+FLOAT (301) 10
+IF (302) 32 33
+ELSE (303) 33
+RETURN (304) 35 36
+VOID (305) 11 15
+WHILE (306) 34
+PLUS (307) 53
+MINUS (308) 54
+TIMES (309) 57
+OVER (310) 58
+LT (311) 45
+LET (312) 44
+HT (313) 46
+HET (314) 47
+EQ (315) 48
+NEQ (316) 49
+ASSIGN (317) 37
+SEMI (318) 7 8 30 31 35 36
+COMMA (319) 16 67
+LPAREN (320) 12 13 32 33 34 59 64
+RPAREN (321) 12 13 32 33 34 59 64
+LBRACK (322) 8 19 40
+RBRACK (323) 8 19 40
+LCAPSULE (324) 20
+RCAPSULE (325) 20
+NUMI (326) 8 62
+NUMF (327) 63
+ID (328) 7 8 12 13 18 19 39 40 64
 NEWLINE (329)
 ERROR (331)
 
@@ -163,63 +158,59 @@ declaration-list (36)
 declaration (37)
     à esquerda: 5 6, à direita: 3 4
 var-declaration (38)
-    à esquerda: 7, à direita: 5 24
-var-list (39)
-    à esquerda: 8 9, à direita: 7 8
-variable (40)
-    à esquerda: 10 11, à direita: 8 9
-type-specifier (41)
-    à esquerda: 12 13 14, à direita: 7 15 16 21 22
-fun-declaration (42)
-    à esquerda: 15 16, à direita: 6
-params (43)
-    à esquerda: 17 18, à direita: 15
-param-list (44)
-    à esquerda: 19 20, à direita: 17 19
-param (45)
-    à esquerda: 21 22, à direita: 19 20
-compound-stmt (46)
-    à esquerda: 23, à direita: 15 16 29
-local-declarations (47)
-    à esquerda: 24 25, à direita: 23 24
-statement-list (48)
-    à esquerda: 26 27, à direita: 23 26
-statement (49)
-    à esquerda: 28 29 30 31 32, à direita: 26 35 36 37
-expression-stmt (50)
-    à esquerda: 33 34, à direita: 28
-selection-stmt (51)
-    à esquerda: 35 36, à direita: 30
-iteration-stmt (52)
-    à esquerda: 37, à direita: 31
-return-stmt (53)
-    à esquerda: 38 39, à direita: 32
-expression (54)
-    à esquerda: 40 41, à direita: 33 39 40 43 62 70 71
-var (55)
-    à esquerda: 42 43, à direita: 40 63
-simple-expression (56)
-    à esquerda: 44 45, à direita: 41
-comparative-expression (57)
-    à esquerda: 46, à direita: 35 36 37 44
-relop (58)
-    à esquerda: 47 48 49 50 51 52, à direita: 46
-additive-expression (59)
-    à esquerda: 53 54 55, à direita: 45 46 53
-addop (60)
-    à esquerda: 56 57, à direita: 53 54
-term (61)
-    à esquerda: 58 59, à direita: 53 54 55 58
-mulop (62)
-    à esquerda: 60 61, à direita: 58
-factor (63)
-    à esquerda: 62 63 64 65 66, à direita: 58 59
-call (64)
-    à esquerda: 67, à direita: 64
-args (65)
-    à esquerda: 68 69, à direita: 67
-arg-list (66)
-    à esquerda: 70 71, à direita: 68 70
+    à esquerda: 7 8, à direita: 5 21
+type-specifier (39)
+    à esquerda: 9 10 11, à direita: 7 8 12 13 18 19
+fun-declaration (40)
+    à esquerda: 12 13, à direita: 6
+params (41)
+    à esquerda: 14 15, à direita: 12
+param-list (42)
+    à esquerda: 16 17, à direita: 14 16
+param (43)
+    à esquerda: 18 19, à direita: 16 17
+compound-stmt (44)
+    à esquerda: 20, à direita: 12 13 26
+local-declarations (45)
+    à esquerda: 21 22, à direita: 20 21
+statement-list (46)
+    à esquerda: 23 24, à direita: 20 23
+statement (47)
+    à esquerda: 25 26 27 28 29, à direita: 23 32 33 34
+expression-stmt (48)
+    à esquerda: 30 31, à direita: 25
+selection-stmt (49)
+    à esquerda: 32 33, à direita: 27
+iteration-stmt (50)
+    à esquerda: 34, à direita: 28
+return-stmt (51)
+    à esquerda: 35 36, à direita: 29
+expression (52)
+    à esquerda: 37 38, à direita: 30 36 37 40 59 67 68
+var (53)
+    à esquerda: 39 40, à direita: 37 60
+simple-expression (54)
+    à esquerda: 41 42, à direita: 38
+comparative-expression (55)
+    à esquerda: 43, à direita: 32 33 34 41
+relop (56)
+    à esquerda: 44 45 46 47 48 49, à direita: 43
+additive-expression (57)
+    à esquerda: 50 51 52, à direita: 42 43 50
+addop (58)
+    à esquerda: 53 54, à direita: 50 51
+term (59)
+    à esquerda: 55 56, à direita: 50 51 52 55
+mulop (60)
+    à esquerda: 57 58, à direita: 55
+factor (61)
+    à esquerda: 59 60 61 62 63, à direita: 55 56
+call (62)
+    à esquerda: 64, à direita: 61
+args (63)
+    à esquerda: 65 66, à direita: 64
+arg-list (64)
+    à esquerda: 67 68, à direita: 65 67
 
 
 Estado 0
@@ -242,23 +233,23 @@ Estado 0
 
 Estado 1
 
-   12 type-specifier: INT .
+    9 type-specifier: INT .
 
-    $padrão  reduzir usando a regra 12 (type-specifier)
+    $padrão  reduzir usando a regra 9 (type-specifier)
 
 
 Estado 2
 
-   13 type-specifier: FLOAT .
+   10 type-specifier: FLOAT .
 
-    $padrão  reduzir usando a regra 13 (type-specifier)
+    $padrão  reduzir usando a regra 10 (type-specifier)
 
 
 Estado 3
 
-   14 type-specifier: VOID .
+   11 type-specifier: VOID .
 
-    $padrão  reduzir usando a regra 14 (type-specifier)
+    $padrão  reduzir usando a regra 11 (type-specifier)
 
 
 Estado 4
@@ -301,14 +292,12 @@ Estado 7
 
 Estado 8
 
-    7 var-declaration: type-specifier . var-list SEMI
-   15 fun-declaration: type-specifier . ID LPAREN params RPAREN compound-stmt
-   16                | type-specifier . ID LPAREN RPAREN compound-stmt
+    7 var-declaration: type-specifier . ID SEMI
+    8                | type-specifier . ID LBRACK NUMI RBRACK SEMI
+   12 fun-declaration: type-specifier . ID LPAREN params RPAREN compound-stmt
+   13                | type-specifier . ID LPAREN RPAREN compound-stmt
 
     ID  deslocar, e ir ao estado 12
-
-    var-list  ir ao estado 13
-    variable  ir ao estado 14
 
 
 Estado 9
@@ -334,1091 +323,1062 @@ Estado 11
 
 Estado 12
 
-   10 variable: ID .
-   11         | ID . LBRACK NUMI RBRACK
-   15 fun-declaration: type-specifier ID . LPAREN params RPAREN compound-stmt
-   16                | type-specifier ID . LPAREN RPAREN compound-stmt
+    7 var-declaration: type-specifier ID . SEMI
+    8                | type-specifier ID . LBRACK NUMI RBRACK SEMI
+   12 fun-declaration: type-specifier ID . LPAREN params RPAREN compound-stmt
+   13                | type-specifier ID . LPAREN RPAREN compound-stmt
 
-    LPAREN  deslocar, e ir ao estado 15
-    LBRACK  deslocar, e ir ao estado 16
-
-    $padrão  reduzir usando a regra 10 (variable)
+    SEMI    deslocar, e ir ao estado 13
+    LPAREN  deslocar, e ir ao estado 14
+    LBRACK  deslocar, e ir ao estado 15
 
 
 Estado 13
 
-    7 var-declaration: type-specifier var-list . SEMI
-    8 var-list: var-list . COMMA variable
-
-    SEMI   deslocar, e ir ao estado 17
-    COMMA  deslocar, e ir ao estado 18
-
-
-Estado 14
-
-    9 var-list: variable .
-
-    $padrão  reduzir usando a regra 9 (var-list)
-
-
-Estado 15
-
-   15 fun-declaration: type-specifier ID LPAREN . params RPAREN compound-stmt
-   16                | type-specifier ID LPAREN . RPAREN compound-stmt
-
-    INT     deslocar, e ir ao estado 1
-    FLOAT   deslocar, e ir ao estado 2
-    VOID    deslocar, e ir ao estado 19
-    RPAREN  deslocar, e ir ao estado 20
-
-    type-specifier  ir ao estado 21
-    params          ir ao estado 22
-    param-list      ir ao estado 23
-    param           ir ao estado 24
-
-
-Estado 16
-
-   11 variable: ID LBRACK . NUMI RBRACK
-
-    NUMI  deslocar, e ir ao estado 25
-
-
-Estado 17
-
-    7 var-declaration: type-specifier var-list SEMI .
+    7 var-declaration: type-specifier ID SEMI .
 
     $padrão  reduzir usando a regra 7 (var-declaration)
 
 
+Estado 14
+
+   12 fun-declaration: type-specifier ID LPAREN . params RPAREN compound-stmt
+   13                | type-specifier ID LPAREN . RPAREN compound-stmt
+
+    INT     deslocar, e ir ao estado 1
+    FLOAT   deslocar, e ir ao estado 2
+    VOID    deslocar, e ir ao estado 16
+    RPAREN  deslocar, e ir ao estado 17
+
+    type-specifier  ir ao estado 18
+    params          ir ao estado 19
+    param-list      ir ao estado 20
+    param           ir ao estado 21
+
+
+Estado 15
+
+    8 var-declaration: type-specifier ID LBRACK . NUMI RBRACK SEMI
+
+    NUMI  deslocar, e ir ao estado 22
+
+
+Estado 16
+
+   11 type-specifier: VOID .
+   15 params: VOID .
+
+    RPAREN    reduzir usando a regra 15 (params)
+    $padrão  reduzir usando a regra 11 (type-specifier)
+
+
+Estado 17
+
+   13 fun-declaration: type-specifier ID LPAREN RPAREN . compound-stmt
+
+    LCAPSULE  deslocar, e ir ao estado 23
+
+    compound-stmt  ir ao estado 24
+
+
 Estado 18
 
-    8 var-list: var-list COMMA . variable
+   18 param: type-specifier . ID
+   19      | type-specifier . ID LBRACK RBRACK
 
-    ID  deslocar, e ir ao estado 26
-
-    variable  ir ao estado 27
+    ID  deslocar, e ir ao estado 25
 
 
 Estado 19
 
-   14 type-specifier: VOID .
-   18 params: VOID .
+   12 fun-declaration: type-specifier ID LPAREN params . RPAREN compound-stmt
 
-    RPAREN    reduzir usando a regra 18 (params)
-    $padrão  reduzir usando a regra 14 (type-specifier)
+    RPAREN  deslocar, e ir ao estado 26
 
 
 Estado 20
 
-   16 fun-declaration: type-specifier ID LPAREN RPAREN . compound-stmt
+   14 params: param-list .
+   16 param-list: param-list . COMMA param
 
-    LCAPSULE  deslocar, e ir ao estado 28
+    COMMA  deslocar, e ir ao estado 27
 
-    compound-stmt  ir ao estado 29
+    $padrão  reduzir usando a regra 14 (params)
 
 
 Estado 21
 
-   21 param: type-specifier . ID
-   22      | type-specifier . ID LBRACK RBRACK
+   17 param-list: param .
 
-    ID  deslocar, e ir ao estado 30
+    $padrão  reduzir usando a regra 17 (param-list)
 
 
 Estado 22
 
-   15 fun-declaration: type-specifier ID LPAREN params . RPAREN compound-stmt
+    8 var-declaration: type-specifier ID LBRACK NUMI . RBRACK SEMI
 
-    RPAREN  deslocar, e ir ao estado 31
+    RBRACK  deslocar, e ir ao estado 28
 
 
 Estado 23
 
-   17 params: param-list .
-   19 param-list: param-list . COMMA param
+   20 compound-stmt: LCAPSULE . local-declarations statement-list RCAPSULE
 
-    COMMA  deslocar, e ir ao estado 32
+    $padrão  reduzir usando a regra 22 (local-declarations)
 
-    $padrão  reduzir usando a regra 17 (params)
+    local-declarations  ir ao estado 29
 
 
 Estado 24
 
-   20 param-list: param .
+   13 fun-declaration: type-specifier ID LPAREN RPAREN compound-stmt .
 
-    $padrão  reduzir usando a regra 20 (param-list)
+    $padrão  reduzir usando a regra 13 (fun-declaration)
 
 
 Estado 25
 
-   11 variable: ID LBRACK NUMI . RBRACK
+   18 param: type-specifier ID .
+   19      | type-specifier ID . LBRACK RBRACK
 
-    RBRACK  deslocar, e ir ao estado 33
+    LBRACK  deslocar, e ir ao estado 30
+
+    $padrão  reduzir usando a regra 18 (param)
 
 
 Estado 26
 
-   10 variable: ID .
-   11         | ID . LBRACK NUMI RBRACK
+   12 fun-declaration: type-specifier ID LPAREN params RPAREN . compound-stmt
 
-    LBRACK  deslocar, e ir ao estado 16
+    LCAPSULE  deslocar, e ir ao estado 23
 
-    $padrão  reduzir usando a regra 10 (variable)
+    compound-stmt  ir ao estado 31
 
 
 Estado 27
 
-    8 var-list: var-list COMMA variable .
+   16 param-list: param-list COMMA . param
 
-    $padrão  reduzir usando a regra 8 (var-list)
+    INT    deslocar, e ir ao estado 1
+    FLOAT  deslocar, e ir ao estado 2
+    VOID   deslocar, e ir ao estado 3
+
+    type-specifier  ir ao estado 18
+    param           ir ao estado 32
 
 
 Estado 28
 
-   23 compound-stmt: LCAPSULE . local-declarations statement-list RCAPSULE
+    8 var-declaration: type-specifier ID LBRACK NUMI RBRACK . SEMI
 
-    $padrão  reduzir usando a regra 25 (local-declarations)
-
-    local-declarations  ir ao estado 34
+    SEMI  deslocar, e ir ao estado 33
 
 
 Estado 29
 
-   16 fun-declaration: type-specifier ID LPAREN RPAREN compound-stmt .
+   20 compound-stmt: LCAPSULE local-declarations . statement-list RCAPSULE
+   21 local-declarations: local-declarations . var-declaration
 
-    $padrão  reduzir usando a regra 16 (fun-declaration)
+    INT    deslocar, e ir ao estado 1
+    FLOAT  deslocar, e ir ao estado 2
+    VOID   deslocar, e ir ao estado 3
+
+    $padrão  reduzir usando a regra 24 (statement-list)
+
+    var-declaration  ir ao estado 34
+    type-specifier   ir ao estado 35
+    statement-list   ir ao estado 36
 
 
 Estado 30
 
-   21 param: type-specifier ID .
-   22      | type-specifier ID . LBRACK RBRACK
+   19 param: type-specifier ID LBRACK . RBRACK
 
-    LBRACK  deslocar, e ir ao estado 35
-
-    $padrão  reduzir usando a regra 21 (param)
+    RBRACK  deslocar, e ir ao estado 37
 
 
 Estado 31
 
-   15 fun-declaration: type-specifier ID LPAREN params RPAREN . compound-stmt
+   12 fun-declaration: type-specifier ID LPAREN params RPAREN compound-stmt .
 
-    LCAPSULE  deslocar, e ir ao estado 28
-
-    compound-stmt  ir ao estado 36
+    $padrão  reduzir usando a regra 12 (fun-declaration)
 
 
 Estado 32
 
-   19 param-list: param-list COMMA . param
+   16 param-list: param-list COMMA param .
 
-    INT    deslocar, e ir ao estado 1
-    FLOAT  deslocar, e ir ao estado 2
-    VOID   deslocar, e ir ao estado 3
-
-    type-specifier  ir ao estado 21
-    param           ir ao estado 37
+    $padrão  reduzir usando a regra 16 (param-list)
 
 
 Estado 33
 
-   11 variable: ID LBRACK NUMI RBRACK .
+    8 var-declaration: type-specifier ID LBRACK NUMI RBRACK SEMI .
 
-    $padrão  reduzir usando a regra 11 (variable)
+    $padrão  reduzir usando a regra 8 (var-declaration)
 
 
 Estado 34
 
-   23 compound-stmt: LCAPSULE local-declarations . statement-list RCAPSULE
-   24 local-declarations: local-declarations . var-declaration
+   21 local-declarations: local-declarations var-declaration .
 
-    INT    deslocar, e ir ao estado 1
-    FLOAT  deslocar, e ir ao estado 2
-    VOID   deslocar, e ir ao estado 3
-
-    $padrão  reduzir usando a regra 27 (statement-list)
-
-    var-declaration  ir ao estado 38
-    type-specifier   ir ao estado 39
-    statement-list   ir ao estado 40
+    $padrão  reduzir usando a regra 21 (local-declarations)
 
 
 Estado 35
 
-   22 param: type-specifier ID LBRACK . RBRACK
+    7 var-declaration: type-specifier . ID SEMI
+    8                | type-specifier . ID LBRACK NUMI RBRACK SEMI
 
-    RBRACK  deslocar, e ir ao estado 41
+    ID  deslocar, e ir ao estado 38
 
 
 Estado 36
 
-   15 fun-declaration: type-specifier ID LPAREN params RPAREN compound-stmt .
+   20 compound-stmt: LCAPSULE local-declarations statement-list . RCAPSULE
+   23 statement-list: statement-list . statement
 
-    $padrão  reduzir usando a regra 15 (fun-declaration)
+    IF        deslocar, e ir ao estado 39
+    RETURN    deslocar, e ir ao estado 40
+    WHILE     deslocar, e ir ao estado 41
+    PLUS      deslocar, e ir ao estado 42
+    MINUS     deslocar, e ir ao estado 43
+    SEMI      deslocar, e ir ao estado 44
+    LPAREN    deslocar, e ir ao estado 45
+    LCAPSULE  deslocar, e ir ao estado 23
+    RCAPSULE  deslocar, e ir ao estado 46
+    NUMI      deslocar, e ir ao estado 47
+    NUMF      deslocar, e ir ao estado 48
+    ID        deslocar, e ir ao estado 49
+
+    compound-stmt           ir ao estado 50
+    statement               ir ao estado 51
+    expression-stmt         ir ao estado 52
+    selection-stmt          ir ao estado 53
+    iteration-stmt          ir ao estado 54
+    return-stmt             ir ao estado 55
+    expression              ir ao estado 56
+    var                     ir ao estado 57
+    simple-expression       ir ao estado 58
+    comparative-expression  ir ao estado 59
+    additive-expression     ir ao estado 60
+    addop                   ir ao estado 61
+    term                    ir ao estado 62
+    factor                  ir ao estado 63
+    call                    ir ao estado 64
 
 
 Estado 37
 
-   19 param-list: param-list COMMA param .
+   19 param: type-specifier ID LBRACK RBRACK .
 
-    $padrão  reduzir usando a regra 19 (param-list)
+    $padrão  reduzir usando a regra 19 (param)
 
 
 Estado 38
 
-   24 local-declarations: local-declarations var-declaration .
+    7 var-declaration: type-specifier ID . SEMI
+    8                | type-specifier ID . LBRACK NUMI RBRACK SEMI
 
-    $padrão  reduzir usando a regra 24 (local-declarations)
+    SEMI    deslocar, e ir ao estado 13
+    LBRACK  deslocar, e ir ao estado 15
 
 
 Estado 39
 
-    7 var-declaration: type-specifier . var-list SEMI
+   32 selection-stmt: IF . LPAREN comparative-expression RPAREN statement
+   33               | IF . LPAREN comparative-expression RPAREN statement ELSE statement
 
-    ID  deslocar, e ir ao estado 26
-
-    var-list  ir ao estado 13
-    variable  ir ao estado 14
+    LPAREN  deslocar, e ir ao estado 65
 
 
 Estado 40
 
-   23 compound-stmt: LCAPSULE local-declarations statement-list . RCAPSULE
-   26 statement-list: statement-list . statement
+   35 return-stmt: RETURN . SEMI
+   36            | RETURN . expression SEMI
 
-    IF        deslocar, e ir ao estado 42
-    RETURN    deslocar, e ir ao estado 43
-    WHILE     deslocar, e ir ao estado 44
-    PLUS      deslocar, e ir ao estado 45
-    MINUS     deslocar, e ir ao estado 46
-    SEMI      deslocar, e ir ao estado 47
-    LPAREN    deslocar, e ir ao estado 48
-    LCAPSULE  deslocar, e ir ao estado 28
-    RCAPSULE  deslocar, e ir ao estado 49
-    NUMI      deslocar, e ir ao estado 50
-    NUMF      deslocar, e ir ao estado 51
-    ID        deslocar, e ir ao estado 52
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    SEMI    deslocar, e ir ao estado 66
+    LPAREN  deslocar, e ir ao estado 45
+    NUMI    deslocar, e ir ao estado 47
+    NUMF    deslocar, e ir ao estado 48
+    ID      deslocar, e ir ao estado 49
 
-    compound-stmt           ir ao estado 53
-    statement               ir ao estado 54
-    expression-stmt         ir ao estado 55
-    selection-stmt          ir ao estado 56
-    iteration-stmt          ir ao estado 57
-    return-stmt             ir ao estado 58
-    expression              ir ao estado 59
-    var                     ir ao estado 60
-    simple-expression       ir ao estado 61
-    comparative-expression  ir ao estado 62
-    additive-expression     ir ao estado 63
-    addop                   ir ao estado 64
-    term                    ir ao estado 65
-    factor                  ir ao estado 66
-    call                    ir ao estado 67
+    expression              ir ao estado 67
+    var                     ir ao estado 57
+    simple-expression       ir ao estado 58
+    comparative-expression  ir ao estado 59
+    additive-expression     ir ao estado 60
+    addop                   ir ao estado 61
+    term                    ir ao estado 62
+    factor                  ir ao estado 63
+    call                    ir ao estado 64
 
 
 Estado 41
 
-   22 param: type-specifier ID LBRACK RBRACK .
-
-    $padrão  reduzir usando a regra 22 (param)
-
-
-Estado 42
-
-   35 selection-stmt: IF . LPAREN comparative-expression RPAREN statement
-   36               | IF . LPAREN comparative-expression RPAREN statement ELSE statement
+   34 iteration-stmt: WHILE . LPAREN comparative-expression RPAREN statement
 
     LPAREN  deslocar, e ir ao estado 68
 
 
+Estado 42
+
+   53 addop: PLUS .
+
+    $padrão  reduzir usando a regra 53 (addop)
+
+
 Estado 43
 
-   38 return-stmt: RETURN . SEMI
-   39            | RETURN . expression SEMI
+   54 addop: MINUS .
 
-    PLUS    deslocar, e ir ao estado 45
-    MINUS   deslocar, e ir ao estado 46
-    SEMI    deslocar, e ir ao estado 69
-    LPAREN  deslocar, e ir ao estado 48
-    NUMI    deslocar, e ir ao estado 50
-    NUMF    deslocar, e ir ao estado 51
-    ID      deslocar, e ir ao estado 52
-
-    expression              ir ao estado 70
-    var                     ir ao estado 60
-    simple-expression       ir ao estado 61
-    comparative-expression  ir ao estado 62
-    additive-expression     ir ao estado 63
-    addop                   ir ao estado 64
-    term                    ir ao estado 65
-    factor                  ir ao estado 66
-    call                    ir ao estado 67
+    $padrão  reduzir usando a regra 54 (addop)
 
 
 Estado 44
 
-   37 iteration-stmt: WHILE . LPAREN comparative-expression RPAREN statement
+   31 expression-stmt: SEMI .
 
-    LPAREN  deslocar, e ir ao estado 71
+    $padrão  reduzir usando a regra 31 (expression-stmt)
 
 
 Estado 45
 
-   56 addop: PLUS .
+   59 factor: LPAREN . expression RPAREN
 
-    $padrão  reduzir usando a regra 56 (addop)
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    LPAREN  deslocar, e ir ao estado 45
+    NUMI    deslocar, e ir ao estado 47
+    NUMF    deslocar, e ir ao estado 48
+    ID      deslocar, e ir ao estado 49
+
+    expression              ir ao estado 69
+    var                     ir ao estado 57
+    simple-expression       ir ao estado 58
+    comparative-expression  ir ao estado 59
+    additive-expression     ir ao estado 60
+    addop                   ir ao estado 61
+    term                    ir ao estado 62
+    factor                  ir ao estado 63
+    call                    ir ao estado 64
 
 
 Estado 46
 
-   57 addop: MINUS .
+   20 compound-stmt: LCAPSULE local-declarations statement-list RCAPSULE .
 
-    $padrão  reduzir usando a regra 57 (addop)
+    $padrão  reduzir usando a regra 20 (compound-stmt)
 
 
 Estado 47
 
-   34 expression-stmt: SEMI .
+   62 factor: NUMI .
 
-    $padrão  reduzir usando a regra 34 (expression-stmt)
+    $padrão  reduzir usando a regra 62 (factor)
 
 
 Estado 48
 
-   62 factor: LPAREN . expression RPAREN
-
-    PLUS    deslocar, e ir ao estado 45
-    MINUS   deslocar, e ir ao estado 46
-    LPAREN  deslocar, e ir ao estado 48
-    NUMI    deslocar, e ir ao estado 50
-    NUMF    deslocar, e ir ao estado 51
-    ID      deslocar, e ir ao estado 52
-
-    expression              ir ao estado 72
-    var                     ir ao estado 60
-    simple-expression       ir ao estado 61
-    comparative-expression  ir ao estado 62
-    additive-expression     ir ao estado 63
-    addop                   ir ao estado 64
-    term                    ir ao estado 65
-    factor                  ir ao estado 66
-    call                    ir ao estado 67
-
-
-Estado 49
-
-   23 compound-stmt: LCAPSULE local-declarations statement-list RCAPSULE .
-
-    $padrão  reduzir usando a regra 23 (compound-stmt)
-
-
-Estado 50
-
-   65 factor: NUMI .
-
-    $padrão  reduzir usando a regra 65 (factor)
-
-
-Estado 51
-
-   66 factor: NUMF .
-
-    $padrão  reduzir usando a regra 66 (factor)
-
-
-Estado 52
-
-   42 var: ID .
-   43    | ID . LBRACK expression RBRACK
-   67 call: ID . LPAREN args RPAREN
-
-    LPAREN  deslocar, e ir ao estado 73
-    LBRACK  deslocar, e ir ao estado 74
-
-    $padrão  reduzir usando a regra 42 (var)
-
-
-Estado 53
-
-   29 statement: compound-stmt .
-
-    $padrão  reduzir usando a regra 29 (statement)
-
-
-Estado 54
-
-   26 statement-list: statement-list statement .
-
-    $padrão  reduzir usando a regra 26 (statement-list)
-
-
-Estado 55
-
-   28 statement: expression-stmt .
-
-    $padrão  reduzir usando a regra 28 (statement)
-
-
-Estado 56
-
-   30 statement: selection-stmt .
-
-    $padrão  reduzir usando a regra 30 (statement)
-
-
-Estado 57
-
-   31 statement: iteration-stmt .
-
-    $padrão  reduzir usando a regra 31 (statement)
-
-
-Estado 58
-
-   32 statement: return-stmt .
-
-    $padrão  reduzir usando a regra 32 (statement)
-
-
-Estado 59
-
-   33 expression-stmt: expression . SEMI
-
-    SEMI  deslocar, e ir ao estado 75
-
-
-Estado 60
-
-   40 expression: var . ASSIGN expression
-   63 factor: var .
-
-    ASSIGN  deslocar, e ir ao estado 76
+   63 factor: NUMF .
 
     $padrão  reduzir usando a regra 63 (factor)
 
 
+Estado 49
+
+   39 var: ID .
+   40    | ID . LBRACK expression RBRACK
+   64 call: ID . LPAREN args RPAREN
+
+    LPAREN  deslocar, e ir ao estado 70
+    LBRACK  deslocar, e ir ao estado 71
+
+    $padrão  reduzir usando a regra 39 (var)
+
+
+Estado 50
+
+   26 statement: compound-stmt .
+
+    $padrão  reduzir usando a regra 26 (statement)
+
+
+Estado 51
+
+   23 statement-list: statement-list statement .
+
+    $padrão  reduzir usando a regra 23 (statement-list)
+
+
+Estado 52
+
+   25 statement: expression-stmt .
+
+    $padrão  reduzir usando a regra 25 (statement)
+
+
+Estado 53
+
+   27 statement: selection-stmt .
+
+    $padrão  reduzir usando a regra 27 (statement)
+
+
+Estado 54
+
+   28 statement: iteration-stmt .
+
+    $padrão  reduzir usando a regra 28 (statement)
+
+
+Estado 55
+
+   29 statement: return-stmt .
+
+    $padrão  reduzir usando a regra 29 (statement)
+
+
+Estado 56
+
+   30 expression-stmt: expression . SEMI
+
+    SEMI  deslocar, e ir ao estado 72
+
+
+Estado 57
+
+   37 expression: var . ASSIGN expression
+   60 factor: var .
+
+    ASSIGN  deslocar, e ir ao estado 73
+
+    $padrão  reduzir usando a regra 60 (factor)
+
+
+Estado 58
+
+   38 expression: simple-expression .
+
+    $padrão  reduzir usando a regra 38 (expression)
+
+
+Estado 59
+
+   41 simple-expression: comparative-expression .
+
+    $padrão  reduzir usando a regra 41 (simple-expression)
+
+
+Estado 60
+
+   42 simple-expression: additive-expression .
+   43 comparative-expression: additive-expression . relop additive-expression
+   50 additive-expression: additive-expression . addop term
+
+    PLUS   deslocar, e ir ao estado 42
+    MINUS  deslocar, e ir ao estado 43
+    LT     deslocar, e ir ao estado 74
+    LET    deslocar, e ir ao estado 75
+    HT     deslocar, e ir ao estado 76
+    HET    deslocar, e ir ao estado 77
+    EQ     deslocar, e ir ao estado 78
+    NEQ    deslocar, e ir ao estado 79
+
+    $padrão  reduzir usando a regra 42 (simple-expression)
+
+    relop  ir ao estado 80
+    addop  ir ao estado 81
+
+
 Estado 61
 
-   41 expression: simple-expression .
+   51 additive-expression: addop . term
 
-    $padrão  reduzir usando a regra 41 (expression)
+    LPAREN  deslocar, e ir ao estado 45
+    NUMI    deslocar, e ir ao estado 47
+    NUMF    deslocar, e ir ao estado 48
+    ID      deslocar, e ir ao estado 49
+
+    var     ir ao estado 82
+    term    ir ao estado 83
+    factor  ir ao estado 63
+    call    ir ao estado 64
 
 
 Estado 62
 
-   44 simple-expression: comparative-expression .
+   52 additive-expression: term .
+   55 term: term . mulop factor
 
-    $padrão  reduzir usando a regra 44 (simple-expression)
+    TIMES  deslocar, e ir ao estado 84
+    OVER   deslocar, e ir ao estado 85
+
+    $padrão  reduzir usando a regra 52 (additive-expression)
+
+    mulop  ir ao estado 86
 
 
 Estado 63
 
-   45 simple-expression: additive-expression .
-   46 comparative-expression: additive-expression . relop additive-expression
-   53 additive-expression: additive-expression . addop term
+   56 term: factor .
 
-    PLUS   deslocar, e ir ao estado 45
-    MINUS  deslocar, e ir ao estado 46
-    LT     deslocar, e ir ao estado 77
-    LET    deslocar, e ir ao estado 78
-    HT     deslocar, e ir ao estado 79
-    HET    deslocar, e ir ao estado 80
-    EQ     deslocar, e ir ao estado 81
-    NEQ    deslocar, e ir ao estado 82
-
-    $padrão  reduzir usando a regra 45 (simple-expression)
-
-    relop  ir ao estado 83
-    addop  ir ao estado 84
+    $padrão  reduzir usando a regra 56 (term)
 
 
 Estado 64
 
-   54 additive-expression: addop . term
+   61 factor: call .
 
-    LPAREN  deslocar, e ir ao estado 48
-    NUMI    deslocar, e ir ao estado 50
-    NUMF    deslocar, e ir ao estado 51
-    ID      deslocar, e ir ao estado 52
-
-    var     ir ao estado 85
-    term    ir ao estado 86
-    factor  ir ao estado 66
-    call    ir ao estado 67
+    $padrão  reduzir usando a regra 61 (factor)
 
 
 Estado 65
 
-   55 additive-expression: term .
-   58 term: term . mulop factor
+   32 selection-stmt: IF LPAREN . comparative-expression RPAREN statement
+   33               | IF LPAREN . comparative-expression RPAREN statement ELSE statement
 
-    TIMES  deslocar, e ir ao estado 87
-    OVER   deslocar, e ir ao estado 88
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    LPAREN  deslocar, e ir ao estado 45
+    NUMI    deslocar, e ir ao estado 47
+    NUMF    deslocar, e ir ao estado 48
+    ID      deslocar, e ir ao estado 49
 
-    $padrão  reduzir usando a regra 55 (additive-expression)
-
-    mulop  ir ao estado 89
+    var                     ir ao estado 82
+    comparative-expression  ir ao estado 87
+    additive-expression     ir ao estado 88
+    addop                   ir ao estado 61
+    term                    ir ao estado 62
+    factor                  ir ao estado 63
+    call                    ir ao estado 64
 
 
 Estado 66
 
-   59 term: factor .
+   35 return-stmt: RETURN SEMI .
 
-    $padrão  reduzir usando a regra 59 (term)
+    $padrão  reduzir usando a regra 35 (return-stmt)
 
 
 Estado 67
 
-   64 factor: call .
+   36 return-stmt: RETURN expression . SEMI
 
-    $padrão  reduzir usando a regra 64 (factor)
+    SEMI  deslocar, e ir ao estado 89
 
 
 Estado 68
 
-   35 selection-stmt: IF LPAREN . comparative-expression RPAREN statement
-   36               | IF LPAREN . comparative-expression RPAREN statement ELSE statement
+   34 iteration-stmt: WHILE LPAREN . comparative-expression RPAREN statement
 
-    PLUS    deslocar, e ir ao estado 45
-    MINUS   deslocar, e ir ao estado 46
-    LPAREN  deslocar, e ir ao estado 48
-    NUMI    deslocar, e ir ao estado 50
-    NUMF    deslocar, e ir ao estado 51
-    ID      deslocar, e ir ao estado 52
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    LPAREN  deslocar, e ir ao estado 45
+    NUMI    deslocar, e ir ao estado 47
+    NUMF    deslocar, e ir ao estado 48
+    ID      deslocar, e ir ao estado 49
 
-    var                     ir ao estado 85
+    var                     ir ao estado 82
     comparative-expression  ir ao estado 90
-    additive-expression     ir ao estado 91
-    addop                   ir ao estado 64
-    term                    ir ao estado 65
-    factor                  ir ao estado 66
-    call                    ir ao estado 67
+    additive-expression     ir ao estado 88
+    addop                   ir ao estado 61
+    term                    ir ao estado 62
+    factor                  ir ao estado 63
+    call                    ir ao estado 64
 
 
 Estado 69
 
-   38 return-stmt: RETURN SEMI .
+   59 factor: LPAREN expression . RPAREN
 
-    $padrão  reduzir usando a regra 38 (return-stmt)
+    RPAREN  deslocar, e ir ao estado 91
 
 
 Estado 70
 
-   39 return-stmt: RETURN expression . SEMI
+   64 call: ID LPAREN . args RPAREN
 
-    SEMI  deslocar, e ir ao estado 92
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    LPAREN  deslocar, e ir ao estado 45
+    NUMI    deslocar, e ir ao estado 47
+    NUMF    deslocar, e ir ao estado 48
+    ID      deslocar, e ir ao estado 49
+
+    $padrão  reduzir usando a regra 66 (args)
+
+    expression              ir ao estado 92
+    var                     ir ao estado 57
+    simple-expression       ir ao estado 58
+    comparative-expression  ir ao estado 59
+    additive-expression     ir ao estado 60
+    addop                   ir ao estado 61
+    term                    ir ao estado 62
+    factor                  ir ao estado 63
+    call                    ir ao estado 64
+    args                    ir ao estado 93
+    arg-list                ir ao estado 94
 
 
 Estado 71
 
-   37 iteration-stmt: WHILE LPAREN . comparative-expression RPAREN statement
+   40 var: ID LBRACK . expression RBRACK
 
-    PLUS    deslocar, e ir ao estado 45
-    MINUS   deslocar, e ir ao estado 46
-    LPAREN  deslocar, e ir ao estado 48
-    NUMI    deslocar, e ir ao estado 50
-    NUMF    deslocar, e ir ao estado 51
-    ID      deslocar, e ir ao estado 52
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    LPAREN  deslocar, e ir ao estado 45
+    NUMI    deslocar, e ir ao estado 47
+    NUMF    deslocar, e ir ao estado 48
+    ID      deslocar, e ir ao estado 49
 
-    var                     ir ao estado 85
-    comparative-expression  ir ao estado 93
-    additive-expression     ir ao estado 91
-    addop                   ir ao estado 64
-    term                    ir ao estado 65
-    factor                  ir ao estado 66
-    call                    ir ao estado 67
+    expression              ir ao estado 95
+    var                     ir ao estado 57
+    simple-expression       ir ao estado 58
+    comparative-expression  ir ao estado 59
+    additive-expression     ir ao estado 60
+    addop                   ir ao estado 61
+    term                    ir ao estado 62
+    factor                  ir ao estado 63
+    call                    ir ao estado 64
 
 
 Estado 72
 
-   62 factor: LPAREN expression . RPAREN
+   30 expression-stmt: expression SEMI .
 
-    RPAREN  deslocar, e ir ao estado 94
+    $padrão  reduzir usando a regra 30 (expression-stmt)
 
 
 Estado 73
 
-   67 call: ID LPAREN . args RPAREN
+   37 expression: var ASSIGN . expression
 
-    PLUS    deslocar, e ir ao estado 45
-    MINUS   deslocar, e ir ao estado 46
-    LPAREN  deslocar, e ir ao estado 48
-    NUMI    deslocar, e ir ao estado 50
-    NUMF    deslocar, e ir ao estado 51
-    ID      deslocar, e ir ao estado 52
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    LPAREN  deslocar, e ir ao estado 45
+    NUMI    deslocar, e ir ao estado 47
+    NUMF    deslocar, e ir ao estado 48
+    ID      deslocar, e ir ao estado 49
 
-    $padrão  reduzir usando a regra 69 (args)
-
-    expression              ir ao estado 95
-    var                     ir ao estado 60
-    simple-expression       ir ao estado 61
-    comparative-expression  ir ao estado 62
-    additive-expression     ir ao estado 63
-    addop                   ir ao estado 64
-    term                    ir ao estado 65
-    factor                  ir ao estado 66
-    call                    ir ao estado 67
-    args                    ir ao estado 96
-    arg-list                ir ao estado 97
+    expression              ir ao estado 96
+    var                     ir ao estado 57
+    simple-expression       ir ao estado 58
+    comparative-expression  ir ao estado 59
+    additive-expression     ir ao estado 60
+    addop                   ir ao estado 61
+    term                    ir ao estado 62
+    factor                  ir ao estado 63
+    call                    ir ao estado 64
 
 
 Estado 74
 
-   43 var: ID LBRACK . expression RBRACK
+   45 relop: LT .
 
-    PLUS    deslocar, e ir ao estado 45
-    MINUS   deslocar, e ir ao estado 46
-    LPAREN  deslocar, e ir ao estado 48
-    NUMI    deslocar, e ir ao estado 50
-    NUMF    deslocar, e ir ao estado 51
-    ID      deslocar, e ir ao estado 52
-
-    expression              ir ao estado 98
-    var                     ir ao estado 60
-    simple-expression       ir ao estado 61
-    comparative-expression  ir ao estado 62
-    additive-expression     ir ao estado 63
-    addop                   ir ao estado 64
-    term                    ir ao estado 65
-    factor                  ir ao estado 66
-    call                    ir ao estado 67
+    $padrão  reduzir usando a regra 45 (relop)
 
 
 Estado 75
 
-   33 expression-stmt: expression SEMI .
+   44 relop: LET .
 
-    $padrão  reduzir usando a regra 33 (expression-stmt)
+    $padrão  reduzir usando a regra 44 (relop)
 
 
 Estado 76
 
-   40 expression: var ASSIGN . expression
+   46 relop: HT .
 
-    PLUS    deslocar, e ir ao estado 45
-    MINUS   deslocar, e ir ao estado 46
-    LPAREN  deslocar, e ir ao estado 48
-    NUMI    deslocar, e ir ao estado 50
-    NUMF    deslocar, e ir ao estado 51
-    ID      deslocar, e ir ao estado 52
-
-    expression              ir ao estado 99
-    var                     ir ao estado 60
-    simple-expression       ir ao estado 61
-    comparative-expression  ir ao estado 62
-    additive-expression     ir ao estado 63
-    addop                   ir ao estado 64
-    term                    ir ao estado 65
-    factor                  ir ao estado 66
-    call                    ir ao estado 67
+    $padrão  reduzir usando a regra 46 (relop)
 
 
 Estado 77
 
-   48 relop: LT .
-
-    $padrão  reduzir usando a regra 48 (relop)
-
-
-Estado 78
-
-   47 relop: LET .
+   47 relop: HET .
 
     $padrão  reduzir usando a regra 47 (relop)
 
 
+Estado 78
+
+   48 relop: EQ .
+
+    $padrão  reduzir usando a regra 48 (relop)
+
+
 Estado 79
 
-   49 relop: HT .
+   49 relop: NEQ .
 
     $padrão  reduzir usando a regra 49 (relop)
 
 
 Estado 80
 
-   50 relop: HET .
+   43 comparative-expression: additive-expression relop . additive-expression
 
-    $padrão  reduzir usando a regra 50 (relop)
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    LPAREN  deslocar, e ir ao estado 45
+    NUMI    deslocar, e ir ao estado 47
+    NUMF    deslocar, e ir ao estado 48
+    ID      deslocar, e ir ao estado 49
+
+    var                  ir ao estado 82
+    additive-expression  ir ao estado 97
+    addop                ir ao estado 61
+    term                 ir ao estado 62
+    factor               ir ao estado 63
+    call                 ir ao estado 64
 
 
 Estado 81
 
-   51 relop: EQ .
+   50 additive-expression: additive-expression addop . term
 
-    $padrão  reduzir usando a regra 51 (relop)
+    LPAREN  deslocar, e ir ao estado 45
+    NUMI    deslocar, e ir ao estado 47
+    NUMF    deslocar, e ir ao estado 48
+    ID      deslocar, e ir ao estado 49
+
+    var     ir ao estado 82
+    term    ir ao estado 98
+    factor  ir ao estado 63
+    call    ir ao estado 64
 
 
 Estado 82
 
-   52 relop: NEQ .
+   60 factor: var .
 
-    $padrão  reduzir usando a regra 52 (relop)
+    $padrão  reduzir usando a regra 60 (factor)
 
 
 Estado 83
 
-   46 comparative-expression: additive-expression relop . additive-expression
+   51 additive-expression: addop term .
+   55 term: term . mulop factor
 
-    PLUS    deslocar, e ir ao estado 45
-    MINUS   deslocar, e ir ao estado 46
-    LPAREN  deslocar, e ir ao estado 48
-    NUMI    deslocar, e ir ao estado 50
-    NUMF    deslocar, e ir ao estado 51
-    ID      deslocar, e ir ao estado 52
+    TIMES  deslocar, e ir ao estado 84
+    OVER   deslocar, e ir ao estado 85
 
-    var                  ir ao estado 85
-    additive-expression  ir ao estado 100
-    addop                ir ao estado 64
-    term                 ir ao estado 65
-    factor               ir ao estado 66
-    call                 ir ao estado 67
+    $padrão  reduzir usando a regra 51 (additive-expression)
+
+    mulop  ir ao estado 86
 
 
 Estado 84
 
-   53 additive-expression: additive-expression addop . term
+   57 mulop: TIMES .
 
-    LPAREN  deslocar, e ir ao estado 48
-    NUMI    deslocar, e ir ao estado 50
-    NUMF    deslocar, e ir ao estado 51
-    ID      deslocar, e ir ao estado 52
-
-    var     ir ao estado 85
-    term    ir ao estado 101
-    factor  ir ao estado 66
-    call    ir ao estado 67
+    $padrão  reduzir usando a regra 57 (mulop)
 
 
 Estado 85
 
-   63 factor: var .
+   58 mulop: OVER .
 
-    $padrão  reduzir usando a regra 63 (factor)
+    $padrão  reduzir usando a regra 58 (mulop)
 
 
 Estado 86
 
-   54 additive-expression: addop term .
-   58 term: term . mulop factor
+   55 term: term mulop . factor
 
-    TIMES  deslocar, e ir ao estado 87
-    OVER   deslocar, e ir ao estado 88
+    LPAREN  deslocar, e ir ao estado 45
+    NUMI    deslocar, e ir ao estado 47
+    NUMF    deslocar, e ir ao estado 48
+    ID      deslocar, e ir ao estado 49
 
-    $padrão  reduzir usando a regra 54 (additive-expression)
-
-    mulop  ir ao estado 89
+    var     ir ao estado 82
+    factor  ir ao estado 99
+    call    ir ao estado 64
 
 
 Estado 87
 
-   60 mulop: TIMES .
+   32 selection-stmt: IF LPAREN comparative-expression . RPAREN statement
+   33               | IF LPAREN comparative-expression . RPAREN statement ELSE statement
 
-    $padrão  reduzir usando a regra 60 (mulop)
+    RPAREN  deslocar, e ir ao estado 100
 
 
 Estado 88
 
-   61 mulop: OVER .
+   43 comparative-expression: additive-expression . relop additive-expression
+   50 additive-expression: additive-expression . addop term
 
-    $padrão  reduzir usando a regra 61 (mulop)
+    PLUS   deslocar, e ir ao estado 42
+    MINUS  deslocar, e ir ao estado 43
+    LT     deslocar, e ir ao estado 74
+    LET    deslocar, e ir ao estado 75
+    HT     deslocar, e ir ao estado 76
+    HET    deslocar, e ir ao estado 77
+    EQ     deslocar, e ir ao estado 78
+    NEQ    deslocar, e ir ao estado 79
+
+    relop  ir ao estado 80
+    addop  ir ao estado 81
 
 
 Estado 89
 
-   58 term: term mulop . factor
+   36 return-stmt: RETURN expression SEMI .
 
-    LPAREN  deslocar, e ir ao estado 48
-    NUMI    deslocar, e ir ao estado 50
-    NUMF    deslocar, e ir ao estado 51
-    ID      deslocar, e ir ao estado 52
-
-    var     ir ao estado 85
-    factor  ir ao estado 102
-    call    ir ao estado 67
+    $padrão  reduzir usando a regra 36 (return-stmt)
 
 
 Estado 90
 
-   35 selection-stmt: IF LPAREN comparative-expression . RPAREN statement
-   36               | IF LPAREN comparative-expression . RPAREN statement ELSE statement
+   34 iteration-stmt: WHILE LPAREN comparative-expression . RPAREN statement
 
-    RPAREN  deslocar, e ir ao estado 103
+    RPAREN  deslocar, e ir ao estado 101
 
 
 Estado 91
 
-   46 comparative-expression: additive-expression . relop additive-expression
-   53 additive-expression: additive-expression . addop term
+   59 factor: LPAREN expression RPAREN .
 
-    PLUS   deslocar, e ir ao estado 45
-    MINUS  deslocar, e ir ao estado 46
-    LT     deslocar, e ir ao estado 77
-    LET    deslocar, e ir ao estado 78
-    HT     deslocar, e ir ao estado 79
-    HET    deslocar, e ir ao estado 80
-    EQ     deslocar, e ir ao estado 81
-    NEQ    deslocar, e ir ao estado 82
-
-    relop  ir ao estado 83
-    addop  ir ao estado 84
+    $padrão  reduzir usando a regra 59 (factor)
 
 
 Estado 92
 
-   39 return-stmt: RETURN expression SEMI .
+   68 arg-list: expression .
 
-    $padrão  reduzir usando a regra 39 (return-stmt)
+    $padrão  reduzir usando a regra 68 (arg-list)
 
 
 Estado 93
 
-   37 iteration-stmt: WHILE LPAREN comparative-expression . RPAREN statement
+   64 call: ID LPAREN args . RPAREN
 
-    RPAREN  deslocar, e ir ao estado 104
+    RPAREN  deslocar, e ir ao estado 102
 
 
 Estado 94
 
-   62 factor: LPAREN expression RPAREN .
+   65 args: arg-list .
+   67 arg-list: arg-list . COMMA expression
 
-    $padrão  reduzir usando a regra 62 (factor)
+    COMMA  deslocar, e ir ao estado 103
+
+    $padrão  reduzir usando a regra 65 (args)
 
 
 Estado 95
 
-   71 arg-list: expression .
+   40 var: ID LBRACK expression . RBRACK
 
-    $padrão  reduzir usando a regra 71 (arg-list)
+    RBRACK  deslocar, e ir ao estado 104
 
 
 Estado 96
 
-   67 call: ID LPAREN args . RPAREN
+   37 expression: var ASSIGN expression .
 
-    RPAREN  deslocar, e ir ao estado 105
+    $padrão  reduzir usando a regra 37 (expression)
 
 
 Estado 97
 
-   68 args: arg-list .
-   70 arg-list: arg-list . COMMA expression
+   43 comparative-expression: additive-expression relop additive-expression .
+   50 additive-expression: additive-expression . addop term
 
-    COMMA  deslocar, e ir ao estado 106
+    PLUS   deslocar, e ir ao estado 42
+    MINUS  deslocar, e ir ao estado 43
 
-    $padrão  reduzir usando a regra 68 (args)
+    $padrão  reduzir usando a regra 43 (comparative-expression)
+
+    addop  ir ao estado 81
 
 
 Estado 98
 
-   43 var: ID LBRACK expression . RBRACK
+   50 additive-expression: additive-expression addop term .
+   55 term: term . mulop factor
 
-    RBRACK  deslocar, e ir ao estado 107
+    TIMES  deslocar, e ir ao estado 84
+    OVER   deslocar, e ir ao estado 85
+
+    $padrão  reduzir usando a regra 50 (additive-expression)
+
+    mulop  ir ao estado 86
 
 
 Estado 99
 
-   40 expression: var ASSIGN expression .
+   55 term: term mulop factor .
 
-    $padrão  reduzir usando a regra 40 (expression)
+    $padrão  reduzir usando a regra 55 (term)
 
 
 Estado 100
 
-   46 comparative-expression: additive-expression relop additive-expression .
-   53 additive-expression: additive-expression . addop term
+   32 selection-stmt: IF LPAREN comparative-expression RPAREN . statement
+   33               | IF LPAREN comparative-expression RPAREN . statement ELSE statement
 
-    PLUS   deslocar, e ir ao estado 45
-    MINUS  deslocar, e ir ao estado 46
+    IF        deslocar, e ir ao estado 39
+    RETURN    deslocar, e ir ao estado 40
+    WHILE     deslocar, e ir ao estado 41
+    PLUS      deslocar, e ir ao estado 42
+    MINUS     deslocar, e ir ao estado 43
+    SEMI      deslocar, e ir ao estado 44
+    LPAREN    deslocar, e ir ao estado 45
+    LCAPSULE  deslocar, e ir ao estado 23
+    NUMI      deslocar, e ir ao estado 47
+    NUMF      deslocar, e ir ao estado 48
+    ID        deslocar, e ir ao estado 49
 
-    $padrão  reduzir usando a regra 46 (comparative-expression)
-
-    addop  ir ao estado 84
+    compound-stmt           ir ao estado 50
+    statement               ir ao estado 105
+    expression-stmt         ir ao estado 52
+    selection-stmt          ir ao estado 53
+    iteration-stmt          ir ao estado 54
+    return-stmt             ir ao estado 55
+    expression              ir ao estado 56
+    var                     ir ao estado 57
+    simple-expression       ir ao estado 58
+    comparative-expression  ir ao estado 59
+    additive-expression     ir ao estado 60
+    addop                   ir ao estado 61
+    term                    ir ao estado 62
+    factor                  ir ao estado 63
+    call                    ir ao estado 64
 
 
 Estado 101
 
-   53 additive-expression: additive-expression addop term .
-   58 term: term . mulop factor
+   34 iteration-stmt: WHILE LPAREN comparative-expression RPAREN . statement
 
-    TIMES  deslocar, e ir ao estado 87
-    OVER   deslocar, e ir ao estado 88
+    IF        deslocar, e ir ao estado 39
+    RETURN    deslocar, e ir ao estado 40
+    WHILE     deslocar, e ir ao estado 41
+    PLUS      deslocar, e ir ao estado 42
+    MINUS     deslocar, e ir ao estado 43
+    SEMI      deslocar, e ir ao estado 44
+    LPAREN    deslocar, e ir ao estado 45
+    LCAPSULE  deslocar, e ir ao estado 23
+    NUMI      deslocar, e ir ao estado 47
+    NUMF      deslocar, e ir ao estado 48
+    ID        deslocar, e ir ao estado 49
 
-    $padrão  reduzir usando a regra 53 (additive-expression)
-
-    mulop  ir ao estado 89
+    compound-stmt           ir ao estado 50
+    statement               ir ao estado 106
+    expression-stmt         ir ao estado 52
+    selection-stmt          ir ao estado 53
+    iteration-stmt          ir ao estado 54
+    return-stmt             ir ao estado 55
+    expression              ir ao estado 56
+    var                     ir ao estado 57
+    simple-expression       ir ao estado 58
+    comparative-expression  ir ao estado 59
+    additive-expression     ir ao estado 60
+    addop                   ir ao estado 61
+    term                    ir ao estado 62
+    factor                  ir ao estado 63
+    call                    ir ao estado 64
 
 
 Estado 102
 
-   58 term: term mulop factor .
+   64 call: ID LPAREN args RPAREN .
 
-    $padrão  reduzir usando a regra 58 (term)
+    $padrão  reduzir usando a regra 64 (call)
 
 
 Estado 103
 
-   35 selection-stmt: IF LPAREN comparative-expression RPAREN . statement
-   36               | IF LPAREN comparative-expression RPAREN . statement ELSE statement
+   67 arg-list: arg-list COMMA . expression
 
-    IF        deslocar, e ir ao estado 42
-    RETURN    deslocar, e ir ao estado 43
-    WHILE     deslocar, e ir ao estado 44
-    PLUS      deslocar, e ir ao estado 45
-    MINUS     deslocar, e ir ao estado 46
-    SEMI      deslocar, e ir ao estado 47
-    LPAREN    deslocar, e ir ao estado 48
-    LCAPSULE  deslocar, e ir ao estado 28
-    NUMI      deslocar, e ir ao estado 50
-    NUMF      deslocar, e ir ao estado 51
-    ID        deslocar, e ir ao estado 52
+    PLUS    deslocar, e ir ao estado 42
+    MINUS   deslocar, e ir ao estado 43
+    LPAREN  deslocar, e ir ao estado 45
+    NUMI    deslocar, e ir ao estado 47
+    NUMF    deslocar, e ir ao estado 48
+    ID      deslocar, e ir ao estado 49
 
-    compound-stmt           ir ao estado 53
-    statement               ir ao estado 108
-    expression-stmt         ir ao estado 55
-    selection-stmt          ir ao estado 56
-    iteration-stmt          ir ao estado 57
-    return-stmt             ir ao estado 58
-    expression              ir ao estado 59
-    var                     ir ao estado 60
-    simple-expression       ir ao estado 61
-    comparative-expression  ir ao estado 62
-    additive-expression     ir ao estado 63
-    addop                   ir ao estado 64
-    term                    ir ao estado 65
-    factor                  ir ao estado 66
-    call                    ir ao estado 67
+    expression              ir ao estado 107
+    var                     ir ao estado 57
+    simple-expression       ir ao estado 58
+    comparative-expression  ir ao estado 59
+    additive-expression     ir ao estado 60
+    addop                   ir ao estado 61
+    term                    ir ao estado 62
+    factor                  ir ao estado 63
+    call                    ir ao estado 64
 
 
 Estado 104
 
-   37 iteration-stmt: WHILE LPAREN comparative-expression RPAREN . statement
+   40 var: ID LBRACK expression RBRACK .
 
-    IF        deslocar, e ir ao estado 42
-    RETURN    deslocar, e ir ao estado 43
-    WHILE     deslocar, e ir ao estado 44
-    PLUS      deslocar, e ir ao estado 45
-    MINUS     deslocar, e ir ao estado 46
-    SEMI      deslocar, e ir ao estado 47
-    LPAREN    deslocar, e ir ao estado 48
-    LCAPSULE  deslocar, e ir ao estado 28
-    NUMI      deslocar, e ir ao estado 50
-    NUMF      deslocar, e ir ao estado 51
-    ID        deslocar, e ir ao estado 52
-
-    compound-stmt           ir ao estado 53
-    statement               ir ao estado 109
-    expression-stmt         ir ao estado 55
-    selection-stmt          ir ao estado 56
-    iteration-stmt          ir ao estado 57
-    return-stmt             ir ao estado 58
-    expression              ir ao estado 59
-    var                     ir ao estado 60
-    simple-expression       ir ao estado 61
-    comparative-expression  ir ao estado 62
-    additive-expression     ir ao estado 63
-    addop                   ir ao estado 64
-    term                    ir ao estado 65
-    factor                  ir ao estado 66
-    call                    ir ao estado 67
+    $padrão  reduzir usando a regra 40 (var)
 
 
 Estado 105
 
-   67 call: ID LPAREN args RPAREN .
+   32 selection-stmt: IF LPAREN comparative-expression RPAREN statement .
+   33               | IF LPAREN comparative-expression RPAREN statement . ELSE statement
 
-    $padrão  reduzir usando a regra 67 (call)
+    ELSE  deslocar, e ir ao estado 108
+
+    ELSE      [reduzir usando a regra 32 (selection-stmt)]
+    $padrão  reduzir usando a regra 32 (selection-stmt)
 
 
 Estado 106
 
-   70 arg-list: arg-list COMMA . expression
+   34 iteration-stmt: WHILE LPAREN comparative-expression RPAREN statement .
 
-    PLUS    deslocar, e ir ao estado 45
-    MINUS   deslocar, e ir ao estado 46
-    LPAREN  deslocar, e ir ao estado 48
-    NUMI    deslocar, e ir ao estado 50
-    NUMF    deslocar, e ir ao estado 51
-    ID      deslocar, e ir ao estado 52
-
-    expression              ir ao estado 110
-    var                     ir ao estado 60
-    simple-expression       ir ao estado 61
-    comparative-expression  ir ao estado 62
-    additive-expression     ir ao estado 63
-    addop                   ir ao estado 64
-    term                    ir ao estado 65
-    factor                  ir ao estado 66
-    call                    ir ao estado 67
+    $padrão  reduzir usando a regra 34 (iteration-stmt)
 
 
 Estado 107
 
-   43 var: ID LBRACK expression RBRACK .
+   67 arg-list: arg-list COMMA expression .
 
-    $padrão  reduzir usando a regra 43 (var)
+    $padrão  reduzir usando a regra 67 (arg-list)
 
 
 Estado 108
 
-   35 selection-stmt: IF LPAREN comparative-expression RPAREN statement .
-   36               | IF LPAREN comparative-expression RPAREN statement . ELSE statement
+   33 selection-stmt: IF LPAREN comparative-expression RPAREN statement ELSE . statement
 
-    ELSE  deslocar, e ir ao estado 111
+    IF        deslocar, e ir ao estado 39
+    RETURN    deslocar, e ir ao estado 40
+    WHILE     deslocar, e ir ao estado 41
+    PLUS      deslocar, e ir ao estado 42
+    MINUS     deslocar, e ir ao estado 43
+    SEMI      deslocar, e ir ao estado 44
+    LPAREN    deslocar, e ir ao estado 45
+    LCAPSULE  deslocar, e ir ao estado 23
+    NUMI      deslocar, e ir ao estado 47
+    NUMF      deslocar, e ir ao estado 48
+    ID        deslocar, e ir ao estado 49
 
-    ELSE      [reduzir usando a regra 35 (selection-stmt)]
-    $padrão  reduzir usando a regra 35 (selection-stmt)
+    compound-stmt           ir ao estado 50
+    statement               ir ao estado 109
+    expression-stmt         ir ao estado 52
+    selection-stmt          ir ao estado 53
+    iteration-stmt          ir ao estado 54
+    return-stmt             ir ao estado 55
+    expression              ir ao estado 56
+    var                     ir ao estado 57
+    simple-expression       ir ao estado 58
+    comparative-expression  ir ao estado 59
+    additive-expression     ir ao estado 60
+    addop                   ir ao estado 61
+    term                    ir ao estado 62
+    factor                  ir ao estado 63
+    call                    ir ao estado 64
 
 
 Estado 109
 
-   37 iteration-stmt: WHILE LPAREN comparative-expression RPAREN statement .
+   33 selection-stmt: IF LPAREN comparative-expression RPAREN statement ELSE statement .
 
-    $padrão  reduzir usando a regra 37 (iteration-stmt)
-
-
-Estado 110
-
-   70 arg-list: arg-list COMMA expression .
-
-    $padrão  reduzir usando a regra 70 (arg-list)
-
-
-Estado 111
-
-   36 selection-stmt: IF LPAREN comparative-expression RPAREN statement ELSE . statement
-
-    IF        deslocar, e ir ao estado 42
-    RETURN    deslocar, e ir ao estado 43
-    WHILE     deslocar, e ir ao estado 44
-    PLUS      deslocar, e ir ao estado 45
-    MINUS     deslocar, e ir ao estado 46
-    SEMI      deslocar, e ir ao estado 47
-    LPAREN    deslocar, e ir ao estado 48
-    LCAPSULE  deslocar, e ir ao estado 28
-    NUMI      deslocar, e ir ao estado 50
-    NUMF      deslocar, e ir ao estado 51
-    ID        deslocar, e ir ao estado 52
-
-    compound-stmt           ir ao estado 53
-    statement               ir ao estado 112
-    expression-stmt         ir ao estado 55
-    selection-stmt          ir ao estado 56
-    iteration-stmt          ir ao estado 57
-    return-stmt             ir ao estado 58
-    expression              ir ao estado 59
-    var                     ir ao estado 60
-    simple-expression       ir ao estado 61
-    comparative-expression  ir ao estado 62
-    additive-expression     ir ao estado 63
-    addop                   ir ao estado 64
-    term                    ir ao estado 65
-    factor                  ir ao estado 66
-    call                    ir ao estado 67
-
-
-Estado 112
-
-   36 selection-stmt: IF LPAREN comparative-expression RPAREN statement ELSE statement .
-
-    $padrão  reduzir usando a regra 36 (selection-stmt)
+    $padrão  reduzir usando a regra 33 (selection-stmt)
