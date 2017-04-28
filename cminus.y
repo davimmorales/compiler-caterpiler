@@ -85,7 +85,7 @@ FILE *arq;
 void yyerror(char*);
 %}
 
-%start programa
+%start program
 %token INT      300
 %token FLOAT    301
 %token IF       302
@@ -120,7 +120,7 @@ void yyerror(char*);
 
 %%
 
-programa	:	/* Entrada Vazia */
+program	:	/* Entrada Vazia */
 					| declaration-list
           {
             $$ = allocateNode("programa");
@@ -146,13 +146,13 @@ declaration		: var-declaration
                addChild($$,$1);}
 							;
 
-var-declaration	: INT ID SEMI
+var-declaration	: INT id SEMI
                 {$$ = allocateNode("var-declaration");
                  /*addChild($$,$1);*/
                  addChild($$,$2);
                  /*$3 = allocateNode("SEMI");
                  addChild($$,$3);}*/
-               }| INT ID LBRACK NUMI RBRACK SEMI{
+               }| INT ID LBRACK num RBRACK SEMI{
                  $$ = allocateNode("var-declaration");
                  addChild($$,$2);
                }
@@ -203,7 +203,7 @@ var-declaration	: INT ID SEMI
                  addChild($$,$1);}
 								;*/
 
-fun-declaration : VOID ID LPAREN params RPAREN compound-stmt
+fun-declaration : VOID id LPAREN params RPAREN compound-stmt
                 {$$ = allocateNode("fun-declaration");
                  addChild($$,$1);
                  $2 = allocateToken("ID");
@@ -215,7 +215,7 @@ fun-declaration : VOID ID LPAREN params RPAREN compound-stmt
                  addChild($$,$5);
                  addChild($$,$6);
                }
-              |INT ID LPAREN params RPAREN compound-stmt
+              |INT id LPAREN params RPAREN compound-stmt
                                  {$$ = allocateNode("fun-declaration");
                                   addChild($$,$1);
                                   $2 = allocateToken("ID");
@@ -248,12 +248,12 @@ param-list  : param-list COMMA param
              addChild($$,$1);}
             ;
 
-param       : INT ID
+param       : INT id
             {$$ = allocateNode("param");
              addChild($$,$1);
              $2 = allocateToken("ID");
              addChild($$,$2);}
-            | INT ID LBRACK RBRACK
+            | INT id LBRACK RBRACK
             {$$ = allocateNode("param");
              addChild($$,$1);
              $2 = allocateToken("ID");
@@ -414,13 +414,13 @@ expression          : var ASSIGN expression
                       }
                     ;
 
-var                 : ID
+var                 : id
                       {
                         $$ = allocateNode("var");
                         $1 = allocateToken("ID");
                         addChild($$,$1);
                       }
-                    | ID LBRACK expression RBRACK
+                    | id LBRACK expression RBRACK
                       {
                         $$ = allocateNode("var");
                         $1 = allocateToken("ID");
@@ -575,21 +575,21 @@ factor              : LPAREN expression RPAREN
                         $1 = allocateNode("call");
                         addChild($$,$1);
                       }
-                    | NUMI
+                    | num
                       {
                         $$ = allocateNode("factor");
                         $1 = allocateToken("NUMI");
                         addChild($$,$1);
                       }
-                    | NUMF
+                    /*| NUMF
                       {
                         $$ = allocateNode("factor");
                         $1 = allocateToken("NUMF");
                         addChild($$,$1);
-                      }
+                      }*/
                     ;
 
-call                : ID LPAREN args RPAREN
+call                : id LPAREN args RPAREN
                       {
                         $$ = allocateNode("call");
                         $1 = allocateToken("ID");
@@ -607,7 +607,7 @@ args                : arg-list
                         $$ = allocateNode("args");
                         addChild($$,$1);
                       }
-                    | /* empty */
+                    |
                     {
                   		$$ = allocateNode("args");
                   	}
@@ -627,6 +627,14 @@ arg-list            : arg-list COMMA expression
                         addChild($$,$1);
                       }
                     ;
+id                  : ID{
+  $$ = allocateNode("ID");
+  addChild($$,$1);
+};
+num                 :NUMI{
+  $$ = allocateNode("NUM");
+  addChild($$,$1);
+}
 
 %%
 
@@ -725,6 +733,7 @@ void effPrintTree(TreeNode * tree)
 		printSpaces();
 		//fprintf(arq, "%s\n",tree->str);
     printf("%s %d\n",tree->str, tree->lineno);
+    /*printf("\n\r\ My birthday = %bd", birthday);*/
 
 		tree = tree->child;
 
