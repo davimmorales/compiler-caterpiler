@@ -1,6 +1,8 @@
 %{
 //GLC para gerar parser para C-
 
+using namespace std;
+
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
@@ -8,7 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <string>
-
 
 #define YYDEBUG 0
 
@@ -19,11 +20,18 @@
 typedef enum {none_nK, statementK, expK} node_kind;
 typedef enum {none_stK, ifK, whileK, assignK, returnK, varK, vecK, funcK, funcvarK, funcvecK} statement_kind;
 typedef enum {none_expK, TypeK, RelOpK, ArithOpK, ConstK, IdK, VecIndexK, CallK} expression_kind;
-typedef enum {none_typeK, intK, voidK} type_kind;
+typedef enum {none_typeK, intK, voidK, boolK} type_kind;
+typedef int TokenType;
 
 union treeKind{
     statement_kind stmt;
     expression_kind exp;
+};
+
+struct treeAttr{
+    TokenType op;
+    int value;
+    char * name;
 };
 
 typedef struct treeNode{
@@ -35,6 +43,7 @@ typedef struct treeNode{
   node_kind nodekind;
   char * scope;
   union treeKind kind;
+  struct treeAttr attr;
   struct treeNode *child;
   struct treeNode *sibling;
 }TreeNode;
@@ -488,39 +497,62 @@ comparative-expression: additive-expression relop additive-expression
 
 relop               : LET
                       {
-                        $$ = allocateNode("relop", RelOpK, none_stK);
+                        /*$$ = allocateNode("relop", RelOpK, none_stK);
                         $1 = allocateNode("LET", none_expK, none_stK);
-                        addChild($$,$1);
+                        addChild($$,$1);*/
+                        $$ = allocateNode("relop", RelOpK, none_stK);
+                        $$->attr.op = LET;
+                        $$->attr.name = "<=";
+                        $$->type = boolK;
                       }
                     | LT
                       {
-                        $$ = allocateNode("relop", RelOpK, none_stK);
+                        /*$$ = allocateNode("relop", RelOpK, none_stK);
                         $1 = allocateNode("LT", none_expK, none_stK);
-                        addChild($$,$1);
+                        addChild($$,$1);*/
+                        $$ = allocateNode("relop", RelOpK, none_stK);
+                        $$->attr.op = LT;
+                        $$->attr.name = "<";
+                        $$->type = boolK;
                       }
                     | HT
                       {
-                        $$ = allocateNode("relop", RelOpK, none_stK);
+                        /*$$ = allocateNode("relop", RelOpK, none_stK);
                         $1 = allocateNode("HT", none_expK, none_stK);
-                        addChild($$,$1);
+                        addChild($$,$1);*/
+                        $$ = allocateNode("relop", RelOpK, none_stK);
+                        $$->attr.op = HT;
+                        $$->attr.name = ">";
+                        $$->type = boolK;
                       }
                     | HET
                       {
-                        $$ = allocateNode("relop", RelOpK, none_stK);
+                        /*$$ = allocateNode("relop", RelOpK, none_stK);
                         $1 = allocateNode("HET", none_expK, none_stK);
-                        addChild($$,$1);
+                        addChild($$,$1);*/
+                        $$ = allocateNode("relop", RelOpK, none_stK);
+                        $$->attr.op = HET;
+                        $$->attr.name = ">=";
+                        $$->type = boolK;
                       }
                     | EQ
                       {
                         $$ = allocateNode("relop", RelOpK, none_stK);
-                        $1 = allocateNode("EQ", none_expK, none_stK);
-                        addChild($$,$1);
+                        $$->attr.op = EQ;
+                        $$->attr.name = "==";
+                        $$->type = boolK;
+                        /*$1 = allocateNode("EQ", none_expK, none_stK);
+                        addChild($$,$1);*/
                       }
                     | NEQ
                       {
-                        $$ = allocateNode("relop", RelOpK, none_stK);
+                        /*$$ = allocateNode("relop", RelOpK, none_stK);
                         $1 = allocateNode("NEQ", none_expK, none_stK);
-                        addChild($$,$1);
+                        addChild($$,$1);*/
+                        $$ = allocateNode("relop", RelOpK, none_stK);
+                        $$->attr.op = NEQ;
+                        $$->attr.name = "!=";
+                        $$->type = boolK;
                       }
                     ;
 
@@ -546,15 +578,23 @@ additive-expression : additive-expression addop term
 
 addop               : PLUS
                       {
-                        $$ = allocateNode("addop", ArithOpK, none_stK);
+                        /*$$ = allocateNode("addop", ArithOpK, none_stK);
                         $1 = allocateNode("PLUS", none_expK, none_stK);
-                        addChild($$,$1);
+                        addChild($$,$1);*/
+                        $$ = allocateNode("addop", ArithOpK, none_stK);
+                        $$->attr.op = PLUS;
+                        $$->attr.name = "+";
+                        $$->type = intK;
                       }
                     | MINUS
                       {
-                        $$ = allocateNode("addop", ArithOpK, none_stK);
+                        /*$$ = allocateNode("addop", ArithOpK, none_stK);
                         $1 = allocateNode("MINUS", none_expK, none_stK);
-                        addChild($$,$1);
+                        addChild($$,$1);*/
+                        $$ = allocateNode("addop", ArithOpK, none_stK);
+                        $$->attr.op = MINUS;
+                        $$->attr.name = "-";
+                        $$->type = intK;
                       }
                     ;
 
@@ -567,33 +607,41 @@ term                : term mulop factor
                       }
                     | factor
                       {
-                        $$ = allocateNode("term", none_expK, none_stK);
+                        $$ = allocateNode("factor", none_expK, none_stK);
                         addChild($$,$1);
                       }
                     ;
 
 mulop               : TIMES
                       {
-                        $$ = allocateNode("mulop", ArithOpK, none_stK);
+                        /*$$ = allocateNode("mulop", ArithOpK, none_stK);
                         $1 = allocateNode("TIMES", none_expK, none_stK);
-                        addChild($$,$1);
+                        addChild($$,$1);*/
+                        $$ = allocateNode("mulop", ArithOpK, none_stK);
+                        $$->attr.op = TIMES;
+                        $$->attr.name = "*";
+                        $$->type = intK;
                       }
                     | OVER
                       {
-                        $$ = allocateNode("mulop", ArithOpK, none_stK);
+                        /*$$ = allocateNode("mulop", ArithOpK, none_stK);
                         $1 = allocateNode("OVER", none_expK, none_stK);
-                        addChild($$,$1);
+                        addChild($$,$1);*/
+                        $$ = allocateNode("mulop", ArithOpK, none_stK);
+                        $$->attr.op = OVER;
+                        $$->attr.name = "/";
+                        $$->type = intK;
                       }
                     ;
 
 factor              : LPAREN expression RPAREN
                       {
                         $$ = allocateNode("factor", none_expK, none_stK);
-                        $1 = allocateNode("LPAREN", none_expK, none_stK);
-                        addChild($$,$1);
+                        /*$1 = allocateNode("LPAREN", none_expK, none_stK);
+                        addChild($$,$1);*/
                         addChild($$,$2);
-                        $3 = allocateNode("RPAREN", none_expK, none_stK);
-                        addChild($$,$3);
+                        /*$3 = allocateNode("RPAREN", none_expK, none_stK);
+                        addChild($$,$3);*/
                       }
                     | var
                       {
@@ -624,13 +672,14 @@ factor              : LPAREN expression RPAREN
 call                : id LPAREN args RPAREN
                       {
                         $$ = allocateNode("call", none_expK, none_stK);
-                        $1 = allocateToken("ID");
+                        $$->kind.exp = CallK;
+                        /*$1 = allocateToken("ID");*/
                         addChild($$,$1);
-                        $2 = allocateNode("LPAREN", none_expK, none_stK);
-                        addChild($$,$2);
+                        /*$2 = allocateNode("LPAREN", none_expK, none_stK);
+                        addChild($$,$2);*/
                         addChild($$,$3);
-                        $4 = allocateNode("RPAREN", none_expK, none_stK);
-                        addChild($$,$4);
+                        /*$4 = allocateNode("RPAREN", none_expK, none_stK);
+                        addChild($$,$4);*/
                       }
                     ;
 
