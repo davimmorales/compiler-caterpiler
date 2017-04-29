@@ -81,9 +81,10 @@
 /***********   Syntax tree for parsing ************/
 /**************************************************/
 
-typedef enum {statementK, expK} node_kind;
-typedef enum {ifK, whileK, assignK, returnK, varK, vecK, funcK, funcvarK, funcvecK} statement_kind;
-typedef enum {TypeK, RelOpK, ArithOpK, ConstK, IdK, VecIndexK, CallK} expression_kind;
+typedef enum {none_nK, statementK, expK} node_kind;
+typedef enum {none_stK, ifK, whileK, assignK, returnK, varK, vecK, funcK, funcvarK, funcvecK} statement_kind;
+typedef enum {none_expK, TypeK, RelOpK, ArithOpK, ConstK, IdK, VecIndexK, CallK} expression_kind;
+typedef enum {none_typeK, intK, voidK} type_kind;
 
 union treeKind{
     statement_kind stmt;
@@ -93,7 +94,7 @@ union treeKind{
 typedef struct treeNode{
   char *str;
   char *name;
-  int type;
+  type_kind type;//where 0=none, 1=int and 2 = void
   int value;
   int lineno;
   node_kind nodekind;
@@ -108,7 +109,7 @@ int reference_line = 0;
 
 TreeNode * tree;// Declaração da árvore
 TreeNode * allocateToken(char const* token);
-TreeNode * allocateNode(char const* node);
+TreeNode * allocateNode(char const* node, expression_kind ek, statement_kind sk);
 TreeNode * addChild(TreeNode* node, TreeNode* newChild);
 TreeNode * addSibling(TreeNode* first, TreeNode* newSibling);
 
@@ -149,7 +150,7 @@ FILE *arq;
 
 void yyerror(char*);
 
-#line 153 "cminus.tab.c" /* yacc.c:339  */
+#line 154 "cminus.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -234,7 +235,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 238 "cminus.tab.c" /* yacc.c:358  */
+#line 239 "cminus.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -539,13 +540,13 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   123,   123,   124,   132,   136,   141,   144,   149,   155,
-     206,   218,   231,   234,   240,   246,   251,   256,   267,   277,
-     284,   287,   294,   297,   302,   307,   312,   317,   324,   331,
-     339,   351,   368,   382,   391,   402,   410,   417,   423,   436,
-     441,   448,   457,   463,   469,   475,   481,   487,   495,   502,
-     508,   515,   521,   529,   536,   543,   549,   557,   566,   572,
-     578,   592,   605,   611,   616,   624,   630,   634
+       0,   124,   124,   125,   133,   137,   142,   145,   150,   156,
+     207,   219,   232,   235,   241,   247,   252,   257,   268,   278,
+     285,   288,   295,   298,   303,   308,   313,   318,   325,   332,
+     340,   352,   369,   383,   392,   403,   411,   418,   424,   437,
+     442,   449,   458,   464,   470,   476,   482,   488,   496,   503,
+     509,   516,   522,   530,   537,   544,   550,   558,   567,   573,
+     579,   593,   606,   612,   617,   625,   631,   635
 };
 #endif
 
@@ -1399,676 +1400,676 @@ yyreduce:
   switch (yyn)
     {
         case 3:
-#line 125 "cminus.y" /* yacc.c:1646  */
+#line 126 "cminus.y" /* yacc.c:1646  */
     {
-            (yyval) = allocateNode("programa");
+            (yyval) = allocateNode("programa", none_expK, none_stK);
             addChild((yyval),(yyvsp[0]));
             tree = (yyval);
           }
-#line 1409 "cminus.tab.c" /* yacc.c:1646  */
+#line 1410 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 133 "cminus.y" /* yacc.c:1646  */
-    {(yyval) = allocateNode("declaration-list");
+#line 134 "cminus.y" /* yacc.c:1646  */
+    {(yyval) = allocateNode("declaration-list", none_expK, none_stK);
                    addChild((yyval),(yyvsp[-1]));
                    addChild((yyval),(yyvsp[0]));}
-#line 1417 "cminus.tab.c" /* yacc.c:1646  */
+#line 1418 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 137 "cminus.y" /* yacc.c:1646  */
-    {(yyval) = allocateNode("declaration-list");
+#line 138 "cminus.y" /* yacc.c:1646  */
+    {(yyval) = allocateNode("declaration-list", none_expK, none_stK);
                    addChild((yyval),(yyvsp[0]));}
-#line 1424 "cminus.tab.c" /* yacc.c:1646  */
+#line 1425 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 142 "cminus.y" /* yacc.c:1646  */
-    {(yyval) = allocateNode("declaration");
+#line 143 "cminus.y" /* yacc.c:1646  */
+    {(yyval) = allocateNode("declaration", none_expK, none_stK);
                addChild((yyval),(yyvsp[0]));}
-#line 1431 "cminus.tab.c" /* yacc.c:1646  */
+#line 1432 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 145 "cminus.y" /* yacc.c:1646  */
-    {(yyval) = allocateNode("declaration");
+#line 146 "cminus.y" /* yacc.c:1646  */
+    {(yyval) = allocateNode("declaration", none_expK, none_stK);
                addChild((yyval),(yyvsp[0]));}
-#line 1438 "cminus.tab.c" /* yacc.c:1646  */
+#line 1439 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 150 "cminus.y" /* yacc.c:1646  */
-    {(yyval) = allocateNode("var-declaration");
+#line 151 "cminus.y" /* yacc.c:1646  */
+    {(yyval) = allocateNode("var-declaration", TypeK, none_stK);
                  /*addChild($$,$1);*/
                  addChild((yyval),(yyvsp[-1]));
                  /*$3 = allocateNode("SEMI");
                  addChild($$,$3);}*/
                }
-#line 1449 "cminus.tab.c" /* yacc.c:1646  */
+#line 1450 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 155 "cminus.y" /* yacc.c:1646  */
+#line 156 "cminus.y" /* yacc.c:1646  */
     {
-                 (yyval) = allocateNode("var-declaration");
+                 (yyval) = allocateNode("var-declaration", TypeK, none_stK);
                  addChild((yyval),(yyvsp[-4]));
                }
-#line 1458 "cminus.tab.c" /* yacc.c:1646  */
+#line 1459 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 207 "cminus.y" /* yacc.c:1646  */
-    {(yyval) = allocateNode("fun-declaration");
+#line 208 "cminus.y" /* yacc.c:1646  */
+    {(yyval) = allocateNode("fun-declaration", TypeK, none_stK);
                  addChild((yyval),(yyvsp[-5]));
                  (yyvsp[-4]) = allocateToken("ID");
-                 (yyvsp[-3]) = allocateNode("LPAREN");
+                 (yyvsp[-3]) = allocateNode("LPAREN", none_expK, none_stK);
                  addChild((yyval),(yyvsp[-4]));
                  addChild((yyval),(yyvsp[-3]));
                  addChild((yyval),(yyvsp[-2]));
-                 (yyvsp[-1]) = allocateNode("RPAREN");
+                 (yyvsp[-1]) = allocateNode("RPAREN", none_expK, none_stK);
                  addChild((yyval),(yyvsp[-1]));
                  addChild((yyval),(yyvsp[0]));
                }
-#line 1474 "cminus.tab.c" /* yacc.c:1646  */
+#line 1475 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 219 "cminus.y" /* yacc.c:1646  */
-    {(yyval) = allocateNode("fun-declaration");
+#line 220 "cminus.y" /* yacc.c:1646  */
+    {(yyval) = allocateNode("fun-declaration", TypeK, none_stK);
                                   addChild((yyval),(yyvsp[-5]));
                                   (yyvsp[-4]) = allocateToken("ID");
-                                  (yyvsp[-3]) = allocateNode("LPAREN");
+                                  (yyvsp[-3]) = allocateNode("LPAREN", none_expK, none_stK);
                                   addChild((yyval),(yyvsp[-4]));
                                   addChild((yyval),(yyvsp[-3]));
                                   addChild((yyval),(yyvsp[-2]));
-                                  (yyvsp[-1]) = allocateNode("RPAREN");
+                                  (yyvsp[-1]) = allocateNode("RPAREN", none_expK, none_stK);
                                   addChild((yyval),(yyvsp[-1]));
                                   addChild((yyval),(yyvsp[0]));}
-#line 1489 "cminus.tab.c" /* yacc.c:1646  */
+#line 1490 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 232 "cminus.y" /* yacc.c:1646  */
-    {(yyval) = allocateNode("params");
+#line 233 "cminus.y" /* yacc.c:1646  */
+    {(yyval) = allocateNode("params", none_expK, none_stK);
          addChild((yyval),(yyvsp[0]));}
-#line 1496 "cminus.tab.c" /* yacc.c:1646  */
+#line 1497 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 235 "cminus.y" /* yacc.c:1646  */
-    {(yyval) = allocateNode("params");
-         (yyvsp[0]) = allocateNode("VOID");
+#line 236 "cminus.y" /* yacc.c:1646  */
+    {(yyval) = allocateNode("params", none_expK, none_stK);
+         (yyvsp[0]) = allocateNode("VOID", none_expK, none_stK);
          addChild((yyval),(yyvsp[0]));}
-#line 1504 "cminus.tab.c" /* yacc.c:1646  */
+#line 1505 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 241 "cminus.y" /* yacc.c:1646  */
-    {(yyval) = allocateNode("param-list");
+#line 242 "cminus.y" /* yacc.c:1646  */
+    {(yyval) = allocateNode("param-list", none_expK, none_stK);
              addChild((yyval),(yyvsp[-2]));
-             (yyvsp[-1]) = allocateNode("COMMA");
+             (yyvsp[-1]) = allocateNode("COMMA", none_expK, none_stK);
              addChild((yyval),(yyvsp[-1]));
              addChild((yyval),(yyvsp[0]));}
-#line 1514 "cminus.tab.c" /* yacc.c:1646  */
+#line 1515 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 247 "cminus.y" /* yacc.c:1646  */
-    {(yyval) = allocateNode("param-list");
+#line 248 "cminus.y" /* yacc.c:1646  */
+    {(yyval) = allocateNode("param-list", none_expK, none_stK);
              addChild((yyval),(yyvsp[0]));}
-#line 1521 "cminus.tab.c" /* yacc.c:1646  */
+#line 1522 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 252 "cminus.y" /* yacc.c:1646  */
-    {(yyval) = allocateNode("param");
+#line 253 "cminus.y" /* yacc.c:1646  */
+    {(yyval) = allocateNode("param", TypeK, none_stK);
              addChild((yyval),(yyvsp[-1]));
              (yyvsp[0]) = allocateToken("ID");
              addChild((yyval),(yyvsp[0]));}
-#line 1530 "cminus.tab.c" /* yacc.c:1646  */
+#line 1531 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 257 "cminus.y" /* yacc.c:1646  */
-    {(yyval) = allocateNode("param");
+#line 258 "cminus.y" /* yacc.c:1646  */
+    {(yyval) = allocateNode("param", TypeK, none_stK);
              addChild((yyval),(yyvsp[-3]));
              (yyvsp[-2]) = allocateToken("ID");
-             (yyvsp[-1]) = allocateNode("LBRACK");
-             (yyvsp[0]) = allocateNode("RBRACK");
+             (yyvsp[-1]) = allocateNode("LBRACK", none_expK, none_stK);
+             (yyvsp[0]) = allocateNode("RBRACK", none_expK, none_stK);
              addChild((yyval),(yyvsp[-2]));
              addChild((yyval),(yyvsp[-1]));
              addChild((yyval),(yyvsp[0]));}
-#line 1543 "cminus.tab.c" /* yacc.c:1646  */
+#line 1544 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 268 "cminus.y" /* yacc.c:1646  */
-    {(yyval) = allocateNode("compound-stmt");
-               (yyvsp[-3]) = allocateNode("LCAPSULE");
+#line 269 "cminus.y" /* yacc.c:1646  */
+    {(yyval) = allocateNode("compound-stmt", none_expK, none_stK);
+               (yyvsp[-3]) = allocateNode("LCAPSULE", none_expK, none_stK);
                addChild((yyval),(yyvsp[-3]));
                addChild((yyval),(yyvsp[-2]));
                addChild((yyval),(yyvsp[-1]));
-               (yyvsp[0]) = allocateNode("RCAPSULE");
+               (yyvsp[0]) = allocateNode("RCAPSULE", none_expK, none_stK);
                addChild((yyval),(yyvsp[0]));}
-#line 1555 "cminus.tab.c" /* yacc.c:1646  */
+#line 1556 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 278 "cminus.y" /* yacc.c:1646  */
+#line 279 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("local-declarations");
+                        (yyval) = allocateNode("local-declarations", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-1]));
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1565 "cminus.tab.c" /* yacc.c:1646  */
+#line 1566 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 284 "cminus.y" /* yacc.c:1646  */
-    {(yyval) = allocateNode("local-declarations");}
-#line 1571 "cminus.tab.c" /* yacc.c:1646  */
+#line 285 "cminus.y" /* yacc.c:1646  */
+    {(yyval) = allocateNode("local-declarations", none_expK, none_stK);}
+#line 1572 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 288 "cminus.y" /* yacc.c:1646  */
+#line 289 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("statement-list");
+                        (yyval) = allocateNode("statement-list", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-1]));
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1581 "cminus.tab.c" /* yacc.c:1646  */
+#line 1582 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 294 "cminus.y" /* yacc.c:1646  */
-    {(yyval) = allocateNode("statement-list");}
-#line 1587 "cminus.tab.c" /* yacc.c:1646  */
+#line 295 "cminus.y" /* yacc.c:1646  */
+    {(yyval) = allocateNode("statement-list", none_expK, none_stK);}
+#line 1588 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 298 "cminus.y" /* yacc.c:1646  */
+#line 299 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("statement");
+                        (yyval) = allocateNode("statement", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1596 "cminus.tab.c" /* yacc.c:1646  */
+#line 1597 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 303 "cminus.y" /* yacc.c:1646  */
+#line 304 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("statement");
+                        (yyval) = allocateNode("statement", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1605 "cminus.tab.c" /* yacc.c:1646  */
+#line 1606 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 308 "cminus.y" /* yacc.c:1646  */
+#line 309 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("statement");
+                        (yyval) = allocateNode("statement", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1614 "cminus.tab.c" /* yacc.c:1646  */
+#line 1615 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 313 "cminus.y" /* yacc.c:1646  */
+#line 314 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("statement");
+                        (yyval) = allocateNode("statement", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1623 "cminus.tab.c" /* yacc.c:1646  */
+#line 1624 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 318 "cminus.y" /* yacc.c:1646  */
+#line 319 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("statement");
+                        (yyval) = allocateNode("statement", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1632 "cminus.tab.c" /* yacc.c:1646  */
+#line 1633 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 325 "cminus.y" /* yacc.c:1646  */
+#line 326 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("expression-stmt");
+                        (yyval) = allocateNode("expression-stmt", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-1]));
-                        (yyvsp[0]) = allocateNode("SEMI");
+                        (yyvsp[0]) = allocateNode("SEMI", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1643 "cminus.tab.c" /* yacc.c:1646  */
+#line 1644 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 332 "cminus.y" /* yacc.c:1646  */
+#line 333 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("expression-stmt");
-                        (yyvsp[0]) = allocateNode("SEMI");
+                        (yyval) = allocateNode("expression-stmt", none_expK, none_stK);
+                        (yyvsp[0]) = allocateNode("SEMI", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1653 "cminus.tab.c" /* yacc.c:1646  */
+#line 1654 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 340 "cminus.y" /* yacc.c:1646  */
+#line 341 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("selection-stmt");
-                        (yyvsp[-4]) = allocateNode("IF");
+                        (yyval) = allocateNode("selection-stmt", none_expK, ifK);
+                        (yyvsp[-4]) = allocateNode("IF", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-4]));
-                        (yyvsp[-3]) = allocateNode("LPAREN");
+                        (yyvsp[-3]) = allocateNode("LPAREN", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-3]));
                         addChild((yyval),(yyvsp[-2]));
-                        (yyvsp[-1]) = allocateNode("RPAREN");
+                        (yyvsp[-1]) = allocateNode("RPAREN", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-1]));
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1669 "cminus.tab.c" /* yacc.c:1646  */
+#line 1670 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 352 "cminus.y" /* yacc.c:1646  */
+#line 353 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("selection-stmt");
-                        (yyvsp[-6]) = allocateNode("IF");
+                        (yyval) = allocateNode("selection-stmt", none_expK, ifK);
+                        (yyvsp[-6]) = allocateNode("IF", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-6]));
-                        (yyvsp[-5]) = allocateNode("LPAREN");
+                        (yyvsp[-5]) = allocateNode("LPAREN", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-5]));
                         addChild((yyval),(yyvsp[-4]));
-                        (yyvsp[-3]) = allocateNode("RPAREN");
+                        (yyvsp[-3]) = allocateNode("RPAREN", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-3]));
                         addChild((yyval),(yyvsp[-2]));
-                        (yyvsp[-1]) = allocateNode("ELSE");
+                        (yyvsp[-1]) = allocateNode("ELSE", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-1]));
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1688 "cminus.tab.c" /* yacc.c:1646  */
+#line 1689 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 369 "cminus.y" /* yacc.c:1646  */
+#line 370 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("iteration-stmt");
-                        (yyvsp[-4]) = allocateNode("WHILE");
+                        (yyval) = allocateNode("iteration-stmt", none_expK, whileK);
+                        (yyvsp[-4]) = allocateNode("WHILE", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-4]));
-                        (yyvsp[-3]) = allocateNode("LPAREN");
+                        (yyvsp[-3]) = allocateNode("LPAREN", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-3]));
                         addChild((yyval),(yyvsp[-2]));
-                        (yyvsp[-1]) = allocateNode("RPAREN");
+                        (yyvsp[-1]) = allocateNode("RPAREN", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-1]));
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1704 "cminus.tab.c" /* yacc.c:1646  */
+#line 1705 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 383 "cminus.y" /* yacc.c:1646  */
+#line 384 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("return-stmt");
-                        (yyvsp[-1]) = allocateNode("RETURN");
+                        (yyval) = allocateNode("return-stmt", none_expK, returnK);
+                        (yyvsp[-1]) = allocateNode("RETURN", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-1]));
-                        (yyvsp[0]) = allocateNode("SEMI");
+                        (yyvsp[0]) = allocateNode("SEMI", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1716 "cminus.tab.c" /* yacc.c:1646  */
+#line 1717 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 392 "cminus.y" /* yacc.c:1646  */
+#line 393 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("return-stmt");
-                        (yyvsp[-2]) = allocateNode("RETURN");
+                        (yyval) = allocateNode("return-stmt", none_expK, returnK);
+                        (yyvsp[-2]) = allocateNode("RETURN", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-2]));
                         addChild((yyval),(yyvsp[-1]));
-                        (yyvsp[0]) = allocateNode("SEMI");
+                        (yyvsp[0]) = allocateNode("SEMI", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1729 "cminus.tab.c" /* yacc.c:1646  */
+#line 1730 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 403 "cminus.y" /* yacc.c:1646  */
+#line 404 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("expression");
+                        (yyval) = allocateNode("expression", none_expK, assignK);
                         addChild((yyval),(yyvsp[-2]));
-                        (yyvsp[-2]) = allocateNode("ASSIGN");
+                        (yyvsp[-2]) = allocateNode("ASSIGN", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-1]));
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1741 "cminus.tab.c" /* yacc.c:1646  */
+#line 1742 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 411 "cminus.y" /* yacc.c:1646  */
+#line 412 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("expression");
+                        (yyval) = allocateNode("expression", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1750 "cminus.tab.c" /* yacc.c:1646  */
+#line 1751 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 418 "cminus.y" /* yacc.c:1646  */
+#line 419 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("var");
+                        (yyval) = allocateNode("var", none_expK, none_stK);
                         (yyvsp[0]) = allocateToken("ID");
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1760 "cminus.tab.c" /* yacc.c:1646  */
+#line 1761 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 424 "cminus.y" /* yacc.c:1646  */
+#line 425 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("var");
+                        (yyval) = allocateNode("var", none_expK, none_stK);
                         (yyvsp[-3]) = allocateToken("ID");
                         addChild((yyval),(yyvsp[-3]));
-                        (yyvsp[-2]) = allocateNode("LBRACK");
+                        (yyvsp[-2]) = allocateNode("LBRACK", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-2]));
                         addChild((yyval),(yyvsp[-1]));
-                        (yyvsp[0]) = allocateNode("RBRACK");
+                        (yyvsp[0]) = allocateNode("RBRACK", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1775 "cminus.tab.c" /* yacc.c:1646  */
+#line 1776 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 437 "cminus.y" /* yacc.c:1646  */
+#line 438 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("simple-expression");
+                        (yyval) = allocateNode("simple-expression", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1784 "cminus.tab.c" /* yacc.c:1646  */
+#line 1785 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 442 "cminus.y" /* yacc.c:1646  */
+#line 443 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("simple-expression");
+                        (yyval) = allocateNode("simple-expression", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1793 "cminus.tab.c" /* yacc.c:1646  */
+#line 1794 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 449 "cminus.y" /* yacc.c:1646  */
+#line 450 "cminus.y" /* yacc.c:1646  */
     {
-                          (yyval) = allocateNode("comparative-expression");
+                          (yyval) = allocateNode("comparative-expression", none_expK, none_stK);
                           addChild((yyval),(yyvsp[-2]));
                           addChild((yyval),(yyvsp[-1]));
                           addChild((yyval),(yyvsp[0]));
                         }
-#line 1804 "cminus.tab.c" /* yacc.c:1646  */
+#line 1805 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 458 "cminus.y" /* yacc.c:1646  */
+#line 459 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("relop");
-                        (yyvsp[0]) = allocateNode("LET");
+                        (yyval) = allocateNode("relop", RelOpK, none_stK);
+                        (yyvsp[0]) = allocateNode("LET", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1814 "cminus.tab.c" /* yacc.c:1646  */
+#line 1815 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 464 "cminus.y" /* yacc.c:1646  */
+#line 465 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("relop");
-                        (yyvsp[0]) = allocateNode("LT");
+                        (yyval) = allocateNode("relop", RelOpK, none_stK);
+                        (yyvsp[0]) = allocateNode("LT", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1824 "cminus.tab.c" /* yacc.c:1646  */
+#line 1825 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 470 "cminus.y" /* yacc.c:1646  */
+#line 471 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("relop");
-                        (yyvsp[0]) = allocateNode("HT");
+                        (yyval) = allocateNode("relop", RelOpK, none_stK);
+                        (yyvsp[0]) = allocateNode("HT", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1834 "cminus.tab.c" /* yacc.c:1646  */
+#line 1835 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 476 "cminus.y" /* yacc.c:1646  */
+#line 477 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("relop");
-                        (yyvsp[0]) = allocateNode("HET");
+                        (yyval) = allocateNode("relop", RelOpK, none_stK);
+                        (yyvsp[0]) = allocateNode("HET", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1844 "cminus.tab.c" /* yacc.c:1646  */
+#line 1845 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 482 "cminus.y" /* yacc.c:1646  */
+#line 483 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("relop");
-                        (yyvsp[0]) = allocateNode("EQ");
+                        (yyval) = allocateNode("relop", RelOpK, none_stK);
+                        (yyvsp[0]) = allocateNode("EQ", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1854 "cminus.tab.c" /* yacc.c:1646  */
+#line 1855 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 488 "cminus.y" /* yacc.c:1646  */
+#line 489 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("relop");
-                        (yyvsp[0]) = allocateNode("NEQ");
+                        (yyval) = allocateNode("relop", RelOpK, none_stK);
+                        (yyvsp[0]) = allocateNode("NEQ", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1864 "cminus.tab.c" /* yacc.c:1646  */
+#line 1865 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 496 "cminus.y" /* yacc.c:1646  */
+#line 497 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("additive-expression");
+                        (yyval) = allocateNode("additive-expression", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-2]));
                         addChild((yyval),(yyvsp[-1]));
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1875 "cminus.tab.c" /* yacc.c:1646  */
+#line 1876 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 503 "cminus.y" /* yacc.c:1646  */
+#line 504 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("additive-expression");
+                        (yyval) = allocateNode("additive-expression", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-1]));
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1885 "cminus.tab.c" /* yacc.c:1646  */
+#line 1886 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 509 "cminus.y" /* yacc.c:1646  */
+#line 510 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("additive-expression");
+                        (yyval) = allocateNode("additive-expression", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1894 "cminus.tab.c" /* yacc.c:1646  */
+#line 1895 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 516 "cminus.y" /* yacc.c:1646  */
+#line 517 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("addop");
-                        (yyvsp[0]) = allocateNode("PLUS");
+                        (yyval) = allocateNode("addop", ArithOpK, none_stK);
+                        (yyvsp[0]) = allocateNode("PLUS", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1904 "cminus.tab.c" /* yacc.c:1646  */
+#line 1905 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 522 "cminus.y" /* yacc.c:1646  */
+#line 523 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("addop");
-                        (yyvsp[0]) = allocateNode("MINUS");
+                        (yyval) = allocateNode("addop", ArithOpK, none_stK);
+                        (yyvsp[0]) = allocateNode("MINUS", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1914 "cminus.tab.c" /* yacc.c:1646  */
+#line 1915 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 530 "cminus.y" /* yacc.c:1646  */
+#line 531 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("term");
+                        (yyval) = allocateNode("term", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-2]));
                         addChild((yyval),(yyvsp[-1]));
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1925 "cminus.tab.c" /* yacc.c:1646  */
+#line 1926 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 537 "cminus.y" /* yacc.c:1646  */
+#line 538 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("term");
+                        (yyval) = allocateNode("term", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1934 "cminus.tab.c" /* yacc.c:1646  */
+#line 1935 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 544 "cminus.y" /* yacc.c:1646  */
+#line 545 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("mulop");
-                        (yyvsp[0]) = allocateNode("TIMES");
+                        (yyval) = allocateNode("mulop", ArithOpK, none_stK);
+                        (yyvsp[0]) = allocateNode("TIMES", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1944 "cminus.tab.c" /* yacc.c:1646  */
+#line 1945 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 550 "cminus.y" /* yacc.c:1646  */
+#line 551 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("mulop");
-                        (yyvsp[0]) = allocateNode("OVER");
+                        (yyval) = allocateNode("mulop", ArithOpK, none_stK);
+                        (yyvsp[0]) = allocateNode("OVER", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1954 "cminus.tab.c" /* yacc.c:1646  */
+#line 1955 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 558 "cminus.y" /* yacc.c:1646  */
+#line 559 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("factor");
-                        (yyvsp[-2]) = allocateNode("LPAREN");
+                        (yyval) = allocateNode("factor", none_expK, none_stK);
+                        (yyvsp[-2]) = allocateNode("LPAREN", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-2]));
                         addChild((yyval),(yyvsp[-1]));
-                        (yyvsp[0]) = allocateNode("RPAREN");
+                        (yyvsp[0]) = allocateNode("RPAREN", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1967 "cminus.tab.c" /* yacc.c:1646  */
+#line 1968 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 567 "cminus.y" /* yacc.c:1646  */
+#line 568 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("factor");
-                        (yyvsp[0]) = allocateNode("var");
+                        (yyval) = allocateNode("factor", none_expK, none_stK);
+                        (yyvsp[0]) = allocateNode("var", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1977 "cminus.tab.c" /* yacc.c:1646  */
+#line 1978 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 573 "cminus.y" /* yacc.c:1646  */
+#line 574 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("factor");
-                        (yyvsp[0]) = allocateNode("call");
+                        (yyval) = allocateNode("factor", none_expK, none_stK);
+                        (yyvsp[0]) = allocateNode("call", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1987 "cminus.tab.c" /* yacc.c:1646  */
+#line 1988 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 579 "cminus.y" /* yacc.c:1646  */
+#line 580 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("factor");
+                        (yyval) = allocateNode("factor", none_expK, none_stK);
                         (yyvsp[0]) = allocateToken("NUMI");
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 1997 "cminus.tab.c" /* yacc.c:1646  */
+#line 1998 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 593 "cminus.y" /* yacc.c:1646  */
+#line 594 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("call");
+                        (yyval) = allocateNode("call", none_expK, none_stK);
                         (yyvsp[-3]) = allocateToken("ID");
                         addChild((yyval),(yyvsp[-3]));
-                        (yyvsp[-2]) = allocateNode("LPAREN");
+                        (yyvsp[-2]) = allocateNode("LPAREN", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-2]));
                         addChild((yyval),(yyvsp[-1]));
-                        (yyvsp[0]) = allocateNode("RPAREN");
+                        (yyvsp[0]) = allocateNode("RPAREN", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 2012 "cminus.tab.c" /* yacc.c:1646  */
+#line 2013 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 606 "cminus.y" /* yacc.c:1646  */
+#line 607 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("args");
+                        (yyval) = allocateNode("args", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 2021 "cminus.tab.c" /* yacc.c:1646  */
+#line 2022 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 611 "cminus.y" /* yacc.c:1646  */
+#line 612 "cminus.y" /* yacc.c:1646  */
     {
-                  		(yyval) = allocateNode("args");
+                  		(yyval) = allocateNode("args", none_expK, none_stK);
                   	}
-#line 2029 "cminus.tab.c" /* yacc.c:1646  */
+#line 2030 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 617 "cminus.y" /* yacc.c:1646  */
+#line 618 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("arg-list");
+                        (yyval) = allocateNode("arg-list", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-2]));
-                        (yyvsp[-1]) = allocateNode("COMMA");
+                        (yyvsp[-1]) = allocateNode("COMMA", none_expK, none_stK);
                         addChild((yyval),(yyvsp[-1]));
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 2041 "cminus.tab.c" /* yacc.c:1646  */
+#line 2042 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 625 "cminus.y" /* yacc.c:1646  */
+#line 626 "cminus.y" /* yacc.c:1646  */
     {
-                        (yyval) = allocateNode("arg-list");
+                        (yyval) = allocateNode("arg-list", none_expK, none_stK);
                         addChild((yyval),(yyvsp[0]));
                       }
-#line 2050 "cminus.tab.c" /* yacc.c:1646  */
+#line 2051 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 630 "cminus.y" /* yacc.c:1646  */
+#line 631 "cminus.y" /* yacc.c:1646  */
     {
-  (yyval) = allocateNode("ID");
+  (yyval) = allocateNode("ID", IdK, none_stK);
   addChild((yyval),(yyvsp[0]));
 }
-#line 2059 "cminus.tab.c" /* yacc.c:1646  */
+#line 2060 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 634 "cminus.y" /* yacc.c:1646  */
+#line 635 "cminus.y" /* yacc.c:1646  */
     {
-  (yyval) = allocateNode("NUM");
+  (yyval) = allocateNode("NUM", ConstK, none_stK);
   addChild((yyval),(yyvsp[0]));
 }
-#line 2068 "cminus.tab.c" /* yacc.c:1646  */
+#line 2069 "cminus.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 2072 "cminus.tab.c" /* yacc.c:1646  */
+#line 2073 "cminus.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2296,7 +2297,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 639 "cminus.y" /* yacc.c:1906  */
+#line 640 "cminus.y" /* yacc.c:1906  */
 
 
 
@@ -2315,16 +2316,16 @@ TreeNode * allocateToken(char const *token)
 	//strncpy(strExp, yytext, sizeof(strExp));
   strExp.erase();
   strExp = yytext;
-	TreeNode *branch = allocateNode(token);
+	TreeNode *branch = allocateNode(token, none_expK, none_stK);
 	//puts( yytext );
 //	sprintf(strExp, "%s", yytext);
-	TreeNode *leaf = allocateNode(strExp.c_str());//because it must be a char const*
+	TreeNode *leaf = allocateNode(strExp.c_str(), none_expK, none_stK);//because it must be a char const*
   // TreeNode *leaf = allocateNode("galeto");
 //	addChild(branch, leaf);
 	return branch;
 }
 
-TreeNode * allocateNode(char const *node)
+TreeNode * allocateNode(char const *node, expression_kind ek, statement_kind sk)/*, type_kind type, statement_kind sk)*/
 {
 
   if(line_flag==0){
@@ -2334,6 +2335,10 @@ TreeNode * allocateNode(char const *node)
 
 	TreeNode *newNode = (TreeNode*)malloc(sizeof(TreeNode));
 	newNode->lineno = yylineno - reference_line;
+
+
+  newNode->kind.exp = ek;
+  newNode->kind.stmt = sk;
   /*newNode->name = strcpy(newNode->name, yylex());*/
 
 	newNode->str = (char*) calloc(sizeof(char),20);
@@ -2393,8 +2398,8 @@ void effPrintTree(TreeNode * tree)
 	{
 		printSpaces();
 		//fprintf(arq, "%s\n",tree->str);
-    printf("%s %d\n",tree->str, tree->lineno);
-    /*printf("\n\r\ My birthday = %bd", birthday);*/
+    printf("%s %d %d %d\n",tree->str, tree->lineno, tree->kind.exp, tree->kind.stmt);
+
 
 		tree = tree->child;
 
