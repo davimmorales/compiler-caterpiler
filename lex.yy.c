@@ -545,6 +545,7 @@ char *yytext;
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "globals.h"
 #include "cminus.tab.h"
 extern YYSTYPE yylval;
 
@@ -555,7 +556,7 @@ void printTree();
 
 int lineno = 1;
 
-#line 559 "lex.yy.c"
+#line 560 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -773,10 +774,10 @@ YY_DECL
 		}
 
 	{
-#line 34 "cminus.l"
+#line 35 "cminus.l"
 
 
-#line 780 "lex.yy.c"
+#line 781 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -845,137 +846,137 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 36 "cminus.l"
+#line 37 "cminus.l"
 {/*printf("INT ");*/ return INT;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 37 "cminus.l"
+#line 38 "cminus.l"
 {/*printf("FLOAT ");*/ return FLOAT;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 38 "cminus.l"
+#line 39 "cminus.l"
 {/*printf("IF ");*/ return IF;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 39 "cminus.l"
+#line 40 "cminus.l"
 {/*printf("ELSE ");*/ return ELSE;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 40 "cminus.l"
+#line 41 "cminus.l"
 {/*printf("RETURN ");*/ return RETURN;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 41 "cminus.l"
+#line 42 "cminus.l"
 {/*printf("VOID ");*/return VOID;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 42 "cminus.l"
+#line 43 "cminus.l"
 {/*printf("WHILE ");*/ return WHILE;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 43 "cminus.l"
+#line 44 "cminus.l"
 {/*printf("PLUS ");*/ return PLUS;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 44 "cminus.l"
+#line 45 "cminus.l"
 {/*printf("MINUS ");*/ return MINUS;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 45 "cminus.l"
+#line 46 "cminus.l"
 {/*printf("TIMES ");*/ return TIMES;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 46 "cminus.l"
+#line 47 "cminus.l"
 {/*printf("LT ");*/ return LT;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 47 "cminus.l"
+#line 48 "cminus.l"
 {/*printf("OVER ");*/ return OVER;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 48 "cminus.l"
+#line 49 "cminus.l"
 {/*printf("LET ");*/ return LET;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 49 "cminus.l"
+#line 50 "cminus.l"
 {/*printf("HT ");*/ return HT;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 50 "cminus.l"
+#line 51 "cminus.l"
 {/*printf("HET ");*/ return HET;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 51 "cminus.l"
+#line 52 "cminus.l"
 {/*printf("EQ ");*/ return EQ;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 52 "cminus.l"
+#line 53 "cminus.l"
 {/*printf("NEQ ");*/ return NEQ;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 53 "cminus.l"
+#line 54 "cminus.l"
 {/*printf("ASSIGN ");*/ return ASSIGN;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 54 "cminus.l"
+#line 55 "cminus.l"
 {/*printf("SEMI ");*/ return SEMI;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 55 "cminus.l"
+#line 56 "cminus.l"
 {/*printf("COMMA ");*/ return COMMA;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 56 "cminus.l"
+#line 57 "cminus.l"
 {/*printf("RPAREN ");*/ return RPAREN;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 57 "cminus.l"
+#line 58 "cminus.l"
 {/*printf("LPAREN ");*/ return LPAREN;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 58 "cminus.l"
+#line 59 "cminus.l"
 {/*printf("RBRACK ");*/ return RBRACK;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 59 "cminus.l"
+#line 60 "cminus.l"
 {/*printf("LBRACK ");*/ return LBRACK;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 60 "cminus.l"
+#line 61 "cminus.l"
 {/*printf("LCAPSULE ");*/ return LCAPSULE;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 61 "cminus.l"
+#line 62 "cminus.l"
 {/*printf("RCAPSULE ");*/ return RCAPSULE;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 62 "cminus.l"
+#line 63 "cminus.l"
 { 	char c, d;
                         c = input();
                         do
@@ -991,44 +992,44 @@ YY_RULE_SETUP
 case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
-#line 73 "cminus.l"
+#line 74 "cminus.l"
 { lineno++; /*printf("\t%d\n", lineno);*/}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 74 "cminus.l"
+#line 75 "cminus.l"
 ;
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 75 "cminus.l"
+#line 76 "cminus.l"
 { /*printf("NUMI ");* strcpy(id,yytext);*/ return NUMI;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 76 "cminus.l"
+#line 77 "cminus.l"
 {/*printf("NUMF "); strcpy(id,yytext);*/ return NUMF;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 77 "cminus.l"
+#line 78 "cminus.l"
 {/*printf("ID "); strcpy(id,yytext);*/ return ID;}
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 78 "cminus.l"
+#line 79 "cminus.l"
 return(0);
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 79 "cminus.l"
+#line 80 "cminus.l"
 { printf("Lexical Error at line %d\n", lineno);}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 81 "cminus.l"
+#line 82 "cminus.l"
 ECHO;
 	YY_BREAK
-#line 1032 "lex.yy.c"
+#line 1033 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2039,7 +2040,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 81 "cminus.l"
+#line 82 "cminus.l"
 
 
 
@@ -2048,7 +2049,7 @@ char R_side[20];
 int verState = 0;
 int voidFlag = 0;
 
-typedef struct TipoID{
+/*typedef struct TipoID{
     char nomeID[20];
     char tipoID[20];
     char tipoData[10];
@@ -2056,24 +2057,26 @@ typedef struct TipoID{
     int linhas[50];
     int top;
     struct TipoID *prox;
-}TipoID;
+}TipoID;*/
 
-typedef struct TypeSync{
+/*typedef struct TypeSync{
   char name[45];
   char scope[45];
   int type;//where 1 stands for var, 2 for array and 3 for function
   int value;
   int top;
   struct TypeSync *next;
-}TypeSync;
+}TypeSync;*/
 
-typedef struct{
+/*typedef struct{
     TipoID *start;
-}TipoLista;
+}TipoLista;*/
 
-typedef struct{
+/*typedef struct{
   TypeSync *start;
-}SyncList;
+}SyncList;*/
+
+SyncList id_list;
 
 void inicializaLista(TipoLista *lista){
     lista->start = NULL;
@@ -2381,6 +2384,36 @@ int semanticAnalysis(TipoLista *hashList){
   return 0;
 }
 
+/*Role: merge idlist with our beloved syntatic tree*/
+void merge_tree(TreeNode * tree, SyncList *list)
+{
+  TypeSync *p = list->start;
+  /*while(p!=NULL){
+      printf("%s %s %d\n", p->name, p->scope, p->type);
+      p = p->next;
+  }*/
+
+  while (tree != NULL)
+  {
+    if(tree->nodekind == expK){
+      if(tree->kind.exp == IdK){
+        tree->attr.name = p->name;
+        tree->scope = p->scope;
+        p = p->next;
+      }
+    }
+            /*tree->attr.name = "test";*/
+
+    tree = tree->child;
+
+    while(tree != NULL)
+    {
+      merge_tree(tree, &id_list);
+      tree = tree->sibling;
+    }
+  }
+}
+
 int main() {
 /*
 extern int yydebug;
@@ -2388,6 +2421,7 @@ yydebug = 1;
 */
 FILE *f_in;
 FILE *f_out;
+TreeNode *freedom;
 int i;
 int w;
 int flag;
@@ -2401,7 +2435,6 @@ int line = 1;
 int hash = 0;
 // Alocando o vetor estático e inicializando ponteiros com NULL
 TipoLista vetor[211]; //lista de listas
-SyncList id_list;
 
 for(i = 0; i < 211; i++) {
   vetor[i].start = NULL;
@@ -2599,8 +2632,10 @@ i = 0;
   if (yyparse()==0) printf("\nSyntax Analysis OK\n");
   else printf("\nERROR in Syntax Analysis\n");
 
-  printTree();
-  
+  freedom = receive_tree();
+  merge_tree(freedom, &id_list);
+  printTree(freedom);
+
   if(voidFlag)
     printf("Semantic error: Void attribution to variable\n");
 
@@ -2623,5 +2658,4 @@ i = 0;
 
   return 0;
 }
-
 

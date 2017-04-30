@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "globals.h"
 #include "cminus.tab.h"
 extern YYSTYPE yylval;
 
@@ -85,7 +86,7 @@ char R_side[20];
 int verState = 0;
 int voidFlag = 0;
 
-typedef struct TipoID{
+/*typedef struct TipoID{
     char nomeID[20];
     char tipoID[20];
     char tipoData[10];
@@ -93,24 +94,26 @@ typedef struct TipoID{
     int linhas[50];
     int top;
     struct TipoID *prox;
-}TipoID;
+}TipoID;*/
 
-typedef struct TypeSync{
+/*typedef struct TypeSync{
   char name[45];
   char scope[45];
   int type;//where 1 stands for var, 2 for array and 3 for function
   int value;
   int top;
   struct TypeSync *next;
-}TypeSync;
+}TypeSync;*/
 
-typedef struct{
+/*typedef struct{
     TipoID *start;
-}TipoLista;
+}TipoLista;*/
 
-typedef struct{
+/*typedef struct{
   TypeSync *start;
-}SyncList;
+}SyncList;*/
+
+SyncList id_list;
 
 void inicializaLista(TipoLista *lista){
     lista->start = NULL;
@@ -418,6 +421,36 @@ int semanticAnalysis(TipoLista *hashList){
   return 0;
 }
 
+/*Role: merge idlist with our beloved syntatic tree*/
+void merge_tree(TreeNode * tree, SyncList *list)
+{
+  TypeSync *p = list->start;
+  /*while(p!=NULL){
+      printf("%s %s %d\n", p->name, p->scope, p->type);
+      p = p->next;
+  }*/
+
+  while (tree != NULL)
+  {
+    if(tree->nodekind == expK){
+      if(tree->kind.exp == IdK){
+        tree->attr.name = p->name;
+        tree->scope = p->scope;
+        p = p->next;
+      }
+    }
+            /*tree->attr.name = "test";*/
+
+    tree = tree->child;
+
+    while(tree != NULL)
+    {
+      merge_tree(tree, &id_list);
+      tree = tree->sibling;
+    }
+  }
+}
+
 int main() {
 /*
 extern int yydebug;
@@ -425,6 +458,7 @@ yydebug = 1;
 */
 FILE *f_in;
 FILE *f_out;
+TreeNode *freedom;
 int i;
 int w;
 int flag;
@@ -438,7 +472,6 @@ int line = 1;
 int hash = 0;
 // Alocando o vetor estático e inicializando ponteiros com NULL
 TipoLista vetor[211]; //lista de listas
-SyncList id_list;
 
 for(i = 0; i < 211; i++) {
   vetor[i].start = NULL;
@@ -636,8 +669,10 @@ i = 0;
   if (yyparse()==0) printf("\nSyntax Analysis OK\n");
   else printf("\nERROR in Syntax Analysis\n");
 
-  printTree();
-  
+  freedom = receive_tree();
+  merge_tree(freedom, &id_list);
+  printTree(freedom);
+
   if(voidFlag)
     printf("Semantic error: Void attribution to variable\n");
 
@@ -660,4 +695,3 @@ i = 0;
 
   return 0;
 }
-

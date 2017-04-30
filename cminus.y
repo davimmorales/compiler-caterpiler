@@ -10,6 +10,7 @@ using namespace std;
 #include <stdlib.h>
 #include <string.h>
 #include <string>
+#include "globals.h"
 
 #define YYDEBUG 0
 
@@ -17,7 +18,7 @@ using namespace std;
 /***********   Syntax tree for parsing ************/
 /**************************************************/
 
-typedef enum {none_nK, statementK, expK} node_kind;
+/*typedef enum {none_nK, statementK, expK} node_kind;
 typedef enum {none_stK, ifK, whileK, assignK, returnK, varK, vecK, funcK, funcvarK, funcvecK} statement_kind;
 typedef enum {none_expK, TypeK, RelOpK, ArithOpK, ConstK, IdK, VecIndexK, CallK} expression_kind;
 typedef enum {none_typeK, intK, voidK, boolK} type_kind;
@@ -46,13 +47,13 @@ typedef struct treeNode{
   struct treeAttr attr;
   struct treeNode *child;
   struct treeNode *sibling;
-}TreeNode;
+}TreeNode;*/
 
 int line_flag = 0;
 int reference_line = 0;
 
 TreeNode * tree;// Declaração da árvore
-TreeNode * allocateToken(char const* token);
+/*TreeNode * allocateToken(char const* token);*/
 TreeNode * allocateNode(char const* node, expression_kind ek, statement_kind sk, node_kind NK);
 TreeNode * addChild(TreeNode* node, TreeNode* newChild);
 TreeNode * addSibling(TreeNode* first, TreeNode* newSibling);
@@ -69,19 +70,17 @@ static TreeNode * savedTree; /* stores syntax tree for later return */
 // char * strExp;
 std::string strExp;
 
-
-
 using namespace std;
 
 extern "C"
 {
-
   ofstream writeTree;
   int yylex();
   int yyparse();
 	void abrirArq();
+  TreeNode * receive_tree();
   void effPrintTree(TreeNode * tree);
-  void printTree();
+  void printTree(TreeNode * tree);
   int yywrap() {
     return 1;
   }
@@ -658,7 +657,7 @@ factor              : LPAREN expression RPAREN
                     | num
                       {
                         $$ = allocateNode("factor", none_expK, none_stK, none_nK);
-                        $1 = allocateToken("NUMI");
+                        /*$1 = allocateToken("NUMI");*/
                         addChild($$,$1);
                       }
                     /*| NUMF
@@ -730,7 +729,7 @@ num                 :NUMI{
 // }*/
 
 
-TreeNode * allocateToken(char const *token)
+/*TreeNode * allocateToken(char const *token)
 {
 	//reset(strExp);
 	//strncpy(strExp, yytext, sizeof(strExp));
@@ -743,7 +742,7 @@ TreeNode * allocateToken(char const *token)
   // TreeNode *leaf = allocateNode("galeto");
 //	addChild(branch, leaf);
 	return branch;
-}
+}*/
 
 TreeNode * allocateNode(char const *node, expression_kind ek, statement_kind sk, node_kind NK)/*, type_kind type, statement_kind sk)*/
 {
@@ -810,6 +809,10 @@ static void printSpaces(void)
 	}
 }
 
+TreeNode * receive_tree(){
+  return tree;
+}
+
 /* procedure printTree prints a syntax tree to the
  * listing file using indentation to indicate subtrees
  */
@@ -820,8 +823,8 @@ void effPrintTree(TreeNode * tree)
 	{
 		printSpaces();
 		//fprintf(arq, "%s\n",tree->str);
-    printf("%s %d %d %d\n",tree->str, tree->lineno, tree->kind.exp, tree->type);
 
+    printf("%s %d %d %d %s %s\n",tree->str, tree->lineno, tree->kind.exp, tree->type, tree->attr.name, tree->scope);
 
 		tree = tree->child;
 
@@ -834,7 +837,7 @@ void effPrintTree(TreeNode * tree)
 	}
 }
 
-void printTree()
+void printTree(TreeNode * tree)
 {
   printf("Imprimindo árvore sintática...\n");
 	arq = fopen("syntaticTree.xls", "w");
