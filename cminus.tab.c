@@ -136,7 +136,7 @@ extern "C"
   int yyparse();
 	void abrirArq();
   void effPrintTree(TreeNode * tree);
-  void printTree();
+  /*void printTree();*/
   int yywrap() {
     return 1;
   }
@@ -2454,13 +2454,13 @@ void effPrintTree(TreeNode * tree)
 	}
 }
 
-void printTree()
+/*void printTree()
 {
   printf("Imprimindo árvore sintática...\n");
 	arq = fopen("syntaticTree.xls", "w");
 	effPrintTree(tree);
 	fclose(arq);
-}
+}*/
 
 void yyerror (char* s)  /* Called by yyparse on error */
 {

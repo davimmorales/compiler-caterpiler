@@ -13,10 +13,13 @@
 #include "cminus.tab.h"
 extern YYSTYPE yylval;
 
+#include "globals.h"
+#include "util.h"
+
 
 void abrirArq();
 
-void printTree();
+/*void printTree();*/
 
 int lineno = 1;
 
@@ -636,8 +639,8 @@ i = 0;
   if (yyparse()==0) printf("\nSyntax Analysis OK\n");
   else printf("\nERROR in Syntax Analysis\n");
 
-  printTree();
-  
+  /*printTree();*/
+
   if(voidFlag)
     printf("Semantic error: Void attribution to variable\n");
 
@@ -660,4 +663,3 @@ i = 0;
 
   return 0;
 }
-
