@@ -421,34 +421,51 @@ int semanticAnalysis(TipoLista *hashList){
   return 0;
 }
 
-/*Role: merge idlist with our beloved syntatic tree*/
-void merge_tree(TreeNode * tree, SyncList *list)
-{
-  TypeSync *p = list->start;
-  /*while(p!=NULL){
-      printf("%s %s %d\n", p->name, p->scope, p->type);
-      p = p->next;
-  }*/
-
-  while (tree != NULL)
-  {
-    if(tree->nodekind == expK){
-      if(tree->kind.exp == IdK){
-        tree->attr.name = p->name;
-        tree->scope = p->scope;
-        p = p->next;
-      }
+static void in_order ( TreeNode *stree) {
+    TreeNode *kid = stree->child;
+    printf("test in order\n");
+    if (stree) {
+      if(kid)
+        in_order (kid);
+        code_gen (stree);
+      if(kid->sibling)
+        in_order (kid->sibling);
     }
-            /*tree->attr.name = "test";*/
+}
 
-    tree = tree->child;
-
-    while(tree != NULL)
-    {
-      merge_tree(tree, &id_list);
-      tree = tree->sibling;
+static void code_gen(TreeNode *stree){
+  /*printf("statement test");*/
+  /*while (stree != NULL)
+	{*/
+  if(stree != NULL){
+    switch(stree->nodekind){
+      case statementK:
+        printf("statement test\n");
+        in_order(stree);
+        break;
+      case expK:
+        printf("expression test\n");
+        in_order(stree);
+        break;
+      default: break;
     }
+    /*if(stree->sibling != NULL)*/
+      code_gen(stree->sibling);
+    /*else
+      code_gen(stree->child);*/
+      /*stree = stree->child;
+      while(stree != NULL)
+      {
+        code_gen(stree);
+        stree = stree->sibling;
+      }*/
   }
+}
+
+
+/*Role: primary function on generating intermediate code*/
+void generate_code(TreeNode * stree){
+  code_gen(stree);
 }
 
 int main() {
@@ -670,7 +687,7 @@ i = 0;
   else printf("\nERROR in Syntax Analysis\n");
 
   freedom = receive_tree();
-  merge_tree(freedom, &id_list);
+  generate_code(freedom);
   printTree(freedom);
 
   if(voidFlag)
@@ -689,7 +706,7 @@ i = 0;
       printWTable(vetor, i);
   }
 
-  printIDList(&id_list);
+  /*printIDList(&id_list);*/
 
 
 

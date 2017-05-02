@@ -462,7 +462,7 @@ var                 : id
                       {
                         $$ = allocateNode("var", none_expK, none_stK, none_nK);
                         $$->type = intK;
-                        $$->kind.exp = VecIndexK;
+                        $$->kind.expr = VecIndexK;
                         /*$1 = allocateToken("ID");*/
                         addChild($$,$1);
                         /*$2 = allocateNode("LBRACK", none_expK, none_stK, none_nK);
@@ -671,7 +671,7 @@ factor              : LPAREN expression RPAREN
 call                : id LPAREN args RPAREN
                       {
                         $$ = allocateNode("call", none_expK, none_stK, none_nK);
-                        $$->kind.exp = CallK;
+                        $$->kind.expr = CallK;
                         /*$1 = allocateToken("ID");*/
                         addChild($$,$1);
                         /*$2 = allocateNode("LPAREN", none_expK, none_stK, none_nK);
@@ -757,7 +757,7 @@ TreeNode * allocateNode(char const *node, expression_kind ek, statement_kind sk,
   newNode->nodekind = NK;
 
   if(NK==expK)
-    newNode->kind.exp = ek;
+    newNode->kind.expr = ek;
   else if(NK==sk)
     newNode->kind.stmt = sk;
   /*newNode->name = strcpy(newNode->name, yylex());*/
@@ -824,7 +824,7 @@ void effPrintTree(TreeNode * tree)
 		printSpaces();
 		//fprintf(arq, "%s\n",tree->str);
 
-    printf("%s %d %d %d %s %s\n",tree->str, tree->lineno, tree->kind.exp, tree->type, tree->attr.name, tree->scope);
+    printf("%s %d %d %d %s %s\n",tree->str, tree->lineno, tree->kind.expr, tree->type, tree->attr.name, tree->scope);
 
 		tree = tree->child;
 

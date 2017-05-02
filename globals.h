@@ -19,7 +19,7 @@ typedef int TokenType;
 
 union treeKind{
     statement_kind stmt;
-    expression_kind exp;
+    expression_kind expr;
 };
 
 struct treeAttr{
@@ -75,3 +75,7 @@ void inicializaLista(TipoLista *lista);
 void insert(SyncList *list, char scope[], char nameID[], char typeID[]);
 
 void printIDList(SyncList *list);
+
+static void in_order ( TreeNode *stree);
+
+static void code_gen(TreeNode *stree);
