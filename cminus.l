@@ -5,17 +5,17 @@
 /* Davi Morales and Mateus Franco                   */
 /****************************************************/
 %{
-#include <stdio.h>
+
+  #include "globals.h"
+  #include "util.h"
+  #include "scan.h"
+/*#include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
+#include <string.h>*/
 #include "cminus.tab.h"
-extern YYSTYPE yylval;
 
-#include "globals.h"
-#include "util.h"
-#include "scan.h"
 #include "parse.h"
 
 char tokenString[MAXTOKENLEN+1];
@@ -32,8 +32,7 @@ int linenumber = 0;
 %}
 
 digit       [0-9]
-numberi     {digit}+
-numberf	    {digit}+?\.{digit}+|-?{digit}+\.{digit}+?
+number     {digit}+
 letter      [a-zA-Z]
 identifier  {letter}+{letter}*
 newline     \n
@@ -81,13 +80,16 @@ other	[^0-9a-zA-Z;/=\-"+""*""("")""\n"\[\]\,\{\}\<\>|!=\==\<=\>=]
                 }
               {newline}       { lineno++; /*printf("\t%d\n", lineno);*/}
               {whitespace}    ;
-              {numberi}       { /*printf("NUMI ");* strcpy(id,yytext);*/ return NUMI;}
-              {numberf}		    {/*printf("NUMF "); strcpy(id,yytext);*/ return NUMF;}
+              {number}       { /*printf("NUM ");* strcpy(id,yytext);*/ return NUM;}
               {identifier}    {/*printf("ID "); strcpy(id,yytext);*/ return ID;}
 <<EOF>>         return(0);
 {other}		{ printf("Lexical Error at line %d\n", lineno);}
 
 %%
+
+int yywrap() {
+  return 1;
+}
 
 TokenType getToken(void){
   static int firstTime = TRUE;
@@ -464,6 +466,7 @@ int main() {
 extern int yydebug;
 yydebug = 1;
 */
+TreeNode * syntaxTree;
 FILE *f_in;
 FILE *f_out;
 int i;
@@ -619,8 +622,7 @@ i = 0;
     case RBRACK:fprintf(f_out, "RBRACK\n"); break;
     case LCAPSULE:	fprintf(f_out, "LCAPSULE\n"); break;
     case RCAPSULE:	fprintf(f_out, "RCAPSULE\n"); break;
-    case NUMI:	fprintf(f_out, "NUMI\n"); break;
-    case NUMF:	fprintf(f_out, "NUMF\n"); break;
+    case NUM:	fprintf(f_out, "NUM\n"); break;
     case ID:	fprintf(f_out, "ID\n"); break;
     }
   i++;
@@ -698,6 +700,7 @@ i = 0;
   printIDList(&id_list);
 
   while(getToken() != ENDFILE);
+  syntaxTree = parse();
 
   return 0;
 }

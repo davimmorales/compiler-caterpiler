@@ -75,7 +75,7 @@ union treeKind{
 };
 
 struct treeAttr{
-    TokenType operator;
+    TokenType oprtr;
     int value;
     char * name;
 };
@@ -90,6 +90,8 @@ typedef struct treeNode{
     struct treeAttr attr;
     ExpType type; /* for type checking of exps */
 } TreeNode;
+
+
 
 /**************************************************/
 /***********   Flags for tracing       ************/

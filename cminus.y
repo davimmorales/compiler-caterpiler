@@ -1,82 +1,22 @@
 %{
+  #define YYPARSER    /* distinguishes Yacc output from other code files */
+
 //GLC para gerar parser para C-
 
-#include <iostream>
-#include <fstream>
-#include <stdio.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <string>
+#include "globals.h"
+#include "util.h"
+#include "scan.h"
+#include "parse.h"
+/*#include "cminus.tab.h"*/
 
 
-#define YYDEBUG 0
 
-/**************************************************/
-/***********   Syntax tree for parsing ************/
-/**************************************************/
 
-typedef enum {statementK, expK} node_kind;
-typedef enum {ifK, whileK, assignK, returnK, varK, vecK, funcK, funcvarK, funcvecK} statement_kind;
-typedef enum {TypeK, RelOpK, ArithOpK, ConstK, IdK, VecIndexK, CallK} expression_kind;
-
-union treeKind{
-    statement_kind stmt;
-    expression_kind exp;
-};
-
-typedef struct treeNode{
-  char *str;
-  char *name;
-  int type;
-  int value;
-  int lineno;
-  node_kind nodekind;
-  char * scope;
-  union treeKind kind;
-  struct treeNode *child;
-  struct treeNode *sibling;
-}TreeNode;
-
-int line_flag = 0;
-int reference_line = 0;
-
-TreeNode * tree;// Declaração da árvore
-TreeNode * allocateToken(char const* token);
-TreeNode * allocateNode(char const* node);
-TreeNode * addChild(TreeNode* node, TreeNode* newChild);
-TreeNode * addSibling(TreeNode* first, TreeNode* newSibling);
-
-static int indentNo = 0;
+/*#define YYDEBUG 0*/
 
 #define YYSTYPE TreeNode *
-#define INDENT indentNo+=2
-#define UNINDENT indentNo-=2
-
-static char * savedName; /* for use in assignments */
-static int savedLineNo;  /* ditto */
-static TreeNode * savedTree; /* stores syntax tree for later return */
-// char * strExp;
-std::string strExp;
-
-
-
-using namespace std;
-
-extern "C"
-{
-
-  ofstream writeTree;
-  int yylex();
-  int yyparse();
-	void abrirArq();
-  void effPrintTree(TreeNode * tree);
-  /*void printTree();*/
-  int yywrap() {
-    return 1;
-  }
-}
-
+static TreeNode * savedTree;    /* stores syntax tree for later return */
+static int yylex(void);
 
 extern char* yytext;
 extern int yylineno;
@@ -86,10 +26,10 @@ void yyerror(char*);
 %}
 
 %start programa
-%token INT      300
-%token FLOAT    301
-%token IF       302
-%nonassoc ELSE     303
+%token INT
+%token FLOAT
+%token IF
+%nonassoc ELSE
 %token RETURN   304
 %token VOID     305
 %token WHILE    306
@@ -112,8 +52,7 @@ void yyerror(char*);
 %token RBRACK   323
 %token LCAPSULE 324
 %token RCAPSULE 325
-%token NUMI	    326
-%token NUMF	    327
+%token NUM	    326
 %token ID		    328
 %token NEWLINE  329
 %token ERROR    331
@@ -407,42 +346,42 @@ simple_expression       :   plus_minus_expression relational_operator plus_minus
 relational_operator     :   EQ
                                 {
                                     $$ = newExpNode(RelOpK);
-                                    $$->attr.operator = EQ;
+                                    $$->attr.oprtr = EQ;
                                     $$->attr.name = "==";
                                     $$->type = Boolean;
                                 }
                         |   NEQ
                                 {
                                     $$ = newExpNode(RelOpK);
-                                    $$->attr.operator = NEQ;
+                                    $$->attr.oprtr = NEQ;
                                     $$->attr.name = "!=";
                                     $$->type = Boolean;
                                 }
                         |   LT
                                 {
                                     $$ = newExpNode(RelOpK);
-                                    $$->attr.operator = LT;
+                                    $$->attr.oprtr = LT;
                                     $$->attr.name = "<";
                                     $$->type = Boolean;
                                 }
                         |   LET
                                 {
                                     $$ = newExpNode(RelOpK);
-                                    $$->attr.operator = LET;
+                                    $$->attr.oprtr = LET;
                                     $$->attr.name = "<=";
                                     $$->type = Boolean;
                                 }
                         |   HT
                                 {
                                     $$ = newExpNode(RelOpK);
-                                    $$->attr.operator = HT;
+                                    $$->attr.oprtr = HT;
                                     $$->attr.name = ">";
                                     $$->type = Boolean;
                                 }
                         |   HET
                                 {
                                     $$ = newExpNode(RelOpK);
-                                    $$->attr.operator = HET;
+                                    $$->attr.oprtr = HET;
                                     $$->attr.name = ">=";
                                     $$->type = Boolean;
                                 }
@@ -461,14 +400,14 @@ plus_minus_expression   :   plus_minus_expression plus_minus term
 plus_minus              :   PLUS
                                 {
                                     $$ = newExpNode(ArithOpK);
-                                    $$->attr.operator = PLUS;
+                                    $$->attr.oprtr = PLUS;
                                     $$->attr.name = "+";
                                     $$->type = Integer;
                                 }
                         |   MINUS
                                 {
                                     $$ = newExpNode(ArithOpK);
-                                    $$->attr.operator = MINUS;
+                                    $$->attr.oprtr = MINUS;
                                     $$->attr.name = "-";
                                     $$->type = Integer;
                                 }
@@ -487,14 +426,14 @@ term                    :   term times_over factor
 times_over              :   TIMES
                                 {
                                     $$ = newExpNode(ArithOpK);
-                                    $$->attr.operator = TIMES;
+                                    $$->attr.oprtr = TIMES;
                                     $$->attr.name = "*";
                                     $$->type = Integer;
                                 }
                         |   OVER
                                 {
                                     $$ = newExpNode(ArithOpK);
-                                    $$->attr.operator = OVER;
+                                    $$->attr.oprtr = OVER;
                                     $$->attr.name = "/";
                                     $$->type = Integer;
                                 }
@@ -561,17 +500,7 @@ num                     :   NUM
 
 %%
 
-
-// void reset(char arg[]) //100%
-// {
-// 	int i, max = strlen(arg);
-//
-// 	for(i = 0; i < max; i++)
-// 		arg[i] = '\0';
-// }
-
-
-TreeNode * allocateToken(char const *token)
+/*TreeNode * allocateToken(char const *token)
 {
 	//reset(strExp);
 	//strncpy(strExp, yytext, sizeof(strExp));
@@ -584,9 +513,9 @@ TreeNode * allocateToken(char const *token)
   // TreeNode *leaf = allocateNode("galeto");
 //	addChild(branch, leaf);
 	return branch;
-}
+}*/
 
-TreeNode * allocateNode(char const *node)
+/*TreeNode * allocateNode(char const *node)
 {
 
   if(line_flag==0){
@@ -598,28 +527,28 @@ TreeNode * allocateNode(char const *node)
 	newNode->lineno = yylineno - reference_line;
   /*newNode->name = strcpy(newNode->name, yylex());*/
 
-	newNode->str = (char*) calloc(sizeof(char),20);
+/*	newNode->str = (char*) calloc(sizeof(char),20);
 	strcpy(newNode->str, node);
 
 	newNode->child = NULL;
 	newNode->sibling = NULL;
   /*printf("alocou no str->%s\n", newNode->str);*/
-	return newNode;
-}
+	/*return newNode;
+}*/
 
-TreeNode* addSibling(TreeNode* first, TreeNode* newSibling){
+/*TreeNode* addSibling(TreeNode* first, TreeNode* newSibling){
 	if(first->sibling == NULL){first->sibling = newSibling;}
 	else{first->sibling = addSibling(first->sibling, newSibling);}
 	return first;
-}
+}*/
 
-TreeNode* addChild(TreeNode* node, TreeNode* childNode){
+/*TreeNode* addChild(TreeNode* node, TreeNode* childNode){
 	if(node->child!=NULL){node->child = addSibling(node->child, childNode);}
 	else{node->child = childNode;}
 	return node;
-}
+}*/
 
-TreeNode* freeTree(TreeNode * tree){
+/*TreeNode* freeTree(TreeNode * tree){
 	if(tree != NULL)
 	{
 		if(tree->sibling != NULL){tree->sibling = freeTree(tree->sibling);}
@@ -632,10 +561,10 @@ TreeNode* freeTree(TreeNode * tree){
 			return NULL;
 		}
 	}
-}
+}*/
 
 /* printSpaces indents by printing spaces */
-static void printSpaces(void)
+/*static void printSpaces(void)
 {
 	int i;
   	for (i=0;i<indentNo;i++)
@@ -643,13 +572,13 @@ static void printSpaces(void)
 		//fprintf(arq, "	");
 		printf("_");
 	}
-}
+}*/
 
 
 /* procedure printTree prints a syntax tree to the
  * listing file using indentation to indicate subtrees
  */
-void effPrintTree(TreeNode * tree)
+/*void effPrintTree(TreeNode * tree)
 {
 	INDENT;
 	while (tree != NULL)
@@ -667,7 +596,7 @@ void effPrintTree(TreeNode * tree)
 		}
 	  	UNINDENT;
 	}
-}
+}*/
 
 /*void printTree()
 {
@@ -680,8 +609,13 @@ void effPrintTree(TreeNode * tree)
 void yyerror (char* s)  /* Called by yyparse on error */
 {
 	extern char* yytext;
-	cout << s << ": " << yytext << endl << "At line: " << yylineno <<  endl;
-  strExp = (char*) calloc(sizeof(char),40);
+	/*cout << s << ": " << yytext << endl << "At line: " << yylineno <<  endl;*/
+  printf("Syntax error at line %d", yylineno);
+  /*strExp = (char*) calloc(sizeof(char),40);*/
+}
+
+static int yylex(void){
+    return getToken();
 }
 
 TreeNode * parse(void){

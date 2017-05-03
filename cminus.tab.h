@@ -45,10 +45,10 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    INT = 300,
-    FLOAT = 301,
-    IF = 302,
-    ELSE = 303,
+    INT = 333,
+    FLOAT = 334,
+    IF = 335,
+    ELSE = 336,
     RETURN = 304,
     VOID = 305,
     WHILE = 306,
@@ -71,8 +71,7 @@ extern int yydebug;
     RBRACK = 323,
     LCAPSULE = 324,
     RCAPSULE = 325,
-    NUMI = 326,
-    NUMF = 327,
+    NUM = 326,
     ID = 328,
     NEWLINE = 329,
     ERROR = 331
