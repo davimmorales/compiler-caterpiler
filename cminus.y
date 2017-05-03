@@ -89,7 +89,7 @@ void yyerror(char*);
 %token INT      300
 %token FLOAT    301
 %token IF       302
-%token ELSE     303
+%nonassoc ELSE     303
 %token RETURN   304
 %token VOID     305
 %token WHILE    306
@@ -107,7 +107,7 @@ void yyerror(char*);
 %token SEMI 	  318
 %token COMMA	  319
 %token LPAREN   320
-%token RPAREN	  321
+%nonassoc RPAREN	  321
 %token LBRACK   322
 %token RBRACK   323
 %token LCAPSULE 324

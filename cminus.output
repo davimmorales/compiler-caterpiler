@@ -4,7 +4,9 @@ Terminais sem uso na gramática
    ERROR
 
 
-Estado 108 conflitos: 1 de deslocamento/redução
+Regras inúteis no analisador por causa de conflitos
+
+   36 selection-stmt: IF LPAREN comparative-expression RPAREN statement ELSE statement
 
 
 Gramática
@@ -1364,9 +1366,6 @@ Estado 108
    35 selection-stmt: IF LPAREN comparative-expression RPAREN statement .
    36               | IF LPAREN comparative-expression RPAREN statement . ELSE statement
 
-    ELSE  deslocar, e ir ao estado 111
-
-    ELSE      [reduzir usando a regra 35 (selection-stmt)]
     $padrão  reduzir usando a regra 35 (selection-stmt)
 
 
@@ -1382,43 +1381,3 @@ Estado 110
    70 arg-list: arg-list COMMA expression .
 
     $padrão  reduzir usando a regra 70 (arg-list)
-
-
-Estado 111
-
-   36 selection-stmt: IF LPAREN comparative-expression RPAREN statement ELSE . statement
-
-    IF        deslocar, e ir ao estado 42
-    RETURN    deslocar, e ir ao estado 43
-    WHILE     deslocar, e ir ao estado 44
-    PLUS      deslocar, e ir ao estado 45
-    MINUS     deslocar, e ir ao estado 46
-    SEMI      deslocar, e ir ao estado 47
-    LPAREN    deslocar, e ir ao estado 48
-    LCAPSULE  deslocar, e ir ao estado 28
-    NUMI      deslocar, e ir ao estado 50
-    NUMF      deslocar, e ir ao estado 51
-    ID        deslocar, e ir ao estado 52
-
-    compound-stmt           ir ao estado 53
-    statement               ir ao estado 112
-    expression-stmt         ir ao estado 55
-    selection-stmt          ir ao estado 56
-    iteration-stmt          ir ao estado 57
-    return-stmt             ir ao estado 58
-    expression              ir ao estado 59
-    var                     ir ao estado 60
-    simple-expression       ir ao estado 61
-    comparative-expression  ir ao estado 62
-    additive-expression     ir ao estado 63
-    addop                   ir ao estado 64
-    term                    ir ao estado 65
-    factor                  ir ao estado 66
-    call                    ir ao estado 67
-
-
-Estado 112
-
-   36 selection-stmt: IF LPAREN comparative-expression RPAREN statement ELSE statement .
-
-    $padrão  reduzir usando a regra 36 (selection-stmt)
