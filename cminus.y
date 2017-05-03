@@ -706,6 +706,7 @@ static void printSpaces(void)
 	}
 }
 
+
 /* procedure printTree prints a syntax tree to the
  * listing file using indentation to indicate subtrees
  */
@@ -742,4 +743,9 @@ void yyerror (char* s)  /* Called by yyparse on error */
 	extern char* yytext;
 	cout << s << ": " << yytext << endl << "At line: " << yylineno <<  endl;
   strExp = (char*) calloc(sizeof(char),40);
+}
+
+TreeNode * parse(void){
+    yyparse();
+    return savedTree;
 }

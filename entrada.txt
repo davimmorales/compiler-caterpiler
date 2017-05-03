@@ -39,12 +39,12 @@ void main(void)
    x = 1;
    while (x <= 10)
    {
-      u = u + 1;  
+      u = u + 1;
       v[i] = u;
-      x = x + 1; 
+      x = x + 1;
    }
 
-   /* teste return simples */   
+   /* teste return simples */
    return;
 
 }

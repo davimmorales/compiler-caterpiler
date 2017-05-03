@@ -15,6 +15,10 @@ extern YYSTYPE yylval;
 
 #include "globals.h"
 #include "util.h"
+#include "scan.h"
+#include "parse.h"
+
+char tokenString[MAXTOKENLEN+1];
 
 
 void abrirArq();
@@ -22,6 +26,8 @@ void abrirArq();
 /*void printTree();*/
 
 int lineno = 1;
+int linenumber = 0;
+
 
 %}
 
@@ -82,6 +88,38 @@ other	[^0-9a-zA-Z;/=\-"+""*""("")""\n"\[\]\,\{\}\<\>|!=\==\<=\>=]
 {other}		{ printf("Lexical Error at line %d\n", lineno);}
 
 %%
+
+TokenType getToken(void){
+  static int firstTime = TRUE;
+  TokenType current;
+  if(firstTime){
+    firstTime = FALSE;
+    linenumber++;
+    FILE * file;
+    yyin = fopen("entrada.txt", "r");
+  }
+  current = yylex();
+  strncpy(tokenString, yytext, MAXTOKENLEN);
+
+  /*printf("\t%d", linenumber);*/
+  printf("%d %s %d\n", current, tokenString, linenumber);
+  /*printToken(current, tokenString);*/
+  return current;
+}
+
+/*may be useful someday*/
+/*static void traverse(TreeNode * t, void (* preProc) (TreeNode *), void (* postProc) (TreeNode *)){
+    if(t != NULL){
+        preProc(t);
+        {
+            int i;
+            for(i = 0; i < MAXCHILDREN; ++i)
+                traverse(t->child[i], preProc, postProc);
+        }
+        postProc(t);
+        traverse(t->sibling, preProc, postProc);
+    }
+}*/
 
 char L_side[20];
 char R_side[20];
@@ -659,7 +697,7 @@ i = 0;
 
   printIDList(&id_list);
 
-
+  while(getToken() != ENDFILE);
 
   return 0;
 }
