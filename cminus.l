@@ -9,14 +9,8 @@
   #include "globals.h"
   #include "util.h"
   #include "scan.h"
-/*#include <stdio.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>*/
-#include "cminus.tab.h"
+  #include "parse.h"
 
-#include "parse.h"
 
 char tokenString[MAXTOKENLEN+1];
 
@@ -104,8 +98,8 @@ TokenType getToken(void){
   strncpy(tokenString, yytext, MAXTOKENLEN);
 
   /*printf("\t%d", linenumber);*/
-  printf("%d %s %d\n", current, tokenString, linenumber);
-  /*printToken(current, tokenString);*/
+  /*printf("%d %s %d\n", current, tokenString, linenumber);*/
+  printToken(current, tokenString);
   return current;
 }
 
@@ -676,8 +670,8 @@ i = 0;
 
   printf("\nParser running...\n");
   abrirArq();
-  if (yyparse()==0) printf("\nSyntax Analysis OK\n");
-  else printf("\nERROR in Syntax Analysis\n");
+  /*if (yyparse()==0) printf("\nSyntax Analysis OK\n");
+  else printf("\nERROR in Syntax Analysis\n");*/
 
   /*printTree();*/
 
@@ -691,16 +685,20 @@ i = 0;
 
   printf("Finished.\n");
 
+
+
+  /*printIDList(&id_list);*/
+
+  /*while(getToken() != ENDFILE);*/
+  syntaxTree = parse();
+
+  printTree(syntaxTree);
+
   printf("Name(ID)  Type(ID)  Type(Data)   Scope    Appears in lines\n");
   for(i = 0;i<211;i++){
       if(&vetor[i]!=NULL)
       printWTable(vetor, i);
   }
-
-  printIDList(&id_list);
-
-  while(getToken() != ENDFILE);
-  syntaxTree = parse();
 
   return 0;
 }

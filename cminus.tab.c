@@ -1343,7 +1343,7 @@ yyreduce:
     {
             /*$$ = allocateNode("programa");
             addChild($$,$1);*/
-            tree = (yyvsp[0]);
+            savedTree = (yyvsp[0]);
           }
 #line 1349 "cminus.tab.c" /* yacc.c:1646  */
     break;
@@ -2340,11 +2340,13 @@ yyreturn:
 	fclose(arq);
 }*/
 
+
+
 void yyerror (char* s)  /* Called by yyparse on error */
 {
 	extern char* yytext;
 	/*cout << s << ": " << yytext << endl << "At line: " << yylineno <<  endl;*/
-  printf("Syntax error at line %d", yylineno);
+  printf("Syntax error at line %d\n", yylineno);
   /*strExp = (char*) calloc(sizeof(char),40);*/
 }
 

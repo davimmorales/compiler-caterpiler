@@ -64,7 +64,7 @@ programa	:	/* Entrada Vazia */
           {
             /*$$ = allocateNode("programa");
             addChild($$,$1);*/
-            tree = $1;
+            savedTree = $1;
           }
 					;
 
@@ -288,7 +288,7 @@ selection_declaration   :   IF LPAREN expression RPAREN statement
                                     $$->child[1] = $5;
                                     $$->child[2] = $7;
                                 }
-                        ;
+;
 iteration_declaration   :   WHILE LPAREN expression RPAREN statement
                                 {
                                     $$ = newStmtNode(WhileK);
@@ -606,11 +606,13 @@ num                     :   NUM
 	fclose(arq);
 }*/
 
+
+
 void yyerror (char* s)  /* Called by yyparse on error */
 {
 	extern char* yytext;
 	/*cout << s << ": " << yytext << endl << "At line: " << yylineno <<  endl;*/
-  printf("Syntax error at line %d", yylineno);
+  printf("Syntax error at line %d\n", yylineno);
   /*strExp = (char*) calloc(sizeof(char),40);*/
 }
 
