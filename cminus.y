@@ -29,7 +29,7 @@ void yyerror(char*);
 %token INT
 %token FLOAT
 %token IF
-%nonassoc ELSE
+%token ELSE
 %token RETURN   304
 %token VOID     305
 %token WHILE    306
@@ -613,6 +613,8 @@ void yyerror (char* s)  /* Called by yyparse on error */
 	extern char* yytext;
 	/*cout << s << ": " << yytext << endl << "At line: " << yylineno <<  endl;*/
   printf("Syntax error at line %d\n", yylineno);
+  printToken(yychar, tokenString);
+
   /*strExp = (char*) calloc(sizeof(char),40);*/
 }
 

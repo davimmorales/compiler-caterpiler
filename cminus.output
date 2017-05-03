@@ -5,9 +5,7 @@ Terminais sem uso na gramática
    ERROR
 
 
-Regras inúteis no analisador por causa de conflitos
-
-   33 selection_declaration: IF LPAREN expression RPAREN statement ELSE statement
+Estado 109 conflitos: 1 de deslocamento/redução
 
 
 Gramática
@@ -1368,6 +1366,9 @@ Estado 109
    32 selection_declaration: IF LPAREN expression RPAREN statement .
    33                      | IF LPAREN expression RPAREN statement . ELSE statement
 
+    ELSE  deslocar, e ir ao estado 112
+
+    ELSE      [reduzir usando a regra 32 (selection_declaration)]
     $padrão  reduzir usando a regra 32 (selection_declaration)
 
 
@@ -1383,3 +1384,40 @@ Estado 111
    63 list_arguments: list_arguments COMMA expression .
 
     $padrão  reduzir usando a regra 63 (list_arguments)
+
+
+Estado 112
+
+   33 selection_declaration: IF LPAREN expression RPAREN statement ELSE . statement
+
+    IF        deslocar, e ir ao estado 38
+    RETURN    deslocar, e ir ao estado 39
+    WHILE     deslocar, e ir ao estado 40
+    SEMI      deslocar, e ir ao estado 41
+    LPAREN    deslocar, e ir ao estado 42
+    LCAPSULE  deslocar, e ir ao estado 31
+    NUM       deslocar, e ir ao estado 22
+    ID        deslocar, e ir ao estado 8
+
+    compound_declaration    ir ao estado 45
+    statement               ir ao estado 113
+    expression_declaration  ir ao estado 49
+    selection_declaration   ir ao estado 50
+    iteration_declaration   ir ao estado 51
+    return_declaration      ir ao estado 52
+    expression              ir ao estado 53
+    variable                ir ao estado 54
+    simple_expression       ir ao estado 55
+    plus_minus_expression   ir ao estado 56
+    term                    ir ao estado 57
+    factor                  ir ao estado 58
+    function_call           ir ao estado 59
+    id                      ir ao estado 60
+    num                     ir ao estado 61
+
+
+Estado 113
+
+   33 selection_declaration: IF LPAREN expression RPAREN statement ELSE statement .
+
+    $padrão  reduzir usando a regra 33 (selection_declaration)
