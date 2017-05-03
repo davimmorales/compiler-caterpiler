@@ -123,502 +123,441 @@ void yyerror(char*);
 programa	:	/* Entrada Vazia */
 					| declaration-list
           {
-            $$ = allocateNode("programa");
-            addChild($$,$1);
-            tree = $$;
+            /*$$ = allocateNode("programa");
+            addChild($$,$1);*/
+            tree = $1;
           }
 					;
 
 declaration-list	: declaration-list declaration
-                  {$$ = allocateNode("declaration-list");
+                  { YYSTYPE t = $1;
+                    if(t != NULL){
+                      while(t->sibling != NULL)
+                        t = t->sibling;
+                      t->sibling = $2;
+                      $$ = $1;
+                    }
+                    else
+                      $$ = $2;
+                    }
+                    /*$$ = allocateNode("declaration-list");
                    addChild($$,$1);
-                   addChild($$,$2);}
+                   addChild($$,$2);}*/
 									| declaration
-                  {$$ = allocateNode("declaration-list");
-                   addChild($$,$1);}
+                  {
+                    $$ = $1;
+                    /*$$ = allocateNode("declaration-list");*/
+                   /*addChild($$,$1);*/
+                 }
 									;
-
-declaration		: var-declaration
-              {$$ = allocateNode("declaration");
-               addChild($$,$1);}
-              | fun-declaration
-              {$$ = allocateNode("declaration");
-               addChild($$,$1);}
-							;
-
-var-declaration	: type-specifier var-list SEMI
-                {$$ = allocateNode("var-declaration");
-                 addChild($$,$1);
-                 addChild($$,$2);
-                 $3 = allocateNode("SEMI");
-                 addChild($$,$3);}
-								;
-
-
-var-list: var-list COMMA variable
-           {$$ = allocateNode("var-list");
-            addChild($$,$1);
-            $2 = allocateNode("COMMA");
-            addChild($$,$2);
-            addChild($$,$3);}
-           | variable
-           {$$ = allocateNode("var-list");
-            addChild($$,$1);}
-           ;
-
-variable: ID
-          {$$ = allocateNode("variable");
-           $1 = allocateToken("ID");
-           addChild($$,$1);}
-          | ID LBRACK NUMI RBRACK
-          {$$ = allocateNode("variable");
-           $1 = allocateToken("ID");
-           $2 = allocateNode("LBRACK");
-           $3 = allocateToken("NUMI");
-           $4 = allocateNode("RBRACK");
-           addChild($$,$1);
-           addChild($$,$2);
-           addChild($$,$3);
-           addChild($$,$4);}
-          ;
-
-
-type-specifier	: INT
-                {$$ = allocateNode("type-specifier");
-                 $1 = allocateNode("INT");
-                 addChild($$,$1);}
-								| FLOAT
-                {$$ = allocateNode("type-specifier");
-                 $1 = allocateNode("FLOAT");
-                 addChild($$,$1);}
-								| VOID
-                {$$ = allocateNode("type-specifier");
-                 $1 = allocateNode("VOID");
-                 addChild($$,$1);}
-								;
-
-fun-declaration : type-specifier ID LPAREN params RPAREN compound-stmt
-                {$$ = allocateNode("fun-declaration");
-                 addChild($$,$1);
-                 $2 = allocateToken("ID");
-                 $3 = allocateNode("LPAREN");
-                 addChild($$,$2);
-                 addChild($$,$3);
-                 addChild($$,$4);
-                 $5 = allocateNode("RPAREN");
-                 addChild($$,$5);
-                 addChild($$,$6);}
-                | type-specifier ID LPAREN RPAREN compound-stmt
-                {$$ = allocateNode("fun-declaration");
-                 addChild($$,$1);
-                 $2 = allocateToken("ID");
-                 $3 = allocateNode("LPAREN");
-                 $4 = allocateNode("RPAREN");
-                 addChild($$,$2);
-                 addChild($$,$3);
-                 addChild($$,$4);
-                 addChild($$,$5);}
-                ;
-
-params  : param-list
-        {$$ = allocateNode("params");
-         addChild($$,$1);}
-        | VOID
-        {$$ = allocateNode("params");
-         $1 = allocateNode("VOID");
-         addChild($$,$1);}
-        ;
-
-param-list  : param-list COMMA param
-            {$$ = allocateNode("param-list");
-             addChild($$,$1);
-             $2 = allocateNode("COMMA");
-             addChild($$,$2);
-             addChild($$,$3);}
-            | param
-            {$$ = allocateNode("param-list");
-             addChild($$,$1);}
-            ;
-
-param       : type-specifier ID
-            {$$ = allocateNode("param");
-             addChild($$,$1);
-             $2 = allocateToken("ID");
-             addChild($$,$2);}
-            | type-specifier ID LBRACK RBRACK
-            {$$ = allocateNode("param");
-             addChild($$,$1);
-             $2 = allocateToken("ID");
-             $3 = allocateNode("LBRACK");
-             $4 = allocateNode("RBRACK");
-             addChild($$,$2);
-             addChild($$,$3);
-             addChild($$,$4);}
-            ;
-
-compound-stmt : LCAPSULE local-declarations statement-list RCAPSULE
-              {$$ = allocateNode("compound-stmt");
-               $1 = allocateNode("LCAPSULE");
-               addChild($$,$1);
-               addChild($$,$2);
-               addChild($$,$3);
-               $4 = allocateNode("RCAPSULE");
-               addChild($$,$4);}
-              ;
-
-local-declarations  : local-declarations var-declaration
-                      {
-                        $$ = allocateNode("local-declarations");
-                        addChild($$,$1);
-                        addChild($$,$2);
-                      }
-                    | /* empty */
-                    {$$ = allocateNode("local-declarations");}
-                    ;
-
-statement-list      : statement-list statement
-                      {
-                        $$ = allocateNode("statement-list");
-                        addChild($$,$1);
-                        addChild($$,$2);
-                      }
-                    | /* empty */
-                    {$$ = allocateNode("statement-list");}
-                    ;
-
-statement           : expression-stmt
-                      {
-                        $$ = allocateNode("statement");
-                        addChild($$,$1);
-                      }
-                    | compound-stmt
-                      {
-                        $$ = allocateNode("statement");
-                        addChild($$,$1);
-                      }
-                    | selection-stmt
-                      {
-                        $$ = allocateNode("statement");
-                        addChild($$,$1);
-                      }
-                    | iteration-stmt
-                      {
-                        $$ = allocateNode("statement");
-                        addChild($$,$1);
-                      }
-                    | return-stmt
-                      {
-                        $$ = allocateNode("statement");
-                        addChild($$,$1);
-                      }
-                    ;
-
-expression-stmt     : expression SEMI
-                      {
-                        $$ = allocateNode("expression-stmt");
-                        addChild($$,$1);
-                        $2 = allocateNode("SEMI");
-                        addChild($$,$2);
-                      }
-                    | SEMI
-                      {
-                        $$ = allocateNode("expression-stmt");
-                        $1 = allocateNode("SEMI");
-                        addChild($$,$1);
-                      }
-                    ;
-
-selection-stmt      : IF LPAREN comparative-expression RPAREN statement
-                      {
-                        $$ = allocateNode("selection-stmt");
-                        $1 = allocateNode("IF");
-                        addChild($$,$1);
-                        $2 = allocateNode("LPAREN");
-                        addChild($$,$2);
-                        addChild($$,$3);
-                        $4 = allocateNode("RPAREN");
-                        addChild($$,$4);
-                        addChild($$,$5);
-                      }
-                    | IF LPAREN comparative-expression RPAREN statement ELSE statement
-                      {
-                        $$ = allocateNode("selection-stmt");
-                        $1 = allocateNode("IF");
-                        addChild($$,$1);
-                        $2 = allocateNode("LPAREN");
-                        addChild($$,$2);
-                        addChild($$,$3);
-                        $4 = allocateNode("RPAREN");
-                        addChild($$,$4);
-                        addChild($$,$5);
-                        $6 = allocateNode("ELSE");
-                        addChild($$,$6);
-                        addChild($$,$7);
-                      }
-                    ;
-
-iteration-stmt      : WHILE LPAREN comparative-expression RPAREN statement
-                      {
-                        $$ = allocateNode("iteration-stmt");
-                        $1 = allocateNode("WHILE");
-                        addChild($$,$1);
-                        $2 = allocateNode("LPAREN");
-                        addChild($$,$2);
-                        addChild($$,$3);
-                        $4 = allocateNode("RPAREN");
-                        addChild($$,$4);
-                        addChild($$,$5);
-                      }
-                    ;
-
-return-stmt         : RETURN SEMI
-                      {
-                        $$ = allocateNode("return-stmt");
-                        $1 = allocateNode("RETURN");
-                        addChild($$,$1);
-                        $2 = allocateNode("SEMI");
-                        addChild($$,$2);
-                      }
-
-                    | RETURN expression SEMI
-                      {
-                        $$ = allocateNode("return-stmt");
-                        $1 = allocateNode("RETURN");
-                        addChild($$,$1);
-                        addChild($$,$2);
-                        $3 = allocateNode("SEMI");
-                        addChild($$,$3);
-                      }
-                    ;
-
-expression          : var ASSIGN expression
-                      {
-                        $$ = allocateNode("expression");
-                        addChild($$,$1);
-                        $1 = allocateNode("ASSIGN");
-                        addChild($$,$2);
-                        addChild($$,$3);
-                      }
-                    | simple-expression
-                      {
-                        $$ = allocateNode("expression");
-                        addChild($$,$1);
-                      }
-                    ;
-
-var                 : ID
-                      {
-                        $$ = allocateNode("var");
-                        $1 = allocateToken("ID");
-                        addChild($$,$1);
-                      }
-                    | ID LBRACK expression RBRACK
-                      {
-                        $$ = allocateNode("var");
-                        $1 = allocateToken("ID");
-                        addChild($$,$1);
-                        $2 = allocateNode("LBRACK");
-                        addChild($$,$2);
-                        addChild($$,$3);
-                        $4 = allocateNode("RBRACK");
-                        addChild($$,$4);
-                      }
-                    ;
-
-simple-expression   : comparative-expression
-                      {
-                        $$ = allocateNode("simple-expression");
-                        addChild($$,$1);
-                      }
-                    | additive-expression
-                      {
-                        $$ = allocateNode("simple-expression");
-                        addChild($$,$1);
-                      }
-                    ;
-
-comparative-expression: additive-expression relop additive-expression
-                        {
-                          $$ = allocateNode("comparative-expression");
-                          addChild($$,$1);
-                          addChild($$,$2);
-                          addChild($$,$3);
-                        }
-                    ;
-
-relop               : LET
-                      {
-                        $$ = allocateNode("relop");
-                        $1 = allocateNode("LET");
-                        addChild($$,$1);
-                      }
-                    | LT
-                      {
-                        $$ = allocateNode("relop");
-                        $1 = allocateNode("LT");
-                        addChild($$,$1);
-                      }
-                    | HT
-                      {
-                        $$ = allocateNode("relop");
-                        $1 = allocateNode("HT");
-                        addChild($$,$1);
-                      }
-                    | HET
-                      {
-                        $$ = allocateNode("relop");
-                        $1 = allocateNode("HET");
-                        addChild($$,$1);
-                      }
-                    | EQ
-                      {
-                        $$ = allocateNode("relop");
-                        $1 = allocateNode("EQ");
-                        addChild($$,$1);
-                      }
-                    | NEQ
-                      {
-                        $$ = allocateNode("relop");
-                        $1 = allocateNode("NEQ");
-                        addChild($$,$1);
-                      }
-                    ;
-
-additive-expression : additive-expression addop term
-                      {
-                        $$ = allocateNode("additive-expression");
-                        addChild($$,$1);
-                        addChild($$,$2);
-                        addChild($$,$3);
-                      }
-                    | addop term
-                      {
-                        $$ = allocateNode("additive-expression");
-                        addChild($$,$1);
-                        addChild($$,$2);
-                      }
-		                | term
-                      {
-                        $$ = allocateNode("additive-expression");
-                        addChild($$,$1);
-                      }
-                    ;
-
-addop               : PLUS
-                      {
-                        $$ = allocateNode("addop");
-                        $1 = allocateNode("PLUS");
-                        addChild($$,$1);
-                      }
-                    | MINUS
-                      {
-                        $$ = allocateNode("addop");
-                        $1 = allocateNode("MINUS");
-                        addChild($$,$1);
-                      }
-                    ;
-
-term                : term mulop factor
-                      {
-                        $$ = allocateNode("term");
-                        addChild($$,$1);
-                        addChild($$,$2);
-                        addChild($$,$3);
-                      }
-                    | factor
-                      {
-                        $$ = allocateNode("term");
-                        addChild($$,$1);
-                      }
-                    ;
-
-mulop               : TIMES
-                      {
-                        $$ = allocateNode("mulop");
-                        $1 = allocateNode("TIMES");
-                        addChild($$,$1);
-                      }
-                    | OVER
-                      {
-                        $$ = allocateNode("mulop");
-                        $1 = allocateNode("OVER");
-                        addChild($$,$1);
-                      }
-                    ;
-
-factor              : LPAREN expression RPAREN
-                      {
-                        $$ = allocateNode("factor");
-                        $1 = allocateNode("LPAREN");
-                        addChild($$,$1);
-                        addChild($$,$2);
-                        $3 = allocateNode("RPAREN");
-                        addChild($$,$3);
-                      }
-                    | var
-                      {
-                        $$ = allocateNode("factor");
-                        $1 = allocateNode("var");
-                        addChild($$,$1);
-                      }
-                    | call
-                      {
-                        $$ = allocateNode("factor");
-                        $1 = allocateNode("call");
-                        addChild($$,$1);
-                      }
-                    | NUMI
-                      {
-                        $$ = allocateNode("factor");
-                        $1 = allocateToken("NUMI");
-                        addChild($$,$1);
-                      }
-                    | NUMF
-                      {
-                        $$ = allocateNode("factor");
-                        $1 = allocateToken("NUMF");
-                        addChild($$,$1);
-                      }
-                    ;
-
-call                : ID LPAREN args RPAREN
-                      {
-                        $$ = allocateNode("call");
-                        $1 = allocateToken("ID");
-                        addChild($$,$1);
-                        $2 = allocateNode("LPAREN");
-                        addChild($$,$2);
-                        addChild($$,$3);
-                        $4 = allocateNode("RPAREN");
-                        addChild($$,$4);
-                      }
-                    ;
-
-args                : arg-list
-                      {
-                        $$ = allocateNode("args");
-                        addChild($$,$1);
-                      }
-                    | /* empty */
-                    {
-                  		$$ = allocateNode("args");
-                  	}
-                    ;
-
-arg-list            : arg-list COMMA expression
-                      {
-                        $$ = allocateNode("arg-list");
-                        addChild($$,$1);
-                        $2 = allocateNode("COMMA");
-                        addChild($$,$2);
-                        addChild($$,$3);
-                      }
-                    | expression
-                      {
-                        $$ = allocateNode("arg-list");
-                        addChild($$,$1);
-                      }
-                    ;
+declaration             :   variable_declaration
+                                {
+                                    $$ = $1;
+                                }
+                        |   function_declaration
+                                {
+                                    $$ = $1;
+                                }
+                        ;
+variable_declaration    :   INT id SEMI
+                                {
+                                    $$ = newExpNode(TypeK);
+                                    $$->type = Integer;
+                                    $$->child[0] = $2;
+                                    $2->nodekind = StmtK;
+                                    $2->kind.stmt = VarK;
+                                    $2->type = Integer;
+                                }
+                        |   INT id LBRACK num RBRACK SEMI
+                                {
+                                    $$ = newExpNode(TypeK);
+                                    $$->type = Integer;
+                                    $$->child[0] = $2;
+                                    $2->nodekind = StmtK;
+                                    $2->kind.stmt = VecK;
+                                    $2->attr.value = $4->attr.value;
+                                    $2->type = Integer;
+                                }
+                        ;
+function_declaration    :   INT id LPAREN parameters RPAREN compound_declaration
+                                {
+                                    $$ = newExpNode(TypeK);
+                                    $$->type = Integer;
+                                    $$->child[0] = $2;
+                                    $2->nodekind = StmtK;
+                                    $2->kind.stmt = FuncK;
+                                    $2->child[0] = $4;
+                                    $2->child[1] = $6;
+                                    $2->type = Integer;
+                                    setScope($2->child[0], $2->attr.name);
+                                    setScope($2->child[1], $2->attr.name);
+                                }
+                        |   VOID id LPAREN parameters RPAREN compound_declaration
+                                {
+                                    $$ = newExpNode(TypeK);
+                                    $$->type = Void;
+                                    $$->child[0] = $2;
+                                    $2->nodekind = StmtK;
+                                    $2->kind.stmt = FuncK;
+                                    $2->child[0] = $4;
+                                    $2->child[1] = $6;
+                                    $2->type = Void;
+                                    setScope($2->child[0], $2->attr.name);
+                                    setScope($2->child[1], $2->attr.name);
+                                }
+                        ;
+parameters              :   list_parameters
+                                {
+                                    $$ = $1;
+                                }
+                        |   VOID
+                                {
+                                    $$ = NULL;
+                                }
+                        ;
+list_parameters         :   list_parameters COMMA parameter
+                                {
+                                    YYSTYPE t = $1;
+                                    if(t != NULL){
+                                        while(t->sibling != NULL)
+                                            t = t->sibling;
+                                        t->sibling = $3;
+                                        $$ = $1;
+                                    }
+                                    else
+                                        $$ = $3;
+                                }
+                        |   parameter
+                                {
+                                    $$ = $1;
+                                }
+                        ;
+parameter               :   INT id
+                                {
+                                    $$ = newExpNode(TypeK);
+                                    $$->type = Integer;
+                                    $$->child[0] = $2;
+                                    $2->nodekind = StmtK;
+                                    $2->kind.stmt = FuncVarK;
+                                    $2->type = Integer;
+                                }
+                        |   INT id LBRACK RBRACK
+                                {
+                                    $$ = newExpNode(TypeK);
+                                    $$->type = Integer;
+                                    $$->child[0] = $2;
+                                    $2->nodekind = StmtK;
+                                    $2->kind.stmt = FuncVecK;
+                                    $2->type = Integer;
+                                }
+                        ;
+compound_declaration    :   LCAPSULE local_declarations list_statement RCAPSULE
+                                {
+                                    YYSTYPE t = $2;
+                                    if(t != NULL){
+                                        while(t->sibling != NULL)
+                                            t = t->sibling;
+                                        t->sibling = $3;
+                                        $$ = $2;
+                                    }
+                                    else
+                                        $$ = $3;
+                                }
+                        |   LCAPSULE local_declarations RCAPSULE
+                                {
+                                    $$ = $2;
+                                }
+                        |   LCAPSULE list_statement RCAPSULE
+                                {
+                                    $$ = $2;
+                                }
+                        |   LCAPSULE RCAPSULE
+                                {}
+                        ;
+local_declarations      :   local_declarations variable_declaration
+                                {
+                                    YYSTYPE t = $1;
+                                    if(t != NULL){
+                                        while(t->sibling != NULL)
+                                            t = t->sibling;
+                                        t->sibling = $2;
+                                        $$ = $1;
+                                    }
+                                    else
+                                        $$ = $2;
+                                }
+                        |   variable_declaration
+                                {
+                                    $$ = $1;
+                                }
+                        ;
+list_statement          :   list_statement statement
+                                {
+                                    YYSTYPE t = $1;
+                                    if(t != NULL){
+                                        while(t->sibling != NULL)
+                                            t = t->sibling;
+                                        t->sibling = $2;
+                                        $$ = $1;
+                                    }
+                                    else
+                                        $$ = $2;
+                                }
+                        |   statement
+                                {
+                                    $$ = $1;
+                                }
+                        ;
+statement               :   expression_declaration
+                                {
+                                    $$ = $1;
+                                }
+                        |   compound_declaration
+                                {
+                                    $$ = $1;
+                                }
+                        |   selection_declaration
+                                {
+                                    $$ = $1;
+                                }
+                        |   iteration_declaration
+                                {
+                                    $$ = $1;
+                                }
+                        |   return_declaration
+                                {
+                                    $$ = $1;
+                                }
+                        ;
+expression_declaration  :   expression SEMI
+                                {
+                                    $$ = $1;
+                                }
+                        |   SEMI
+                                {}
+                        ;
+selection_declaration   :   IF LPAREN expression RPAREN statement
+                                {
+                                    $$ = newStmtNode(IfK);
+                                    $$->child[0] = $3;
+                                    $$->child[1] = $5;
+                                }
+                        |   IF LPAREN expression RPAREN statement ELSE statement
+                                {
+                                    $$ = newStmtNode(IfK);
+                                    $$->child[0] = $3;
+                                    $$->child[1] = $5;
+                                    $$->child[2] = $7;
+                                }
+                        ;
+iteration_declaration   :   WHILE LPAREN expression RPAREN statement
+                                {
+                                    $$ = newStmtNode(WhileK);
+                                    $$->child[0] = $3;
+                                    $$->child[1] = $5;
+                                }
+                        ;
+return_declaration      :   RETURN SEMI
+                                {
+                                    $$ = newStmtNode(ReturnK);
+                                    $$->type = Void;
+                                }
+                        |   RETURN expression SEMI
+                                {
+                                    $$ = newStmtNode(ReturnK);
+                                    $$->child[0] = $2;
+                                    $$->type = $2->type;
+                                }
+                        ;
+expression              :   variable ASSIGN expression
+                                {
+                                    $$ = newStmtNode(AssignK);
+                                    $$->child[0] = $1;
+                                    $$->child[1] = $3;
+                                }
+                        |   simple_expression
+                                {
+                                    $$ = $1;
+                                }
+                        ;
+variable                :   id
+                                {
+                                    $$ = $1;
+                                    $$->type = Integer;
+                                }
+                        |   id LBRACK expression RBRACK
+                                {
+                                    $$ = $1;
+                                    $$->kind.exp = VecIndexK;
+                                    $$->child[0] = $3;
+                                    $$->type = Integer;
+                                }
+                        ;
+simple_expression       :   plus_minus_expression relational_operator plus_minus_expression
+                                {
+                                    $$ = $2;
+                                    $$->child[0] = $1;
+                                    $$->child[1] = $3;
+                                }
+                        |   plus_minus_expression
+                                {
+                                    $$ = $1;
+                                }
+                        ;
+relational_operator     :   EQ
+                                {
+                                    $$ = newExpNode(RelOpK);
+                                    $$->attr.operator = EQ;
+                                    $$->attr.name = "==";
+                                    $$->type = Boolean;
+                                }
+                        |   NEQ
+                                {
+                                    $$ = newExpNode(RelOpK);
+                                    $$->attr.operator = NEQ;
+                                    $$->attr.name = "!=";
+                                    $$->type = Boolean;
+                                }
+                        |   LT
+                                {
+                                    $$ = newExpNode(RelOpK);
+                                    $$->attr.operator = LT;
+                                    $$->attr.name = "<";
+                                    $$->type = Boolean;
+                                }
+                        |   LET
+                                {
+                                    $$ = newExpNode(RelOpK);
+                                    $$->attr.operator = LET;
+                                    $$->attr.name = "<=";
+                                    $$->type = Boolean;
+                                }
+                        |   HT
+                                {
+                                    $$ = newExpNode(RelOpK);
+                                    $$->attr.operator = HT;
+                                    $$->attr.name = ">";
+                                    $$->type = Boolean;
+                                }
+                        |   HET
+                                {
+                                    $$ = newExpNode(RelOpK);
+                                    $$->attr.operator = HET;
+                                    $$->attr.name = ">=";
+                                    $$->type = Boolean;
+                                }
+                        ;
+plus_minus_expression   :   plus_minus_expression plus_minus term
+                                {
+                                    $$ = $2;
+                                    $$->child[0] = $1;
+                                    $$->child[1] = $3;
+                                }
+                        |   term
+                                {
+                                    $$ = $1;
+                                }
+                        ;
+plus_minus              :   PLUS
+                                {
+                                    $$ = newExpNode(ArithOpK);
+                                    $$->attr.operator = PLUS;
+                                    $$->attr.name = "+";
+                                    $$->type = Integer;
+                                }
+                        |   MINUS
+                                {
+                                    $$ = newExpNode(ArithOpK);
+                                    $$->attr.operator = MINUS;
+                                    $$->attr.name = "-";
+                                    $$->type = Integer;
+                                }
+                        ;
+term                    :   term times_over factor
+                                {
+                                    $$ = $2;
+                                    $$->child[0] = $1;
+                                    $$->child[1] = $3;
+                                }
+                        |   factor
+                                {
+                                    $$ = $1;
+                                }
+                        ;
+times_over              :   TIMES
+                                {
+                                    $$ = newExpNode(ArithOpK);
+                                    $$->attr.operator = TIMES;
+                                    $$->attr.name = "*";
+                                    $$->type = Integer;
+                                }
+                        |   OVER
+                                {
+                                    $$ = newExpNode(ArithOpK);
+                                    $$->attr.operator = OVER;
+                                    $$->attr.name = "/";
+                                    $$->type = Integer;
+                                }
+                        ;
+factor                  :   LPAREN expression RPAREN
+                                {
+                                    $$ = $2;
+                                }
+                        |   variable
+                                {
+                                    $$ = $1;
+                                }
+                        |   function_call
+                                {
+                                    $$ = $1;
+                                }
+                        |   num
+                                {
+                                    $$ = $1;
+                                }
+                        ;
+function_call           :   id LPAREN list_arguments RPAREN
+                                {
+                                    $$ = $1;
+                                    $$->child[0] = $3;
+                                    $$->kind.exp = CallK;
+                                }
+                        |   id LPAREN RPAREN
+                                {
+                                    $$ = $1;
+                                    $$->kind.exp = CallK;
+                                }
+                        ;
+list_arguments          :   list_arguments COMMA expression
+                                {
+                                    YYSTYPE t = $1;
+                                    if(t != NULL){
+                                        while(t->sibling != NULL)
+                                            t = t->sibling;
+                                        t->sibling = $3;
+                                        $$ = $1;
+                                    }
+                                    else
+                                        $$ = $3;
+                                }
+                        |   expression
+                                {
+                                    $$ = $1;
+                                }
+                        ;
+id                      :   ID
+                                {
+                                    $$ = newExpNode(IdK);
+                                    $$->attr.name = copyString(tokenString);
+                                }
+                        ;
+num                     :   NUM
+                                {
+                                    $$ = newExpNode(ConstK);
+                                    $$->attr.value = atoi(tokenString);
+                                    $$->type = Integer;
+                                }
+                        ;
 
 %%
 
