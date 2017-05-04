@@ -65,4 +65,6 @@ void setScope(TreeNode * t, char * scope);
  */
 void printTree(TreeNode *);
 
+int ends_with(const char *str, const char *suffix);
+
 #endif

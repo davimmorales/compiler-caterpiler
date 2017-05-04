@@ -102,6 +102,30 @@ typedef struct treeNode{
     ExpType type; /* for type checking of exps */
 } TreeNode;
 
+static char * OP_ADD = "ADD";
+static char * OP_ADDI = "ADDI";
+static char * OP_SUB = "SUB";
+static char * OP_SUBI = "SUBI";
+static char * OP_AND = "AND";
+static char * OP_ANDI = "ANDI";
+static char * OP_OR = "OR";
+static char * OP_ORI = "ORI";
+static char * OP_NOT = "NOT";
+static char * OP_SR = "SR";
+static char * OP_SL = "SL";
+static char * OP_LOAD = "LOAD";
+static char * OP_LOADI = "LOADI";
+static char * OP_STORE = "STORE";
+static char * OP_JUMP = "JUMP";
+static char * OP_JUMPI = "JUMPI";
+static char * OP_JZI = "JZI";
+static char * OP_JN = "JN";
+static char * OP_JNI = "JNI";
+static char * OP_MOVE = "MOVE";
+static char * OP_NOP = "NOP";
+static char * OP_HLT = "HLT";
+static char * OP_IN = "IN";
+static char * OP_OUT = "OUT";
 
 
 /**************************************************/

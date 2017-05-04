@@ -300,6 +300,13 @@ void printType(TokenType type){
   }
 }
 
+int ends_with(const char *str, const char *suffix){
+  if(!str||!suffix||strlen(suffix)>strlen(str))
+    return 0;
+  return strncmp(str+strlen(str)-strlen(suffix), suffix, strlen(suffix)) == 0;
+}
+
+
 /* procedure printTree prints a syntax tree to the
  * listing file using indentation to indicate subtrees
  */
