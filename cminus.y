@@ -1,4 +1,11 @@
 %{
+  /****************************************************/
+  /* File: cminus.y                                   */
+  /* Syntax TreeNode                                  */
+  /* Practical Compilers Work                         */
+  /* Davi Morales and Mateus Franco                   */
+  /****************************************************/
+
   #define YYPARSER    /* distinguishes Yacc output from other code files */
 
 //GLC para gerar parser para C-

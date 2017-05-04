@@ -532,7 +532,7 @@ char *yytext;
 /****************************************************/
 /* File: cminus.l                                   */
 /* Lex specification for C- and Table Generator     */
-/* Trabalho Prático de Compiladores                 */
+/* Practical Compilers Work                         */
 /* Davi Morales and Mateus Franco                   */
 /****************************************************/
 #line 8 "cminus.l"

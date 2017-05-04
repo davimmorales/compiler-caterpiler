@@ -1,7 +1,8 @@
 /****************************************************/
 /* File: cminus.l                                   */
-/* Lex specification for C- and Table Generator     */
-/* Trabalho Prático de Compiladores                 */
+/* Lex specification for C-, Table Generator        */
+/* Lexical and Semantic Analysis                    */
+/* Practical Compilers Work                         */
 /* Davi Morales and Mateus Franco                   */
 /****************************************************/
 %{

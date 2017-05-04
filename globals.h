@@ -2,7 +2,6 @@
 /* File: globals.h                                  */
 /* Global types and vars for C- compiler            */
 /* must come before other include files             */
-/* Rodrigo de Farias Ramires                        */
 /****************************************************/
 
 #ifndef _GLOBALS_H_
