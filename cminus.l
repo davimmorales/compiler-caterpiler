@@ -22,6 +22,7 @@ void abrirArq();
 
 int lineno = 1;
 int linenumber = 0;
+static void code_generator_parsing(TreeNode *tree);
 
 
 %}
@@ -424,8 +425,6 @@ int checkSameVarFunc(TipoLista *list, int index){
   return 0;
 }
 
-
-
 int semanticAnalysis(TipoLista *hashList){
   int i;
   int j;
@@ -456,6 +455,184 @@ int semanticAnalysis(TipoLista *hashList){
     if (checkMainFlag)
       printf("Semantic error: main function not present or different from 'void main(void)'\n ");
   return 0;
+}
+
+/*INTERMEDIATE CODE GENERATION*/
+static void generate_expression(TreeNode *tree){
+  int loc;
+  TreeNode *p1, *p2;
+  switch(tree->kind.exp){
+    case ConstK:
+      /*format_four();*/
+      printf("Constk\n");
+    break;
+    case IdK:
+      /*loc = get_variable_mem_loc(tree);*/
+      printf("id\n");
+      p1 = tree->child[0];
+      if(p1){//array
+        code_generator_parsing(p1);
+        /*format_two();*/
+        int i;
+        /*int size = get_array_size(tree);*/
+        /*int end_jump = get_line_counter()+(size*5);*/
+        /*for(i = loc; i< size+loc; i++){
+          format_two();
+          format_two();
+          format_three();
+          format_four();
+          format_three();
+        }*/
+        break;
+      }
+      /*format_four();*/
+      break;
+
+      case OpK:
+        p1 = tree->child[0];
+        p2 = tree->child[1];
+        printf("OpK\n");
+        code_generator_parsing(p1);
+        /*format_two();*/
+        code_generator_parsing(p2);
+        /*format_two();
+        format_two();*/
+        switch(tree->attr.oprtr){
+          case PLUS:
+          /*format_one();*/
+          printf("plus\n");
+          break;
+          case MINUS:
+          /*format_one();*/
+          printf("minus\n");
+          break;
+          case TIMES:
+            /*format_four();
+            format_two();
+            format_three();
+            format_one();
+            format_three();*/
+            break;
+          case OVER:
+            /*format_four();
+            format_one();
+            format_three();
+            format_two();
+            format_three();*/
+            break;
+          case LT:
+            /*format_four();
+            format_one();
+            format_three();
+            format_four();*/
+            break;
+          case HT:
+            /*format_four();
+            format_one();
+            format_three();
+            format_four();*/
+            break;
+          case LET:
+          /*format_four();
+          format_one();
+          format_three();
+          format_three();
+          format_four();*/
+          break;
+          case HET:
+          /*format_four();
+          format_one();
+          format_three();
+          format_three();
+          format_four();*/
+          break;
+          case NEQ:
+          /*format_four();
+          format_one();
+          format_three();
+          format_four();*/
+          break;
+          case EQ:
+          /*format_four();
+          format_one();
+          format_three();
+          format_four();*/
+          break;
+          default:break;
+        }default:break;
+}
+}
+
+
+static void generate_declaration(TreeNode *tree){
+  TreeNode *aux;
+  switch(tree->kind.dec){
+    case FuncDecK:
+      if(!strcmp(tree->attr.name,"main"))
+        /*jump_to_main();*/printf("main\n");
+      aux = tree->child[0];
+      if(aux)
+        code_generator_parsing(aux);
+      code_generator_parsing(tree->child[1]);
+      /*if(tree->type = Void){
+        ignore
+      }*/
+      if(strcmp(tree->attr.name,"main"))
+        /*format_tree_assembly();*/printf("not main\n");
+    break;
+    case VarK:
+    aux = tree->child[0];
+    printf("VarK\n");
+    if(aux->child[0] == NULL)
+      /*allocate_variable_mem_lock();*/printf("variable\n");
+    else{
+      aux = tree->child[0]->child[0];
+      /*allocate_array_mem_lock();*/
+
+    }
+    break;
+    case CompK:
+      aux = tree->child[0];
+      if(aux)//declaration
+        code_generator_parsing(aux);
+      aux = tree->child[1];
+      if(aux)//statement
+        code_generator_parsing(aux);
+      break;
+    case ParamK:
+      /*allocate_variable_mem_lock();*/printf("paramk\n");
+    break;
+    default:
+    break;
+  }
+}
+
+static void code_generator_parsing(TreeNode *tree){
+  if(tree!=NULL){
+    switch(tree->nodekind){
+      case StmtK:
+      printf("stmt sbt\n");
+      break;
+      case ExpK:
+      printf("expk sbt\n");
+      generate_expression(tree);
+      break;
+      case DecK:
+      printf("deck sbt\n");
+      generate_declaration(tree);
+      break;
+      case TypeK:
+        break;
+      default:
+        break;
+    }
+    code_generator_parsing(tree->sibling);
+  }
+}
+
+
+void code_generator(TreeNode *syntaxTree){
+  code_generator_parsing(syntaxTree);
 }
 
 int main() {
@@ -694,6 +871,7 @@ i = 0;
 
   /*while(getToken() != ENDFILE);*/
   syntaxTree = parse();
+  code_generator(syntaxTree);
 
   /*printTree(syntaxTree);*/
 

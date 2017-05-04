@@ -553,9 +553,10 @@ void abrirArq();
 
 int lineno = 1;
 int linenumber = 0;
+static void code_generator_parsing(TreeNode *tree);
 
 
-#line 559 "lex.yy.c"
+#line 560 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -773,10 +774,10 @@ YY_DECL
 		}
 
 	{
-#line 37 "cminus.l"
+#line 38 "cminus.l"
 
 
-#line 780 "lex.yy.c"
+#line 781 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -845,137 +846,137 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 39 "cminus.l"
+#line 40 "cminus.l"
 {/*printf("INT ");*/ return INT;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 40 "cminus.l"
+#line 41 "cminus.l"
 {/*printf("FLOAT ");*/ return FLOAT;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 41 "cminus.l"
+#line 42 "cminus.l"
 {/*printf("IF ");*/ return IF;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 42 "cminus.l"
+#line 43 "cminus.l"
 {/*printf("ELSE ");*/ return ELSE;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 43 "cminus.l"
+#line 44 "cminus.l"
 {/*printf("RETURN ");*/ return RETURN;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 44 "cminus.l"
+#line 45 "cminus.l"
 {/*printf("VOID ");*/return VOID;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 45 "cminus.l"
+#line 46 "cminus.l"
 {/*printf("WHILE ");*/ return WHILE;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 46 "cminus.l"
+#line 47 "cminus.l"
 {/*printf("PLUS ");*/ return PLUS;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 47 "cminus.l"
+#line 48 "cminus.l"
 {/*printf("MINUS ");*/ return MINUS;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 48 "cminus.l"
+#line 49 "cminus.l"
 {/*printf("TIMES ");*/ return TIMES;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 49 "cminus.l"
+#line 50 "cminus.l"
 {/*printf("LT ");*/ return LT;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 50 "cminus.l"
+#line 51 "cminus.l"
 {/*printf("OVER ");*/ return OVER;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 51 "cminus.l"
+#line 52 "cminus.l"
 {/*printf("LET ");*/ return LET;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 52 "cminus.l"
+#line 53 "cminus.l"
 {/*printf("HT ");*/ return HT;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 53 "cminus.l"
+#line 54 "cminus.l"
 {/*printf("HET ");*/ return HET;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 54 "cminus.l"
+#line 55 "cminus.l"
 {/*printf("EQ ");*/ return EQ;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 55 "cminus.l"
+#line 56 "cminus.l"
 {/*printf("NEQ ");*/ return NEQ;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 56 "cminus.l"
+#line 57 "cminus.l"
 {/*printf("ASSIGN ");*/ return ASSIGN;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 57 "cminus.l"
+#line 58 "cminus.l"
 {/*printf("SEMI ");*/ return SEMI;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 58 "cminus.l"
+#line 59 "cminus.l"
 {/*printf("COMMA ");*/ return COMMA;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 59 "cminus.l"
+#line 60 "cminus.l"
 {/*printf("RPAREN ");*/ return RPAREN;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 60 "cminus.l"
+#line 61 "cminus.l"
 {/*printf("LPAREN ");*/ return LPAREN;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 61 "cminus.l"
+#line 62 "cminus.l"
 {/*printf("RBRACK ");*/ return RBRACK;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 62 "cminus.l"
+#line 63 "cminus.l"
 {/*printf("LBRACK ");*/ return LBRACK;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 63 "cminus.l"
+#line 64 "cminus.l"
 {/*printf("LCAPSULE ");*/ return LCAPSULE;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 64 "cminus.l"
+#line 65 "cminus.l"
 {/*printf("RCAPSULE ");*/ return RCAPSULE;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 65 "cminus.l"
+#line 66 "cminus.l"
 { 	char c, d;
                         c = input();
                         do
@@ -991,39 +992,39 @@ YY_RULE_SETUP
 case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
-#line 76 "cminus.l"
+#line 77 "cminus.l"
 { lineno++; /*printf("\t%d\n", lineno);*/}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 77 "cminus.l"
+#line 78 "cminus.l"
 ;
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 78 "cminus.l"
+#line 79 "cminus.l"
 { /*printf("NUM ");* strcpy(id,yytext);*/ return NUM;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 79 "cminus.l"
+#line 80 "cminus.l"
 {/*printf("ID "); strcpy(id,yytext);*/ return ID;}
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 80 "cminus.l"
+#line 81 "cminus.l"
 return(0);
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 81 "cminus.l"
+#line 82 "cminus.l"
 { printf("Lexical Error at line %d\n", lineno);}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 83 "cminus.l"
+#line 84 "cminus.l"
 ECHO;
 	YY_BREAK
-#line 1027 "lex.yy.c"
+#line 1028 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2034,7 +2035,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 83 "cminus.l"
+#line 84 "cminus.l"
 
 
 
@@ -2380,8 +2381,6 @@ int checkSameVarFunc(TipoLista *list, int index){
   return 0;
 }
 
-
-
 int semanticAnalysis(TipoLista *hashList){
   int i;
   int j;
@@ -2412,6 +2411,184 @@ int semanticAnalysis(TipoLista *hashList){
     if (checkMainFlag)
       printf("Semantic error: main function not present or different from 'void main(void)'\n ");
   return 0;
+}
+
+/*INTERMEDIATE CODE GENERATION*/
+static void generate_expression(TreeNode *tree){
+  int loc;
+  TreeNode *p1, *p2;
+  switch(tree->kind.exp){
+    case ConstK:
+      /*format_four();*/
+      printf("Constk\n");
+    break;
+    case IdK:
+      /*loc = get_variable_mem_loc(tree);*/
+      printf("id\n");
+      p1 = tree->child[0];
+      if(p1){//array
+        code_generator_parsing(p1);
+        /*format_two();*/
+        int i;
+        /*int size = get_array_size(tree);*/
+        /*int end_jump = get_line_counter()+(size*5);*/
+        /*for(i = loc; i< size+loc; i++){
+          format_two();
+          format_two();
+          format_three();
+          format_four();
+          format_three();
+        }*/
+        break;
+      }
+      /*format_four();*/
+      break;
+
+      case OpK:
+        p1 = tree->child[0];
+        p2 = tree->child[1];
+        printf("OpK\n");
+        code_generator_parsing(p1);
+        /*format_two();*/
+        code_generator_parsing(p2);
+        /*format_two();
+        format_two();*/
+        switch(tree->attr.oprtr){
+          case PLUS:
+          /*format_one();*/
+          printf("plus\n");
+          break;
+          case MINUS:
+          /*format_one();*/
+          printf("minus\n");
+          break;
+          case TIMES:
+            /*format_four();
+            format_two();
+            format_three();
+            format_one();
+            format_three();*/
+            break;
+          case OVER:
+            /*format_four();
+            format_one();
+            format_three();
+            format_two();
+            format_three();*/
+            break;
+          case LT:
+            /*format_four();
+            format_one();
+            format_three();
+            format_four();*/
+            break;
+          case HT:
+            /*format_four();
+            format_one();
+            format_three();
+            format_four();*/
+            break;
+          case LET:
+          /*format_four();
+          format_one();
+          format_three();
+          format_three();
+          format_four();*/
+          break;
+          case HET:
+          /*format_four();
+          format_one();
+          format_three();
+          format_three();
+          format_four();*/
+          break;
+          case NEQ:
+          /*format_four();
+          format_one();
+          format_three();
+          format_four();*/
+          break;
+          case EQ:
+          /*format_four();
+          format_one();
+          format_three();
+          format_four();*/
+          break;
+          default:break;
+        }default:break;
+}
+}
+
+
+static void generate_declaration(TreeNode *tree){
+  TreeNode *aux;
+  switch(tree->kind.dec){
+    case FuncDecK:
+      if(!strcmp(tree->attr.name,"main"))
+        /*jump_to_main();*/printf("main\n");
+      aux = tree->child[0];
+      if(aux)
+        code_generator_parsing(aux);
+      code_generator_parsing(tree->child[1]);
+      /*if(tree->type = Void){
+        ignore
+      }*/
+      if(strcmp(tree->attr.name,"main"))
+        /*format_tree_assembly();*/printf("not main\n");
+    break;
+    case VarK:
+    aux = tree->child[0];
+    printf("VarK\n");
+    if(aux->child[0] == NULL)
+      /*allocate_variable_mem_lock();*/printf("variable\n");
+    else{
+      aux = tree->child[0]->child[0];
+      /*allocate_array_mem_lock();*/
+
+    }
+    break;
+    case CompK:
+      aux = tree->child[0];
+      if(aux)//declaration
+        code_generator_parsing(aux);
+      aux = tree->child[1];
+      if(aux)//statement
+        code_generator_parsing(aux);
+      break;
+    case ParamK:
+      /*allocate_variable_mem_lock();*/printf("paramk\n");
+    break;
+    default:
+    break;
+  }
+}
+
+static void code_generator_parsing(TreeNode *tree){
+  if(tree!=NULL){
+    switch(tree->nodekind){
+      case StmtK:
+      printf("stmt sbt\n");
+      break;
+      case ExpK:
+      printf("expk sbt\n");
+      generate_expression(tree);
+      break;
+      case DecK:
+      printf("deck sbt\n");
+      generate_declaration(tree);
+      break;
+      case TypeK:
+        break;
+      default:
+        break;
+    }
+    code_generator_parsing(tree->sibling);
+  }
+}
+
+
+void code_generator(TreeNode *syntaxTree){
+  code_generator_parsing(syntaxTree);
 }
 
 int main() {
@@ -2650,6 +2827,7 @@ i = 0;
 
   /*while(getToken() != ENDFILE);*/
   syntaxTree = parse();
+  code_generator(syntaxTree);
 
   /*printTree(syntaxTree);*/
 
