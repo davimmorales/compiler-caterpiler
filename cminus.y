@@ -106,55 +106,60 @@ declaration             :   variable_declaration
                         |   function_declaration
                                 {
                                     $$ = $1;
+                                    saved_fun_name = "Global";
                                 }
                         ;
-variable_declaration    :   INT id SEMI
+id                      :   ID
                                 {
-                                    $$ = newExpNode(TypeK);
-                                    $$->type = Integer;
-                                    $$->child[0] = $2;
-                                    $2->nodekind = StmtK;
-                                    $2->kind.stmt = VarK;
-                                    $2->type = Integer;
-                                }
-                        |   INT id LBRACK num RBRACK SEMI
-                                {
-                                    $$ = newExpNode(TypeK);
-                                    $$->type = Integer;
-                                    $$->child[0] = $2;
-                                    $2->nodekind = StmtK;
-                                    $2->kind.stmt = VecK;
-                                    $2->attr.value = $4->attr.value;
-                                    $2->type = Integer;
+                                    $$ = newExpNode(IdK);
+                                    $$->attr.name = copyString(tokenString);
+                                    saved_id_name = $$->attr.name;
+                                    $$->scope = saved_fun_name;
+                                    $$->linenumber = linenumber;
                                 }
                         ;
-function_declaration    :   INT id LPAREN parameters RPAREN compound_declaration
+
+function_id             : {
+                            saved_fun_name = saved_id_name;
+                          }
+
+variable_declaration    :   type_specifier variable SEMI
                                 {
-                                    $$ = newExpNode(TypeK);
-                                    $$->type = Integer;
+                                    $$ = newDecNode(VarK);
+                                    $$->type = $1->type;
                                     $$->child[0] = $2;
-                                    $2->nodekind = StmtK;
-                                    $2->kind.stmt = FuncK;
-                                    $2->child[0] = $4;
-                                    $2->child[1] = $6;
-                                    $2->type = Integer;
-                                    setScope($2->child[0], $2->attr.name);
-                                    setScope($2->child[1], $2->attr.name);
-                                }
-                        |   VOID id LPAREN parameters RPAREN compound_declaration
-                                {
-                                    $$ = newExpNode(TypeK);
-                                    $$->type = Void;
-                                    $$->child[0] = $2;
-                                    $2->nodekind = StmtK;
-                                    $2->kind.stmt = FuncK;
-                                    $2->child[0] = $4;
-                                    $2->child[1] = $6;
-                                    $2->type = Void;
-                                    setScope($2->child[0], $2->attr.name);
-                                    setScope($2->child[1], $2->attr.name);
+                                    $$->attr.name = $2->attr.name;
+                                    $$->linenumber = $2->linenumber;
+                                    $$->scope = saved_fun_name;
                                 }
                         ;
+
+type_specifier          : INT
+                        {
+                          $$ = newTypeNode(TypeK);
+                          $$->type = Integer;
+                        }
+                        | VOID
+                        {
+                          $$ = newTypeNode(TypeK);
+                          $$->type = Void;
+                        }
+                        ;
+
+function_declaration    :   type_specifier id  function_id LPAREN parameters RPAREN compound_declaration
+                                {
+                                    $$ = newDecNode(FuncDecK);
+                                    $$->attr.name = saved_fun_name;
+                                    $$->type = $1->type;
+                                    $$->child[0] = $2;
+                                    $2->child[0] = $5;
+                                    $2->child[1] = $7;
+                                    $$->linenumber = $2->linenumber;
+                                    /*setScope($2->child[0], $2->attr.name);
+                                    setScope($2->child[1], $2->attr.name);*/
+                                }
+                        ;
+
 parameters              :   list_parameters
                                 {
                                     $$ = $1;
@@ -181,47 +186,32 @@ list_parameters         :   list_parameters COMMA parameter
                                     $$ = $1;
                                 }
                         ;
-parameter               :   INT id
+parameter               :   type_specifier id
                                 {
-                                    $$ = newExpNode(TypeK);
-                                    $$->type = Integer;
+                                    $$ = newDecNode(ParamK);
+                                    $$->type = $1->type;
+                                    $$->attr.name = $2->attr.name;
                                     $$->child[0] = $2;
-                                    $2->nodekind = StmtK;
-                                    $2->kind.stmt = FuncVarK;
-                                    $2->type = Integer;
+                                    $$->scope = $2->scope;
+                                    $$->linenumber = $2->linenumber;
                                 }
-                        |   INT id LBRACK RBRACK
+                        |   type_specifier id LBRACK RBRACK
                                 {
-                                    $$ = newExpNode(TypeK);
-                                    $$->type = Integer;
+                                    $$ = newDecNode(ParamK);
+                                    $$->type = $1->type;
+                                    $$->attr.name = $2->attr.name;
                                     $$->child[0] = $2;
-                                    $2->nodekind = StmtK;
-                                    $2->kind.stmt = FuncVecK;
-                                    $2->type = Integer;
+                                    $$->call_stmt = 13;
+                                    $$->scope = $2->scope;
+                                    $$->linenumber = $2->linenumber;
                                 }
                         ;
 compound_declaration    :   LCAPSULE local_declarations list_statement RCAPSULE
                                 {
-                                    YYSTYPE t = $2;
-                                    if(t != NULL){
-                                        while(t->sibling != NULL)
-                                            t = t->sibling;
-                                        t->sibling = $3;
-                                        $$ = $2;
-                                    }
-                                    else
-                                        $$ = $3;
+                                  $$ = newDecNode(CompK);
+                                  $$->child[0] = $2;
+                                  $$->child[1] = $3;
                                 }
-                        |   LCAPSULE local_declarations RCAPSULE
-                                {
-                                    $$ = $2;
-                                }
-                        |   LCAPSULE list_statement RCAPSULE
-                                {
-                                    $$ = $2;
-                                }
-                        |   LCAPSULE RCAPSULE
-                                {}
                         ;
 local_declarations      :   local_declarations variable_declaration
                                 {
@@ -235,10 +225,9 @@ local_declarations      :   local_declarations variable_declaration
                                     else
                                         $$ = $2;
                                 }
-                        |   variable_declaration
-                                {
-                                    $$ = $1;
-                                }
+                        |   {
+                          $$ = NULL;
+                        }
                         ;
 list_statement          :   list_statement statement
                                 {
@@ -252,9 +241,8 @@ list_statement          :   list_statement statement
                                     else
                                         $$ = $2;
                                 }
-                        |   statement
-                                {
-                                    $$ = $1;
+                                |   {
+                                  $$ = NULL;
                                 }
                         ;
 statement               :   expression_declaration
@@ -283,10 +271,11 @@ expression_declaration  :   expression SEMI
                                     $$ = $1;
                                 }
                         |   SEMI
-                                {}
+                                {$$ = NULL;}
                         ;
 selection_declaration   :   IF LPAREN expression RPAREN statement
                                 {
+                                  /*ERRORS MAY COME FROM HERE*/
                                     $$ = newStmtNode(IfK);
                                     $$->child[0] = $3;
                                     $$->child[1] = $5;
@@ -309,13 +298,12 @@ iteration_declaration   :   WHILE LPAREN expression RPAREN statement
 return_declaration      :   RETURN SEMI
                                 {
                                     $$ = newStmtNode(ReturnK);
-                                    $$->type = Void;
+                                    $$->child[0] = NULL;
                                 }
                         |   RETURN expression SEMI
                                 {
                                     $$ = newStmtNode(ReturnK);
                                     $$->child[0] = $2;
-                                    $$->type = $2->type;
                                 }
                         ;
 expression              :   variable ASSIGN expression
@@ -332,21 +320,27 @@ expression              :   variable ASSIGN expression
 variable                :   id
                                 {
                                     $$ = $1;
-                                    $$->type = Integer;
                                 }
                         |   id LBRACK expression RBRACK
                                 {
-                                    $$ = $1;
-                                    $$->kind.exp = VecIndexK;
+                                    /*$$ = $1;
+                                    $$->kind.exp = VecIndexK;*/
                                     $$->child[0] = $3;
-                                    $$->type = Integer;
+                                    /*$$->type = Integer;*/
                                 }
                         ;
+
+variable_b              :id
+                                {
+                                    $$ = $1;
+                                }
+
 simple_expression       :   plus_minus_expression relational_operator plus_minus_expression
                                 {
-                                    $$ = $2;
-                                    $$->child[0] = $1;
-                                    $$->child[1] = $3;
+                                  $$ = newExpNode(OpK);
+                                  $$->child[0] = $1;
+                                  $$->child[1] = $3;
+                                  $$->attr.oprtr = $2->attr.oprtr;
                                 }
                         |   plus_minus_expression
                                 {
@@ -355,52 +349,41 @@ simple_expression       :   plus_minus_expression relational_operator plus_minus
                         ;
 relational_operator     :   EQ
                                 {
-                                    $$ = newExpNode(RelOpK);
+                                    $$ = newTypeNode(TypeK);
                                     $$->attr.oprtr = EQ;
-                                    $$->attr.name = "==";
-                                    $$->type = Boolean;
                                 }
                         |   NEQ
                                 {
-                                    $$ = newExpNode(RelOpK);
+                                    $$ = newTypeNode(TypeK);
                                     $$->attr.oprtr = NEQ;
-                                    $$->attr.name = "!=";
-                                    $$->type = Boolean;
                                 }
                         |   LT
                                 {
-                                    $$ = newExpNode(RelOpK);
+                                    $$ = newTypeNode(TypeK);
                                     $$->attr.oprtr = LT;
-                                    $$->attr.name = "<";
-                                    $$->type = Boolean;
                                 }
                         |   LET
                                 {
-                                    $$ = newExpNode(RelOpK);
+                                    $$ = newTypeNode(TypeK);
                                     $$->attr.oprtr = LET;
-                                    $$->attr.name = "<=";
-                                    $$->type = Boolean;
                                 }
                         |   HT
                                 {
-                                    $$ = newExpNode(RelOpK);
+                                    $$ = newTypeNode(TypeK);
                                     $$->attr.oprtr = HT;
-                                    $$->attr.name = ">";
-                                    $$->type = Boolean;
                                 }
                         |   HET
                                 {
-                                    $$ = newExpNode(RelOpK);
+                                    $$ = newTypeNode(TypeK);
                                     $$->attr.oprtr = HET;
-                                    $$->attr.name = ">=";
-                                    $$->type = Boolean;
                                 }
                         ;
 plus_minus_expression   :   plus_minus_expression plus_minus term
                                 {
-                                    $$ = $2;
+                                    $$ = newExpNode(OpK);
                                     $$->child[0] = $1;
                                     $$->child[1] = $3;
+                                    $$->attr.oprtr = $2->attr.oprtr;
                                 }
                         |   term
                                 {
@@ -409,43 +392,37 @@ plus_minus_expression   :   plus_minus_expression plus_minus term
                         ;
 plus_minus              :   PLUS
                                 {
-                                    $$ = newExpNode(ArithOpK);
+                                    $$ = newTypeNode(TypeK);
                                     $$->attr.oprtr = PLUS;
-                                    $$->attr.name = "+";
-                                    $$->type = Integer;
                                 }
                         |   MINUS
                                 {
-                                    $$ = newExpNode(ArithOpK);
+                                    $$ = newTypeNode(TypeK);
                                     $$->attr.oprtr = MINUS;
-                                    $$->attr.name = "-";
-                                    $$->type = Integer;
                                 }
                         ;
 term                    :   term times_over factor
                                 {
-                                    $$ = $2;
+                                    $$ = newExpNode(OpK);
                                     $$->child[0] = $1;
                                     $$->child[1] = $3;
+                                    $$->attr.oprtr = $2->attr.oprtr;
                                 }
                         |   factor
                                 {
                                     $$ = $1;
                                 }
                         ;
+
 times_over              :   TIMES
                                 {
-                                    $$ = newExpNode(ArithOpK);
+                                    $$ = newTypeNode(TypeK);
                                     $$->attr.oprtr = TIMES;
-                                    $$->attr.name = "*";
-                                    $$->type = Integer;
                                 }
                         |   OVER
                                 {
-                                    $$ = newExpNode(ArithOpK);
+                                    $$ = newTypeNode(TypeK);
                                     $$->attr.oprtr = OVER;
-                                    $$->attr.name = "/";
-                                    $$->type = Integer;
                                 }
                         ;
 factor                  :   LPAREN expression RPAREN
@@ -455,28 +432,36 @@ factor                  :   LPAREN expression RPAREN
                         |   variable
                                 {
                                     $$ = $1;
+                                    $1->call_stmt = 1;
                                 }
                         |   function_call
                                 {
                                     $$ = $1;
                                 }
-                        |   num
+                        |   NUM
                                 {
-                                    $$ = $1;
+                                    $$ = newExpNode(ConstK);
+                                    $$->type = Integer;
+                                    $$->attr.value = atoi(tokenString);
                                 }
                         ;
-function_call           :   id LPAREN list_arguments RPAREN
+function_call           :   variable_b LPAREN arguments RPAREN
                                 {
-                                    $$ = $1;
+                                    $$ = newStmtNode(CallK);
+                                    $$->attr.name = $1->attr.name;
                                     $$->child[0] = $3;
-                                    $$->kind.exp = CallK;
-                                }
-                        |   id LPAREN RPAREN
-                                {
-                                    $$ = $1;
-                                    $$->kind.exp = CallK;
                                 }
                         ;
+
+arguments               : list_arguments
+                        {
+                          $$ = $1;
+                        }
+                        |
+                        {
+                          $$ = NULL;
+                        }
+
 list_arguments          :   list_arguments COMMA expression
                                 {
                                     YYSTYPE t = $1;
@@ -494,20 +479,6 @@ list_arguments          :   list_arguments COMMA expression
                                     $$ = $1;
                                 }
                         ;
-id                      :   ID
-                                {
-                                    $$ = newExpNode(IdK);
-                                    $$->attr.name = copyString(tokenString);
-                                }
-                        ;
-num                     :   NUM
-                                {
-                                    $$ = newExpNode(ConstK);
-                                    $$->attr.value = atoi(tokenString);
-                                    $$->type = Integer;
-                                }
-                        ;
-
 %%
 
 /*TreeNode * allocateToken(char const *token)

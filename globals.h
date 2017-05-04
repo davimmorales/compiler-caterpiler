@@ -95,7 +95,6 @@ typedef struct treeNode{
     struct treeNode * sibling;
     int linenumber;
     int call_stmt;
-    TypeKind type;
     char * scope;
     NodeKind nodekind;
     union treeKind kind;

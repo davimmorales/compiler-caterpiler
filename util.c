@@ -114,23 +114,44 @@ void printToken(TokenType token, const char* tokenString){
     }
 }
 
-// TreeNode * newTypeNode(TypeKind kind){
-//   TreeNode * t = (TreeNode *) malloc(sizeof(TreeNode));
-//   int i;
-//   if(t==NULL)
-//     printf("ERROR: out of memory");
-//   else{
-//     for (i = 0; i < MAXCHILDREN; i++) {
-//       t->child[i] = NULL;
-//     }
-//     t->sibling = NULL;
-//     t->nodekind = Type;
-//     t->linenumber = linenumber;
-//     t->call_stmt = 0;
-//     t->kind->typ = kind;
-//   }
-//   return t;
-// }
+/* Function newTypeNode creates a new Type
+ * node for syntax tree construction
+ */
+TreeNode * newTypeNode(ExpType kind){
+  TreeNode * t = (TreeNode *) malloc(sizeof(TreeNode));
+  int i;
+  if(t==NULL)
+    printf("ERROR: out of memory\n");
+  else{
+    for (i = 0; i < MAXCHILDREN; i++) {
+      t->child[i] = NULL;
+    }
+    t->sibling = NULL;
+    t->nodekind = TypeK;
+    t->linenumber = linenumber;
+    t->call_stmt = 0;
+    t->kind.typ = kind;
+  }
+  return t;
+}
+
+TreeNode * newDecNode(DecKind kind){
+  TreeNode * t = (TreeNode *) malloc(sizeof(TreeNode));
+  int i;
+  if(t==NULL)
+    printf("ERROR: out of memory\n");
+  else{
+    for (i = 0; i < MAXCHILDREN; i++) {
+      t->child[i] = NULL;
+    }
+    t->sibling = NULL;
+    t->nodekind = DecK;
+    t->linenumber = linenumber;
+    t->call_stmt = 0;
+    t->kind.dec = kind;
+  }
+  return t;
+}
 
 /* Function newStmtNode creates a new statement
  * node for syntax tree construction
@@ -139,7 +160,7 @@ TreeNode * newStmtNode(StmtKind kind){
     TreeNode * t = (TreeNode *) malloc(sizeof(TreeNode));
     int i;
     if(t == NULL)
-        printf( "Out of memory error at line %d\n", linenumber);
+      printf("ERROR: out of memory\n");
     else{
         for(i = 0; i < MAXCHILDREN; ++i)
             t->child[i] = NULL;
@@ -147,7 +168,8 @@ TreeNode * newStmtNode(StmtKind kind){
         t->nodekind = StmtK;
         t->kind.stmt = kind;
         t->linenumber = linenumber;
-        t->scope = "global";
+        t->call_stmt = 0;
+        // t->scope = "global";
     }
     return t;
 }
@@ -159,7 +181,7 @@ TreeNode * newExpNode(ExpKind kind){
     TreeNode * t = (TreeNode *) malloc(sizeof(TreeNode));
     int i;
     if(t == NULL)
-        printf( "Out of memory error at line %d\n", linenumber);
+    printf("ERROR: out of memory\n");
     else{
         for(i = 0; i < MAXCHILDREN; ++i)
             t->child[i] = NULL;
@@ -167,8 +189,9 @@ TreeNode * newExpNode(ExpKind kind){
         t->nodekind = ExpK;
         t->kind.exp = kind;
         t->linenumber = linenumber;
-        t->type = Void;
-        t->scope = "global";
+        t->call_stmt = 0;
+        // t->type = Void;
+        // t->scope = "global";
     }
     return t;
 }
@@ -230,22 +253,22 @@ char * joinNameScope(char * name, char * sep, char * scope){
 /* Function setScope defines scope for all children
  * nodes of a function
  */
-void setScope(TreeNode * t, char * scope){
-    while(t != NULL){
-        t->scope = copyString(scope);
-        int i;
-        if(t->nodekind == StmtK && t->kind.stmt == FuncK){
-            char * newScope = joinNameScope(t->attr.name, "/", scope);
-            for(i = 0; i < MAXCHILDREN; ++i)
-                setScope(t->child[i], newScope);
-        }
-        else{
-            for(i = 0; i < MAXCHILDREN; ++i)
-                setScope(t->child[i], scope);
-        }
-        t = t->sibling;
-    }
-}
+// void setScope(TreeNode * t, char * scope){
+//     while(t != NULL){
+//         t->scope = copyString(scope);
+//         int i;
+//         if(t->nodekind == StmtK && t->kind.stmt == FuncK){
+//             char * newScope = joinNameScope(t->attr.name, "/", scope);
+//             for(i = 0; i < MAXCHILDREN; ++i)
+//                 setScope(t->child[i], newScope);
+//         }
+//         else{
+//             for(i = 0; i < MAXCHILDREN; ++i)
+//                 setScope(t->child[i], scope);
+//         }
+//         t = t->sibling;
+//     }
+// }
 
 /* Variable indentno is used by printTree to
  * store current number of spaces to indent
@@ -263,102 +286,43 @@ static void printSpaces(){
         printf( " ");
 }
 
+void printType(TokenType type){
+  switch (type) {
+    case Void:
+      printf("void\n");
+      break;
+    case Integer:
+      printf("int\n");
+      break;
+    default:
+      printf("unknown");
+      break;
+  }
+}
+
 /* procedure printTree prints a syntax tree to the
  * listing file using indentation to indicate subtrees
  */
-void printTree(TreeNode * tree){
-    int i;
-    INDENT;
-    while(tree != NULL){
-        printSpaces();
-        if(tree->nodekind == StmtK){
-            switch(tree->kind.stmt){
-                case IfK:
-                    if(tree->child[2] != NULL)
-                        printf( "If-Else:\n");
-                    else
-                        printf( "If:\n");
-                    break;
-                case WhileK:
-                    printf( "While:\n");
-                    break;
-                case AssignK:
-                    printf( "Assign to:\n");
-                    break;
-                case ReturnK:
-                    if(tree->child[0] != NULL)
-                        printf( "Return:\n");
-                    else
-                        printf( "Return\n");
-                    break;
-                case VarK:
-                    printf( "Variable declaration: %s\n", tree->attr.name);
-                    break;
-                case VecK:
-                    printf( "Vector declaration: %s[%d]\n", tree->attr.name, tree->attr.value);
-                    break;
-                case FuncK:
-                    if(tree->child[0] != NULL){
-                        int k = countParamArg(tree->child[0]);
-                        printf( "Function declaration: %s(%d parameter%s)\n",
-                                tree->attr.name, k, ((k>1) ? "s" : ""));
-                    }
-                    else
-                        printf( "Function declaration: %s(void)\n", tree->attr.name);
-                    break;
-                case FuncVarK:
-                    printf( "Variable: %s\n", tree->attr.name);
-                    break;
-                case FuncVecK:
-                    printf( "Vector: %s[]\n", tree->attr.name);
-                    break;
-                default:
-                    printf( "Unknown StmtNode kind\n");
-                    break;
-            }
-        }
-        else if(tree->nodekind == ExpK){
-            switch(tree->kind.exp){
-                case TypeK:
-                    if(tree->type == Integer)
-                        printf( "Type: Integer\n");
-                    else if(tree->type == Void)
-                        printf( "Type: Void\n");
-                    break;
-                case RelOpK:
-                    printf( "Relational operator: %s\n", tree->attr.name);
-                    break;
-                case ArithOpK:
-                    printf( "Arithmetic operator: %s\n", tree->attr.name);
-                    break;
-                case ConstK:
-                    printf( "Constant: %d\n", tree->attr.value);
-                    break;
-                case IdK:
-                    printf( "Identifier: %s\n", tree->attr.name);
-                    break;
-                case VecIndexK:
-                    printf( "Vector index: %s[]\n", tree->attr.name);
-                    break;
-                case CallK:
-                    if(tree->child[0] != NULL){
-                        int k = countParamArg(tree->child[0]);
-                        printf( "Function call: %s(%d argument%s)\n",
-                                tree->attr.name, k, ((k>1) ? "s" : ""));
-                    }
-                    else
-                        printf( "Function call: %s()\n", tree->attr.name);
-                    break;
-                default:
-                    printf( "Unknown ExpNode kind\n");
-                    break;
-            }
-        }
-        else
-            printf( "Unknown node kind\n");
-        for(i = 0; i < MAXCHILDREN; ++i)
-            printTree(tree->child[i]);
-        tree = tree->sibling;
-    }
-    UNINDENT;
-}
+// void printTree(TreeNode *tree){
+//   int i;
+//   INDENT;
+//   while (tree!=NULL) {
+//     printSpaces();
+//     switch(tree->nodekind){
+//       case DecK:
+//           switch (tree->kind.dec) {
+//             case VarK:
+//               printf("Variable declaration, type:");
+//               printType(tree->type);
+//               printf("\n");
+//             case FuncDecK:
+//               printf("Function Declaration, type\n");
+//               printType(tree->type);
+//               printf("\n");
+//
+//
+//
+//           }
+//     }
+//   }
+// }

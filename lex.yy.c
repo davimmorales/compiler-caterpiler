@@ -2056,7 +2056,9 @@ TokenType getToken(void){
 
   /*printf("\t%d", linenumber);*/
   /*printf("%d %s %d\n", current, tokenString, linenumber);*/
-  printToken(current, tokenString);
+
+  /*the one I really print*/
+  /*printToken(current, tokenString);*/
   return current;
 }
 
@@ -2649,13 +2651,13 @@ i = 0;
   /*while(getToken() != ENDFILE);*/
   syntaxTree = parse();
 
-  printTree(syntaxTree);
+  /*printTree(syntaxTree);*/
 
-  printf("Name(ID)  Type(ID)  Type(Data)   Scope    Appears in lines\n");
+  /*printf("Name(ID)  Type(ID)  Type(Data)   Scope    Appears in lines\n");
   for(i = 0;i<211;i++){
       if(&vetor[i]!=NULL)
       printWTable(vetor, i);
-  }
+  }*/
 
   return 0;
 }

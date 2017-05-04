@@ -30,6 +30,7 @@ void printToken(TokenType, const char*);
   * node for syntax tree construction
   */
 
+TreeNode * newTypeNode(ExpType kind);
 TreeNode * newDecNode(DecKind);
 TreeNode * newStmtNode(StmtKind);
 TreeNode * newExpNode(ExpKind);
