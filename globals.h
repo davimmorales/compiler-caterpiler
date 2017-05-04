@@ -68,10 +68,9 @@ extern int linenumber; /* source line number*/
 // typedef enum {TypeK, RelOpK, ArithOpK, ConstK, IdK, VecIndexK, CallK} ExpKind;
 
 typedef enum {DecK, StmtK, ExpK, TypeK} NodeKind;
-typedef enum {IfK, WhileK, AssignK, ReturnK, VarK, VecK, FuncK, FuncVarK, FuncVecK} StmtKind;
-typedef enum {TypeK, RelOpK, ArithOpK, ConstK, IdK, VecIndexK, CallK} ExpKind;
-
-
+typedef enum {IfK, WhileK, AssignK, ReturnK, CallK} StmtKind;
+typedef enum {ConstK, IdK, OpK} ExpKind;
+typedef enum { FuncDecK, VarK, CompK, ParamK} DecKind;
 
 /* ExpType is used for type checking */
 typedef enum {Void, Integer, Boolean} ExpType;
@@ -81,6 +80,8 @@ typedef enum {Void, Integer, Boolean} ExpType;
 union treeKind{
     StmtKind stmt;
     ExpKind exp;
+    DecKind dec;
+    ExpType typ;
 };
 
 struct treeAttr{
@@ -93,6 +94,8 @@ typedef struct treeNode{
     struct treeNode * child[MAXCHILDREN];
     struct treeNode * sibling;
     int linenumber;
+    int call_stmt;
+    TypeKind type;
     char * scope;
     NodeKind nodekind;
     union treeKind kind;
