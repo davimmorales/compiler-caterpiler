@@ -458,6 +458,126 @@ int semanticAnalysis(TipoLista *hashList){
 }
 
 /*INTERMEDIATE CODE GENERATION*/
+int freeze_line_loc(TreeNode *node){
+  int future_line_loc;
+  /*if(get_skip_print()){
+    set_skip_print(1);
+    int backup_line_loc = get_line_counter();
+    code_generator_parsing(node);
+    future_line_loc = get_line_counter()+1;
+    set_line_counter(backup_line_loc);
+  } else{
+    set_skip_print(1);
+    int backup_line_loc = get_line_counter();
+    code_generator_parsing(node);
+    future_line_loc = get_line_counter()+1;
+    set_line_counter(backup_line_loc);
+    set_skip_print(0);
+  }*/
+  return future_line_loc;
+}
+
+static void generate_statememt(TreeNode *tree){
+  TreeNode *p1, *p2, *p3, *aux;
+  switch(tree->kind.stmt){
+    case IfK:{
+      p1 = tree->child[0];
+      p2 = tree->child[1];
+      p3 = tree->child[2];
+
+      code_generator_parsing(p1);
+      /*int future_line_loc = freeze_line_loc(p2);*/
+      if(p3)
+        /*future_line_loc++;*/printf("p3 :)\n");
+
+      /*format_two();
+      format_three();*/
+
+      code_generator_parsing(p2);
+
+      if(p3){
+        /*future_line_loc = freeze_line_loc(p3);
+        format_three();*/
+        printf("p3!\n");
+      }
+
+      code_generator_parsing(p3);
+      break;
+    }
+    case WhileK:{
+      p1 = tree->child[0];
+      p2 = tree->child[1];
+      /*int past_line_loc = get_line_counter();*/
+
+      /*int future_line_loc = freeze_line_loc(p2) + 2;*/
+
+      /*format_two();
+      format_three();*/
+
+      code_generator_parsing(p2);
+      /*format_three();*/
+      break;
+    }
+    case AssignK:
+      p1 = tree->child[0];
+      /*int memloc = get_variable_mem_loc(p1);*/
+
+      if(p1->child[0]){ //it's an array
+        code_generator_parsing(tree->child[1]);
+        /*format_two();*/
+        code_generator_parsing(p1->child[0]);
+        /*format_two();*/
+        int i;
+        /*int size = get_array_size(p1);*/
+        /*int end_jump = get_line_counter() + (size*5);*/
+        /*for(i = memloc; i<size+memloc; i++){
+          format_two();
+          format_three();
+          format_three();
+          format_four();
+          format_three();
+          }*/
+          break;
+      }
+      code_generator_parsing(tree->child[1]);
+      /*format_four();*/
+      break;
+      case CallK:
+        if(!strcmp("input", tree->attr.name))
+          /*format_four();*/printf("input\n");
+        else if(!strcmp("output", tree->attr.name)){
+          code_generator_parsing(tree->child[0]);
+          /*format_four();*/printf("output\n");
+        }
+        else{
+          printf("general function call\n");
+          /*if(get_skip_print())
+              break;*/
+            /*TreeNode *recovered_tree = get_tree_from_table(tree->attr.name);
+            code_generator_parsing(recovered_tree->child[0]);
+
+            TreeNode *assign_tree_parameters = build_parameter_tree(tree, recovered_tree);
+            code_generator_parsing(assign_tree_parameters);
+
+            int function_start_line = keep_line_loc(tree);
+            format_four();
+            format_three();*/
+          }
+          break;
+          case ReturnK:
+            printf("return\n");
+            aux = tree->child[0];
+            if(aux)
+              code_generator_parsing(aux);
+            /*format_three();*/
+            break;
+          default:
+            break;
+        }
+  }
+
+
+
 static void generate_expression(TreeNode *tree){
   int loc;
   TreeNode *p1, *p2;
@@ -612,6 +732,7 @@ static void code_generator_parsing(TreeNode *tree){
     switch(tree->nodekind){
       case StmtK:
       printf("stmt sbt\n");
+      generate_statememt(tree);
       break;
       case ExpK:
       printf("expk sbt\n");
