@@ -22,6 +22,9 @@
 /*#define YYDEBUG 0*/
 
 #define YYSTYPE TreeNode *
+static char * saved_id_name;
+static char * saved_fun_name = "Global";
+static int saved_line_number;
 static TreeNode * savedTree;    /* stores syntax tree for later return */
 static int yylex(void);
 

@@ -114,6 +114,24 @@ void printToken(TokenType token, const char* tokenString){
     }
 }
 
+// TreeNode * newTypeNode(TypeKind kind){
+//   TreeNode * t = (TreeNode *) malloc(sizeof(TreeNode));
+//   int i;
+//   if(t==NULL)
+//     printf("ERROR: out of memory");
+//   else{
+//     for (i = 0; i < MAXCHILDREN; i++) {
+//       t->child[i] = NULL;
+//     }
+//     t->sibling = NULL;
+//     t->nodekind = Type;
+//     t->linenumber = linenumber;
+//     t->call_stmt = 0;
+//     t->kind->typ = kind;
+//   }
+//   return t;
+// }
+
 /* Function newStmtNode creates a new statement
  * node for syntax tree construction
  */

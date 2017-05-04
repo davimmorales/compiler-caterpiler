@@ -43,25 +43,35 @@
 
 /* MAXRESERVED = the number of reserved words */
 #define MAXRESERVED 6
+#define VARIABLE_LENGHT 2
+#define EXP_VARIABLE_LENGHT 1
+#define LABEL_SIZE 10
 
 /* Yacc/Bison generates its own integer values
  * for tokens
  */
 typedef int TokenType;
 
-extern FILE* source; /* source code text file */
-extern FILE* listing; /* listing output text file */
+
+// extern FILE* source; /* source code text file */
+// extern FILE* listing; /* listing output text file */
 extern FILE* code; /* code text file for TM simulator */
 
-extern int linenumber; /* source line number for listing */
+extern int linenumber; /* source line number*/
 
 /**************************************************/
 /***********   Syntax tree for parsing ************/
 /**************************************************/
 
-typedef enum {StmtK, ExpK} NodeKind;
+// typedef enum {StmtK, ExpK} NodeKind;
+// typedef enum {IfK, WhileK, AssignK, ReturnK, VarK, VecK, FuncK, FuncVarK, FuncVecK} StmtKind;
+// typedef enum {TypeK, RelOpK, ArithOpK, ConstK, IdK, VecIndexK, CallK} ExpKind;
+
+typedef enum {DecK, StmtK, ExpK, TypeK} NodeKind;
 typedef enum {IfK, WhileK, AssignK, ReturnK, VarK, VecK, FuncK, FuncVarK, FuncVecK} StmtKind;
 typedef enum {TypeK, RelOpK, ArithOpK, ConstK, IdK, VecIndexK, CallK} ExpKind;
+
+
 
 /* ExpType is used for type checking */
 typedef enum {Void, Integer, Boolean} ExpType;

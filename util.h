@@ -25,11 +25,13 @@ void printToken(TokenType, const char*);
 /* Function newStmtNode creates a new statement
  * node for syntax tree construction
  */
-TreeNode * newStmtNode(StmtKind);
 
-/* Function newExpNode creates a new expression
- * node for syntax tree construction
- */
+ /* Function newExpNode creates a new expression
+  * node for syntax tree construction
+  */
+
+TreeNode * newDecNode(DecKind);
+TreeNode * newStmtNode(StmtKind);
 TreeNode * newExpNode(ExpKind);
 
 /* Function countParamArg counts how many parameters/arguments
