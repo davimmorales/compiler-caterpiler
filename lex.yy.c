@@ -542,7 +542,7 @@ char *yytext;
   #include "util.h"
   #include "scan.h"
   #include "parse.h"
-  #include "intermediate.h"
+  /*#include "intermediate.h"*/
 
 
 char tokenString[MAXTOKENLEN+1];
@@ -2041,9 +2041,14 @@ void yyfree (void * ptr )
 
 
 
+int label_counter = 0;
+int temp_counter = 0;
+
 int yywrap() {
   return 1;
 }
+
+list_quadruple *quadruple;
 
 TokenType getToken(void){
   static int firstTime = TRUE;
@@ -2521,92 +2526,144 @@ static void generate_statememt(TreeNode *tree, TipoLista *hash){
       p2 = tree->child[1];
       p3 = tree->child[2];
 
+      char *temp;
+      char *t = "T";
+      char *arg_a;
+      char *label;
+      char *result;
+      char *possible_else;
+
       code_generator_parsing(p1, hash);
-      /*int future_line_loc = freeze_line_loc(p2);*/
-      if(p3)
-        /*future_line_loc++;*/printf("p3 :)\n");
+      sprintf(temp, "%d", temp_counter-1);
+      arg_a = malloc(strlen(t)+strlen(temp)+1);
+      strcpy(arg_a, t);
+      strcat(arg_a, temp);
 
-      /*format_two();
-      format_three();*/
-
+      sprintf(label, "%d", label_counter);
+      result = label;
+      label_counter++;
+      insert_quadruple(quadruple, "none", "none", "if", result);
       code_generator_parsing(p2, hash);
-
       if(p3){
-        /*future_line_loc = freeze_line_loc(p3);
-        format_three();*/
-        printf("p3!\n");
+        sprintf(label, "%d", label_counter);
+        possible_else = label;
+        label_counter++;
+      insert_quadruple(quadruple, "none", "none", "goto", possible_else);
       }
-
+      insert_quadruple(quadruple, "none", "none", "label", result);
       code_generator_parsing(p3, hash);
       break;
     }
     case WhileK:{
       p1 = tree->child[0];
       p2 = tree->child[1];
-      /*int past_line_loc = get_line_counter();*/
 
-      /*int future_line_loc = freeze_line_loc(p2) + 2;*/
+      char *comparison_label;
+      char *label;
+      char *result;
+      char *arg_a;
+      char *temp;
+      char *t = "T";
 
-      /*format_two();
-      format_three();*/
+      sprintf(label, "%d", label_counter);
+      comparison_label = label;
+      label_counter++;
+
+      insert_quadruple(quadruple, "none", "none", "label", comparison_label);
+      code_generator_parsing(p1, hash);
+
+      sprintf(temp, "%d", temp_counter-1);
+      arg_a = malloc(strlen(t)+strlen(temp)+1);
+      strcpy(arg_a, t);
+      strcat(arg_a, temp);
+
+      sprintf(label, "%d", label_counter);
+      result = label;
+      label_counter++;
+      insert_quadruple(quadruple, "none", "none", "if", result);
 
       code_generator_parsing(p2, hash);
-      /*format_three();*/
+      insert_quadruple(quadruple, "none", "none", "goto", comparison_label);
+
       break;
     }
     case AssignK:
       p1 = tree->child[0];
-      int memloc = get_variable_mem_loc(p1, hash);
+      char *arg_a;
+      char *result;
+      char *label;
+      char *temp;
+      char *t = "T";
 
-      if(p1->child[0]){ //it's an array
-        code_generator_parsing(tree->child[1], hash);
-        /*format_two();*/
-        code_generator_parsing(p1->child[0], hash);
-        /*format_two();*/
-        int i;
-        int size = 5;//DELETE
-        /*int size = get_array_size(p1);*/
-        /*int end_jump = get_line_counter() + (size*5);*/
-        for(i = memloc; i<size+memloc; i++){
-          /*format_two();
-          format_three();
-          format_three();*/
-          format_four(reg_operation_loader, i, OP_ST);
-          /*format_three();*/
-          }
-          break;
+      if(p1->attr.name)
+        strcpy(arg_a, p1->attr.name);
+      else{
+        sprintf(temp, "%d", temp_counter);
+        arg_a = malloc(strlen(t)+strlen(temp)+1);
+        strcpy(arg_a, t);
+        strcat(arg_a, temp);
+        temp_counter++;
       }
+
+      if(tree->attr.name)
+        strcpy(result, tree->attr.name);
+      else{
+        sprintf(temp, "%d", temp_counter);
+        result = malloc(strlen(t)+strlen(temp)+1);
+        strcpy(result, t);
+        strcat(result, temp);
+        temp_counter++;
+      }
+      /*if(p1->child[0]){ //it's an array
+        code_generator_parsing(tree->child[1], hash);
+        code_generator_parsing(p1->child[0], hash);
+      }*/
+
       code_generator_parsing(tree->child[1], hash);
-      format_four(reg_result, memloc, OP_ST);
+
+      insert_quadruple(quadruple, arg_a, "none", "assign", result);
+      /*insert_quadruple(quadruple, )*/
       break;
       case CallK:
         if(!strcmp("input", tree->attr.name))
-          format_four(reg_result,0,OP_IN);
+          insert_quadruple(quadruple, "none", "none", "call", "input");
         else if(!strcmp("output", tree->attr.name)){
+          insert_quadruple(quadruple, "none", "none", "call", "output");
           code_generator_parsing(tree->child[0], hash);
-          format_four(reg_result,0,OP_OUT);
         }
         else{
-          printf("general function call\n");
+          insert_quadruple(quadruple, "none", "none", "call", tree->attr.name);
+
           /*if(get_skip_print())
               break;*/
-            /*TreeNode *recovered_tree = get_tree_from_table(tree->attr.name);
-            code_generator_parsing(recovered_tree->child[0]);
+            /*TreeNode *recovered_tree = get_tree_from_table(tree->attr.name);*/
+            /*code_generator_parsing(recovered_tree->child[0]);*/
 
-            TreeNode *assign_tree_parameters = build_parameter_tree(tree, recovered_tree);
-            code_generator_parsing(assign_tree_parameters);
+            /*TreeNode *assign_tree_parameters = build_parameter_tree(tree, recovered_tree);*/
+            /*code_generator_parsing(assign_tree_parameters);*/
 
-            int function_start_line = keep_line_loc(tree);*/
-            /*format_four(reg_context_offset, );*/
-            /*format_three();*/
+            /*int function_start_line = keep_line_loc(tree);*/
           }
           break;
           case ReturnK:
-            printf("return\n");
             aux = tree->child[0];
-            if(aux)
+
+            char *ret;
+            char *rtmp;
+            char *w = "T";
+
+            if(aux){
               code_generator_parsing(aux, hash);
-            /*format_three();*/
+
+              sprintf(rtmp, "%d", temp_counter);
+              ret = malloc(strlen(t)+strlen(rtmp)+1);
+              strcpy(ret, w);
+              strcat(ret, rtmp);
+              temp_counter++;
+
+              insert_quadruple(quadruple, "none", "none", "return", ret);
+            }
+            insert_quadruple(quadruple, "none", "none", "return", " ");
             break;
           default:
             break;
@@ -2620,12 +2677,11 @@ static void generate_expression(TreeNode *tree, TipoLista *hash){
   TreeNode *p1, *p2;
   switch(tree->kind.exp){
     case ConstK:
-      format_four(reg_result, tree->attr.value, OP_ADDI);
-      printf("Constk\n");
+      /*format_four(reg_result, tree->attr.value, OP_ADDI);*/
+      /*printf("Constk\n");*/
     break;
     case IdK:
       loc = get_variable_mem_loc(tree, hash);
-      printf("id\n");
       p1 = tree->child[0];
       if(p1){//array
         code_generator_parsing(p1, hash);
@@ -2638,86 +2694,110 @@ static void generate_expression(TreeNode *tree, TipoLista *hash){
           /*format_two();
           format_two();
           format_three();*/
-          format_four(reg_result, i, OP_LD);
+          /*format_four(reg_result, i, OP_LD);*/
           /*format_three();*/
         }
         break;
       }
-      format_four(reg_result, loc, OP_LD);
+      /*format_four(reg_result, loc, OP_LD);*/
       break;
 
       case OpK:
         p1 = tree->child[0];
         p2 = tree->child[1];
+        char *arg_a;
+        char *arg_b;
+        char *result;
+        char *label;
+        char *temp;
+        char *t = "T";
+
+        if(p1->attr.name)
+          strcpy(arg_a, p1->attr.name);
+        else{
+          sprintf(temp, "%d", temp_counter);
+          arg_a = malloc(strlen(t)+strlen(temp)+1);
+          strcpy(arg_a, t);
+          strcat(arg_a, temp);
+          temp_counter++;
+        }
+
+        if(p2->attr.name)
+          strcpy(arg_b, p2->attr.name);
+        else{
+          sprintf(temp, "%d", temp_counter);
+          arg_b = malloc(strlen(t)+strlen(temp)+1);
+          strcpy(arg_b, t);
+          strcat(arg_b, temp);
+          temp_counter++;
+        }
+
+        if(tree->attr.name)
+          strcpy(result, tree->attr.name);
+        else{
+          sprintf(temp, "%d", temp_counter);
+          result = malloc(strlen(t)+strlen(temp)+1);
+          strcpy(result, t);
+          strcat(result, temp);
+          temp_counter++;
+        }
+
         code_generator_parsing(p1, hash);
-        /*format_two();*/
         code_generator_parsing(p2, hash);
-        /*format_two();
-        format_two();*/
+
         switch(tree->attr.oprtr){
           case PLUS:
-          format_one(reg_result, reg_operation_left, reg_operation_right, OP_ADD);
-          printf("plus\n");
+          insert_quadruple(quadruple, arg_a, arg_b, "plus", result);
           break;
           case MINUS:
-          format_one(reg_result, reg_operation_left, reg_operation_right, OP_SUB);
-          printf("minus\n");
+          insert_quadruple(quadruple, arg_a, arg_b, "minus", result);
           break;
           case TIMES:
-          format_one(reg_result, reg_operation_left, reg_operation_right, OP_MUL);
-            /*format_four();
-            format_two();
-            format_three();
-            format_one();
-            format_three();*/
+          insert_quadruple(quadruple, arg_a, arg_b, "times", result);
             break;
           case OVER:
-          format_one(reg_result, reg_operation_left, reg_operation_right, OP_DIV);
-            /*format_four();
-            format_one();
-            format_three();
-            format_two();
-            format_three();*/
+          insert_quadruple(quadruple, arg_a, arg_b, "over", result);
             break;
           case LT:
-            format_one(reg_result, reg_operation_left, reg_operation_right, OP_SLT);
-            /*format_four();
-            format_one();
-            format_three();
-            format_four();*/
+            sprintf(label, "%d", label_counter);
+            insert_quadruple(quadruple, "none", "none", "label", label);
+            insert_quadruple(quadruple, arg_a, arg_b, "lt", result);
+            label_counter++;
+
             break;
           case HT:
-          format_one(reg_result, reg_operation_right, reg_operation_left, OP_SLT);
-            /*format_four();
-            format_one();
-            format_three();
-            format_four();*/
+          sprintf(label, "%d", label_counter);
+          insert_quadruple(quadruple, "none", "none", "label", label);
+          insert_quadruple(quadruple, arg_a, arg_b, "ht", result);
+          label_counter++;
+
             break;
           case LET:
-          /*format_four();
-          format_one();
-          format_three();
-          format_three();
-          format_four();*/
+          sprintf(label, "%d", label_counter);
+          insert_quadruple(quadruple, "none", "none", "label", label);
+          insert_quadruple(quadruple, arg_a, arg_b, "let", result);
+          label_counter++;
+
           break;
           case HET:
-          /*format_four();
-          format_one();
-          format_three();
-          format_three();
-          format_four();*/
+          sprintf(label, "%d", label_counter);
+          insert_quadruple(quadruple, "none", "none", "label", label);
+          insert_quadruple(quadruple, arg_a, arg_b, "het", result);
+          label_counter++;
+
           break;
           case NEQ:
-          /*format_four();
-          format_one();
-          format_three();
-          format_four();*/
+          sprintf(label, "%d", label_counter);
+          insert_quadruple(quadruple, "none", "none", "label", label);
+          insert_quadruple(quadruple, arg_a, arg_b, "neq", result);
+          label_counter++;
+
           break;
           case EQ:
-          /*format_four();
-          format_one();
-          format_three();
-          format_four();*/
+          sprintf(label, "%d", label_counter);
+          insert_quadruple(quadruple, "none", "none", "label", label);
+          insert_quadruple(quadruple, arg_a, arg_b, "eq", result);
+          label_counter++;
           break;
           default:break;
         }default:break;
@@ -2730,7 +2810,7 @@ static void generate_declaration(TreeNode *tree, TipoLista *hash){
   switch(tree->kind.dec){
     case FuncDecK:
       if(!strcmp(tree->attr.name,"main"))
-        /*jump_to_main();*/printf("main\n");
+        /*jump_to_main();*/insert_quadruple(quadruple, "none", "none", "label", "main");
       aux = tree->child[0];
       if(aux)
         code_generator_parsing(aux, hash);
@@ -2738,8 +2818,8 @@ static void generate_declaration(TreeNode *tree, TipoLista *hash){
       /*if(tree->type = Void){
         ignore
       }*/
-      if(strcmp(tree->attr.name,"main"))
-        /*format_tree_assembly();*/printf("not main\n");
+      if(strcmp(tree->attr.name,"main")&&tree->attr.name)
+        /*format_tree_assembly();*/insert_quadruple(quadruple, "none", "none", "label", tree->attr.name);
     break;
     case VarK:
     aux = tree->child[0];
