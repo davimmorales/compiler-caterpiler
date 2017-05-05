@@ -66,6 +66,24 @@ extern int linenumber; /* source line number*/
 // typedef enum {StmtK, ExpK} NodeKind;
 // typedef enum {IfK, WhileK, AssignK, ReturnK, VarK, VecK, FuncK, FuncVarK, FuncVecK} StmtKind;
 // typedef enum {TypeK, RelOpK, ArithOpK, ConstK, IdK, VecIndexK, CallK} ExpKind;
+/* Kinds of Operands */
+// typedef enum {TempK, SymtabK, ImmK, AILK} OperandKind;
+// /* Assembly Instruction Set: 21 instructions */
+// typedef enum {
+//                 /* 5 Arithmetic instructions */
+//                 AddK, SubK, MultK, DivK, RemK,
+//                 /* 6 Logical instructions */
+//                 CmpEqK, CmpNEqK, CmpGK, CmpGEqK, CmpLK, CmpLEqK,
+//                 /* 2 Data Transfer instructions */
+//                 VarAsgK, VecAsgKK,
+//                 /* 2 (In|Out)put instructions */
+//                 InK, OutK,
+//                 /* 3 Function/Procedure instructions */
+//                 ParamK, CallK, RetK,
+//                 /* 3 Flow Control instructions */
+//                 IfTrueK, GotoK, HaltK
+// } AsmInstKind;
+
 
 typedef enum {DecK, StmtK, ExpK, TypeK} NodeKind;
 typedef enum {IfK, WhileK, AssignK, ReturnK, CallK} StmtKind;
@@ -102,31 +120,69 @@ typedef struct treeNode{
     ExpType type; /* for type checking of exps */
 } TreeNode;
 
+
+
+typedef struct TipoID{
+    char nomeID[20];
+    char tipoID[20];
+    char tipoData[10];
+    char escopo[30];
+    int linhas[50];
+    int memloc;
+    int size;
+    int top;
+    struct TipoID *prox;
+}TipoID;
+
+typedef struct{
+    TipoID *start;
+}TipoLista;
+
+typedef struct type_quadruple{
+  char operation[20];
+  char argument_a[20];
+  char argument_b[20];
+  char result[20];
+  struct type_quadruple *next;
+}type_quadruple;
+
+typedef struct{
+  type_quadruple *start;
+}list_quadruple;
+
 static char * OP_ADD = "ADD";
 static char * OP_ADDI = "ADDI";
 static char * OP_SUB = "SUB";
 static char * OP_SUBI = "SUBI";
+static char * OP_MUL = "MUL";
+static char * OP_DIV = "DIV";
+static char * OP_INC = "INC";
+static char * OP_DEC = "DEC";
 static char * OP_AND = "AND";
-static char * OP_ANDI = "ANDI";
 static char * OP_OR = "OR";
-static char * OP_ORI = "ORI";
+static char * OP_MOD = "MOD";
+static char * OP_XOR = "XOR";
 static char * OP_NOT = "NOT";
-static char * OP_SR = "SR";
-static char * OP_SL = "SL";
-static char * OP_LOAD = "LOAD";
-static char * OP_LOADI = "LOADI";
-static char * OP_STORE = "STORE";
-static char * OP_JUMP = "JUMP";
+static char * OP_SHR = "SHR";
+static char * OP_SHL = "SHL";
+static char * OP_PBC = "PBC";
+static char * OP_BOZ = "BOZ";
+static char * OP_BON = "BON";
+static char * OP_SLT = "SLT";
+static char * OP_LD = "LD";
+static char * OP_LDI = "LDI";
+static char * OP_ST = "ST";
+static char * OP_JMP = "JMP";
+static char * OP_NOP = "NOP";
+static char * OP_HLT = "HLT";
+static char * OP_IN = "IN";
+static char * OP_OUT = "OUT";
+// NOT MINE
 static char * OP_JUMPI = "JUMPI";
 static char * OP_JZI = "JZI";
 static char * OP_JN = "JN";
 static char * OP_JNI = "JNI";
 static char * OP_MOVE = "MOVE";
-static char * OP_NOP = "NOP";
-static char * OP_HLT = "HLT";
-static char * OP_IN = "IN";
-static char * OP_OUT = "OUT";
-
 
 /**************************************************/
 /***********   Flags for tracing       ************/
