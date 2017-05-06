@@ -10,6 +10,7 @@
   #include "util.h"
   #include "scan.h"
   #include "parse.h"
+  #include "intermediate.h"
 
 
 char tokenString[MAXTOKENLEN+1];
@@ -99,7 +100,7 @@ TokenType getToken(void){
 
   /*printf("\t%d", linenumber);*/
   /*printf("%d %s %d\n", current, tokenString, linenumber);*/
-  printToken(current, tokenString);
+  /*printToken(current, tokenString); this is the one*/
   return current;
 }
 
@@ -122,7 +123,7 @@ char R_side[20];
 int verState = 0;
 int voidFlag = 0;
 
-typedef struct TipoID{
+/*typedef struct TipoID{
     char nomeID[20];
     char tipoID[20];
     char tipoData[10];
@@ -130,7 +131,7 @@ typedef struct TipoID{
     int linhas[50];
     int top;
     struct TipoID *prox;
-}TipoID;
+}TipoID;*/
 
 typedef struct TypeSync{
   char name[45];
@@ -140,10 +141,6 @@ typedef struct TypeSync{
   int top;
   struct TypeSync *next;
 }TypeSync;
-
-typedef struct{
-    TipoID *start;
-}TipoLista;
 
 typedef struct{
   TypeSync *start;
@@ -685,7 +682,9 @@ i = 0;
 
   printf("Finished.\n");
 
-
+  /*for(i = 0; i < 211; i++) {
+    hash_table[i].start = NULL;
+  }*/
 
   /*printIDList(&id_list);*/
 
@@ -694,11 +693,13 @@ i = 0;
 
   printTree(syntaxTree);
 
-  printf("Name(ID)  Type(ID)  Type(Data)   Scope    Appears in lines\n");
+  generate_intermediate_code(syntaxTree);
+
+  /*printf("Name(ID)  Type(ID)  Type(Data)   Scope    Appears in lines\n");
   for(i = 0;i<211;i++){
       if(&vetor[i]!=NULL)
       printWTable(vetor, i);
-  }
+  }*/
 
   return 0;
 }

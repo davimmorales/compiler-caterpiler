@@ -2,7 +2,6 @@
 /* File: globals.h                                  */
 /* Global types and vars for C- compiler            */
 /* must come before other include files             */
-/* Rodrigo de Farias Ramires                        */
 /****************************************************/
 
 #ifndef _GLOBALS_H_
@@ -91,6 +90,21 @@ typedef struct treeNode{
     ExpType type; /* for type checking of exps */
 } TreeNode;
 
+typedef struct TipoID{
+    char nomeID[20];
+    char tipoID[20];
+    char tipoData[10];
+    char escopo[30];
+    int linhas[50];
+    int top;
+    struct TipoID *prox;
+}TipoID;
+
+typedef struct{
+    TipoID *start;
+}TipoLista;
+
+// extern TipoLista hash_table[211];
 
 
 /**************************************************/
