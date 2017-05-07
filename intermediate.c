@@ -14,6 +14,7 @@
 // }
 
 static int temporary = 0;
+static int label = 0;
 
 static void generate_relop(TreeNode *tree) {
   TreeNode *c0, *c1, *c2;
@@ -292,16 +293,172 @@ static void generate_arithop(TreeNode *tree){
 
   switch (tree->attr.oprtr) {
     case PLUS:
-      printf("PLUS\n");
+      if(c0){
+        if(c0->kind.stmt == VarK){
+          strcpy(quad->address_1.name, c0->attr.name);
+          quad->address_1.kind = String;
+          printf("%s\n", quad->address_1.name);
+        }else if (c0->kind.exp == ConstK) {
+          quad->address_1.value = c0->attr.value;
+          quad->address_1.kind = IntConst;
+          printf("%d\n", quad->address_1.value);
+        }else{
+          generate_intermediate_code(c0);
+          printf("%d\n", temporary);
+          quad->address_1.value = temporary;
+          quad->address_1.kind = Temp;
+          temporary++;
+        }
+      }
+
+      if(c1){
+        if(c1->kind.stmt == VarK){
+          strcpy(quad->address_2.name, c1->attr.name);
+          quad->address_2.kind = String;
+          printf("%s\n", quad->address_2.name);
+        }else if (c1->kind.exp == ConstK) {
+          quad->address_2.value = c1->attr.value;
+          quad->address_2.kind = IntConst;
+          printf("%d\n", quad->address_2.value);
+        }else{
+          generate_intermediate_code(c1);
+          printf("%d\n", temporary);
+          quad->address_2.value = temporary;
+          quad->address_2.kind = Temp;
+          temporary++;
+        }
+      }
+      quad->address_3.value = temporary;
+      quad->address_3.kind = Temp;
+      temporary++;
+
+      quad->op = AddK;
       break;
     case MINUS:
-      printf("MINUS\n");
+      if(c0){
+        if(c0->kind.stmt == VarK){
+          strcpy(quad->address_1.name, c0->attr.name);
+          quad->address_1.kind = String;
+          printf("%s\n", quad->address_1.name);
+        }else if (c0->kind.exp == ConstK) {
+          quad->address_1.value = c0->attr.value;
+          quad->address_1.kind = IntConst;
+          printf("%d\n", quad->address_1.value);
+        }else{
+          generate_intermediate_code(c0);
+          printf("%d\n", temporary);
+          quad->address_1.value = temporary;
+          quad->address_1.kind = Temp;
+          temporary++;
+        }
+      }
+
+      if(c1){
+        if(c1->kind.stmt == VarK){
+          strcpy(quad->address_2.name, c1->attr.name);
+          quad->address_2.kind = String;
+          printf("%s\n", quad->address_2.name);
+        }else if (c1->kind.exp == ConstK) {
+          quad->address_2.value = c1->attr.value;
+          quad->address_2.kind = IntConst;
+          printf("%d\n", quad->address_2.value);
+        }else{
+          generate_intermediate_code(c1);
+          printf("%d\n", temporary);
+          quad->address_2.value = temporary;
+          quad->address_2.kind = Temp;
+          temporary++;
+        }
+      }
+      quad->address_3.value = temporary;
+      quad->address_3.kind = Temp;
+      temporary++;
+
+      quad->op = SubK;
       break;
     case TIMES:
-      printf("TIMES\n");
+      if(c0){
+        if(c0->kind.stmt == VarK){
+          strcpy(quad->address_1.name, c0->attr.name);
+          quad->address_1.kind = String;
+          printf("%s\n", quad->address_1.name);
+        }else if (c0->kind.exp == ConstK) {
+          quad->address_1.value = c0->attr.value;
+          quad->address_1.kind = IntConst;
+          printf("%d\n", quad->address_1.value);
+        }else{
+          generate_intermediate_code(c0);
+          printf("%d\n", temporary);
+          quad->address_1.value = temporary;
+          quad->address_1.kind = Temp;
+          temporary++;
+        }
+      }
+
+      if(c1){
+        if(c1->kind.stmt == VarK){
+          strcpy(quad->address_2.name, c1->attr.name);
+          quad->address_2.kind = String;
+          printf("%s\n", quad->address_2.name);
+        }else if (c1->kind.exp == ConstK) {
+          quad->address_2.value = c1->attr.value;
+          quad->address_2.kind = IntConst;
+          printf("%d\n", quad->address_2.value);
+        }else{
+          generate_intermediate_code(c1);
+          printf("%d\n", temporary);
+          quad->address_2.value = temporary;
+          quad->address_2.kind = Temp;
+          temporary++;
+        }
+      }
+      quad->address_3.value = temporary;
+      quad->address_3.kind = Temp;
+      temporary++;
+
+      quad->op = TimK;
       break;
     case OVER:
-      printf("OVER\n");
+      if(c0){
+        if(c0->kind.stmt == VarK){
+          strcpy(quad->address_1.name, c0->attr.name);
+          quad->address_1.kind = String;
+          printf("%s\n", quad->address_1.name);
+        }else if (c0->kind.exp == ConstK) {
+          quad->address_1.value = c0->attr.value;
+          quad->address_1.kind = IntConst;
+          printf("%d\n", quad->address_1.value);
+        }else{
+          generate_intermediate_code(c0);
+          printf("%d\n", temporary);
+          quad->address_1.value = temporary;
+          quad->address_1.kind = Temp;
+          temporary++;
+        }
+      }
+
+      if(c1){
+        if(c1->kind.stmt == VarK){
+          strcpy(quad->address_2.name, c1->attr.name);
+          quad->address_2.kind = String;
+          printf("%s\n", quad->address_2.name);
+        }else if (c1->kind.exp == ConstK) {
+          quad->address_2.value = c1->attr.value;
+          quad->address_2.kind = IntConst;
+          printf("%d\n", quad->address_2.value);
+        }else{
+          generate_intermediate_code(c1);
+          printf("%d\n", temporary);
+          quad->address_2.value = temporary;
+          quad->address_2.kind = Temp;
+          temporary++;
+        }
+      }
+      quad->address_3.value = temporary;
+      quad->address_3.kind = Temp;
+      temporary++;
+
+      quad->op = OvrK;
       break;
     default:
       break;
@@ -314,20 +471,35 @@ static void generate_statement(TreeNode *tree) {
   c0 = tree->child[0];
   c1 = tree->child[1];
   c2 = tree->child[2];
+  int aux;
+  int aux2;
+  int aux3;
 
   switch (tree->kind.stmt) {
     case IfK:
     // printf("IfK\n");
       // if
-      if(c0)
+      if(c0){
         generate_intermediate_code(c0);
-      //store temporary;
+        aux = temporary - 1;
+        aux2 = label;
+        label++;
+        printf("If_false t%d goto L%d\n", aux, aux2);
+      }
       // then
-      // if(c1)
-      //   generate_intermediate_code(c1);
+      if(c1)
+        generate_intermediate_code(c1);
+      if (c2) {
+        aux3 = label;
+        label++;
+        printf("goto L%d\n", aux3);
+      }
+      printf("L%d:\n", aux2);
       // else
-      // if(c2)
-      //   generate_intermediate_code(c2);
+      if(c2){
+        generate_intermediate_code(c2);
+        printf("L%d: ", aux3);
+      }
       break;
     case WhileK:
       printf("WhileK\n");

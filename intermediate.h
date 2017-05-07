@@ -11,7 +11,7 @@
  */
 typedef enum {
   // arithmetic
-  AddK, SubK, MulK, DivK,
+  AddK, SubK, TimK, OvrK,
   // relational
   EqlK, NeqK, GtrK, GeqK, LsrK, LeqK,
   // data transfer
@@ -21,7 +21,7 @@ typedef enum {
   // function/procedure
   PrmK, CalK, RetK,
   // flow
-  IffK, GtoK, HltK
+  IffK, GtoK, HltK, LblK
  } OpKind;
 
 typedef enum {Empty, IntConst, String, Temp} AddrKind;
