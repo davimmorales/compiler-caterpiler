@@ -23,21 +23,29 @@ typedef enum {
   // flow
   IffK, GtoK, HltK
  } OpKind;
-typedef enum {Empty, IntConst, String} AddrKind;
 
-typedef struct {
-  AddrKind kind;
-    union{
-      int val;
-      char *name;
-    }contents;
+typedef enum {Empty, IntConst, String, Temp} AddrKind;
+
+// typedef struct {
+//   AddrKind kind;
+//     union{
+//       int val;
+//       char *name;
+//     }contents;
+// } Address;
+
+typedef struct{
+    AddrKind kind;
+    int value;
+    char name[20];
 } Address;
 
-typedef struct quadruple{
+typedef struct{
   OpKind op;
   Address address_1, address_2, address_3;
   struct quadruple *next;
 }quadruple;
+
 
 static void generate_statement(TreeNode *tree);
 
