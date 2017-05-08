@@ -577,9 +577,11 @@ static void generate_statement(TreeNode *tree) {
             quad0->address_2.kind = String;
             strcpy(quad0->address_2.name, g1->attr.name);
           }
+          quad0->op = AsaK;
         }else{
           printf("Variable assigned: %s = \n", c0->attr.name);
           quad0->address_2.kind = Empty;
+          quad0->op = AsvK;
         }
         quad0->address_3.kind = String;
         strcpy(quad0->address_3.name, c0->attr.name);
@@ -595,30 +597,41 @@ static void generate_statement(TreeNode *tree) {
         }else if(c1->attr.oprtr==ConstK){
           quad0->address_1.kind = IntConst;
           quad0->address_1.value = c1->attr.value;
-        }else
+        }else if(c1->attr.oprtr==VarK){
           quad0->address_1.kind = String;
           strcpy(quad0->address_1.name, c1->attr.name);
+        }
       }
       // add quad0
       break;
     case ReturnK:
       // printf("ReturnK\n");
+      quad0->address_1.kind = Empty;
+      quad0->address_2.kind = Empty;
       if (!c0) {
         printf("Return void\n");
+        quad0->address_3.kind = Empty;
       }else{
         TreeNode *g1 = c0->child[0];
         if(g1){
           generate_intermediate_code(c0);
           aux = temporary - 1;
           printf("Return t%d\n", aux);
+          quad0->address_3.kind = Temp;
+          quad0->address_3.value = aux;
         }else{
           if (c0->kind.stmt == ConstK) {
             printf("Return %d\n", c0->attr.value);
+            quad0->address_3.kind = IntConst;
+            quad0->address_3.value = c0->attr.value;
           }else
             printf("Return %s\n", c0->attr.name);
+            quad0->address_3.kind = String;
+            strcpy(quad0->address_3.name, c0->attr.name);
         }
       }
-
+      quad0->op = RetK;
+      // add quad0
       break;
     case VarK:
       // printf("Vark\n");
@@ -631,18 +644,23 @@ static void generate_statement(TreeNode *tree) {
     case FuncK:
       printf("FuncK\n");
       printf("Label: %s \n", tree->attr.name);
-
+      quad0->address_1.kind = Empty;
+      quad0->address_2.kind = Empty;
+      quad0->address_3.kind = String;
+      strcpy(quad0->address_3.name, tree->attr.name);
+      quad0->op = LblK;
+      // add quad0
       if (c1) {
         generate_intermediate_code(c1);
       }
       break;
     case FuncVecK:
-      printf("FuncVecK\n");
-      printf("Array: %s\n", c0->attr.name);
+      // printf("FuncVecK\n");
+      // printf("Array: %s\n", c0->attr.name);
       break;
     case FuncVarK:
-      printf("FuncVarK\n");
-      printf("Variable: %s\n", c0->attr.name);
+      // printf("FuncVarK\n");
+      // printf("Variable: %s\n", c0->attr.name);
       break;
     default:
     printf("Oops: uncomment something!\n");
@@ -654,6 +672,9 @@ static void generate_expression(TreeNode *tree) {
   TreeNode *c0, *c1;
   c0 = tree->child[0];
   c1 = tree->child[1];
+
+  quadruple *quad0 = malloc(sizeof(quadruple));
+  quadruple *quad1 = malloc(sizeof(quadruple));
 
   switch (tree->kind.exp) {
     case TypeK:
@@ -677,26 +698,45 @@ static void generate_expression(TreeNode *tree) {
       printf("VecIndexK\n");
       break;
     case CallK:
+    {
+      int count;
       if (!c0) {
         printf("call %s, 0\n", tree->attr.name);
       }else{
-        int count = 0;
         while(c0){
           if (!c0->child[0]) {
             printf("param %s\n", c0->attr.name);
+            quad0->address_1.kind = Empty;
+            quad0->address_2.kind = Empty;
+            quad0->address_3.kind = String;
+            strcpy(quad0->address_3.name, c0->attr.name);
           }else{
             int aux;
             TreeNode *g0 = c0->child[0];
             generate_intermediate_code(c0);
             aux = temporary-1;
             printf("param t%d\n", aux);
+            quad0->address_1.kind = Empty;
+            quad0->address_2.kind = Empty;
+            quad0->address_3.kind = Temp;
+            quad0->address_3.value = aux;
           }
           c0 = c0->sibling;
           count++;
+          quad0->op = PrmK;
+          // add quad0
         }
         printf("call %s, %d\n", tree->attr.name, count);
       }
+      quad1->address_1.kind = IntConst;
+      quad1->address_1.value = count;
+      quad1->address_2.kind = Empty;
+      quad1->address_3.kind = String;
+      strcpy(quad1->address_3.name, tree->attr.name);
+      quad1->op = CalK;
+      // add quad1
       break;
+    }
     default:
       break;
   }
