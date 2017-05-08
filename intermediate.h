@@ -24,7 +24,7 @@ typedef enum {
   IffK, GtoK, HltK, LblK
  } OpKind;
 
-typedef enum {Empty, IntConst, String, Temp} AddrKind;
+typedef enum {Empty, IntConst, String, Temp, LabAddr} AddrKind;
 
 // typedef struct {
 //   AddrKind kind;
