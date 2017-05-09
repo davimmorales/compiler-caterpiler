@@ -40,7 +40,7 @@ typedef struct{
     char name[20];
 } Address;
 
-typedef struct{
+typedef struct quadruple{
   OpKind op;
   Address address_1, address_2, address_3;
   struct quadruple *next;
@@ -50,12 +50,11 @@ typedef struct{
     quadruple *start;
 }list_quadruple;
 
-list_quadruple lquad;
-
-// void initialize_quad_list(list_quadruple *lquad);
-
 static void generate_statement(list_quadruple *quad_list, TreeNode *tree);
 
 void generate_intermediate_code(list_quadruple *quad_list, TreeNode *tree);
+
+void print_quadruple_list(list_quadruple *quad_list);
+
 
 #endif

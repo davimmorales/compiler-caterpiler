@@ -697,6 +697,9 @@ i = 0;
 
   generate_intermediate_code(&quad_list, syntaxTree);
 
+  printf("\n");
+  print_quadruple_list(&quad_list);
+
   /*printf("Name(ID)  Type(ID)  Type(Data)   Scope    Appears in lines\n");
   for(i = 0;i<211;i++){
       if(&vetor[i]!=NULL)
