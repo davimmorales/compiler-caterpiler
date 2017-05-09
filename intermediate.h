@@ -46,6 +46,13 @@ typedef struct{
   struct quadruple *next;
 }quadruple;
 
+typedef struct{
+    quadruple *start;
+}list_quadruple;
+
+list_quadruple lquad;
+
+void initialize_quad_list(list_quadruple *lquad);
 
 static void generate_statement(TreeNode *tree);
 

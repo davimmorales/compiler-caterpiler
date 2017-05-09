@@ -5,6 +5,18 @@
 static int temporary = 0;
 static int label = 0;
 
+void insert_quadruple(quadruple *quad){
+  quadruple *p = lquad.start;
+  if(p==NULL)
+    lquad.start = quad;
+  else{
+    while(p->next!=NULL)
+      p = p->next;
+    p->next = quad;
+  }
+  printf("Deu certo.\n");
+}
+
 static void generate_relop(TreeNode *tree) {
   TreeNode *c0, *c1, *c2;
   c0 = tree->child[0];
@@ -742,7 +754,7 @@ static void generate_expression(TreeNode *tree) {
   }
 }
 
-void generate_intermediate_code(TreeNode *tree){
+void generate_intermediate_code(list_quadruple quad_list, TreeNode *tree){
   if(tree!=NULL){
     switch (tree->nodekind) {
       case StmtK:
