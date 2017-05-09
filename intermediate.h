@@ -52,10 +52,10 @@ typedef struct{
 
 list_quadruple lquad;
 
-void initialize_quad_list(list_quadruple *lquad);
+// void initialize_quad_list(list_quadruple *lquad);
 
-static void generate_statement(TreeNode *tree);
+static void generate_statement(list_quadruple *quad_list, TreeNode *tree);
 
-void generate_intermediate_code(TreeNode *tree);
+void generate_intermediate_code(list_quadruple *quad_list, TreeNode *tree);
 
 #endif

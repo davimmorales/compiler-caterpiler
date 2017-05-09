@@ -2430,12 +2430,14 @@ int hash = 0;
 // Alocando o vetor estático e inicializando ponteiros com NULL
 TipoLista vetor[211]; //lista de listas
 SyncList id_list;
+list_quadruple quad_list;
 
 for(i = 0; i < 211; i++) {
   vetor[i].start = NULL;
 }
 
 id_list.start = NULL;
+quad_list.start = NULL;
 
 for (i=0;i<=100000;i++) buf[i] = 0;
 
@@ -2649,7 +2651,7 @@ i = 0;
 
   printTree(syntaxTree);
 
-  generate_intermediate_code(syntaxTree);
+  generate_intermediate_code(&quad_list, syntaxTree);
 
   /*printf("Name(ID)  Type(ID)  Type(Data)   Scope    Appears in lines\n");
   for(i = 0;i<211;i++){
