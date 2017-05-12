@@ -1,7 +1,6 @@
 /****************************************************/
 /* File: scan.h                                     */
 /* The scanner interface for the C- compiler        */
-/* Rodrigo de Farias Ramires                        */
 /****************************************************/
 
 #ifndef _SCAN_H_
@@ -13,7 +12,7 @@
 /* tokenString array stores the lexeme of each token */
 extern char tokenString[MAXTOKENLEN+1];
 
-/* function getToken returns the 
+/* function getToken returns the
  * next token in source file
  */
 TokenType getToken(void);

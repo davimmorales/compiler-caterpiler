@@ -2,7 +2,6 @@
 /* File: util.c                                     */
 /* Utility function implementation                  */
 /* for the C- compiler                              */
-/* Rodrigo de Farias Ramires                        */
 /****************************************************/
 
 #include "globals.h"

@@ -1,8 +1,8 @@
-/* gcd sem erros */
+/* gdc sem erros */
 
 /* teste de função com parâmetros e corpo sem declarações */
-
-int gdc (int u, int v){
+int gdc (int u, int v)
+{
     /* teste de seleção, expressões, return e chamada de função */
     if (v == 0) return u;
     else return gdc(v,u-u/v*v);
@@ -29,6 +29,7 @@ void main(void)
    int i;
    int v[10];
 
+
    /* chamadas de funções */
    x = input();
    y = input();
@@ -39,12 +40,12 @@ void main(void)
    x = 1;
    while (x <= 10)
    {
-      u = u + 1;  
+      u = u + 1;
       v[i] = u;
-      x = x + 1; 
+      x = x + 1;
    }
 
-   /* teste return simples */   
+   /* teste return simples */
    return;
 
 }

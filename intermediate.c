@@ -5,16 +5,101 @@
 static int temporary = 0;
 static int label = 0;
 static int flag_param = 0;
+int test_count=0;
+int number_of_quadruples = 0;
+FILE *file_quadruples;
+FILE *file_read_quadruples;
+
+void store_quadruple(OpKind o, AddrKind k1, AddrKind k2, AddrKind k3,
+                     int v1, int v2, int v3,
+                     char n1[], char n2[], char n3[]){
+                      if(k1!=IntConst)
+                        v1 = 1;
+                      if(k2!=IntConst)
+                        v2 = 1;
+                      if(k3!=IntConst)
+                        v3 = 1;
+                      if(k1!=String)
+                        strcpy(n1, "empty");
+                      if(k2!=String)
+                        strcpy(n2, "empty");
+                      if(k3!=String)
+                        strcpy(n3, "empty");
+                      number_of_quadruples++;
+                        fprintf(file_quadruples, "%d %d %d %d %d %d %d %s %s %s\n",
+                        o, k1, k2, k3, v1, v2, v3, n1, n2, n3);
+                     }
 
 void insert_quadruple(list_quadruple *quad_list, quadruple *quad){
-  quadruple *p = quad_list->start;
-  if(p==NULL)
-    quad_list->start = quad;
-  else{
-    while(p->next!=NULL){
-      p = p->next;
+   quadruple *p = quad_list->start;
+   if(p==NULL)
+     quad_list->start = quad;
+   else{
+     while(p->next!=NULL){
+       p = p->next;
+      //  printf("%d\n", p->op);
+     }
+      p->next = quad;
+   }
+}
+
+void insert_quadruples(list_quadruple *quad_list){
+  char word[1024];
+  int item;
+  item = 0;
+  quadruple *quad = malloc(sizeof(quadruple));
+  quad_list->start = NULL;
+  quad = NULL;
+  quad->next = NULL;
+
+  while (fscanf(file_read_quadruples, "%1023s", word) == 1) {
+    switch (item) {
+      case 0:
+        quad->op = atoi(word);
+        // printf("%d %s\n", quad->op, word);
+        item++;
+        break;
+      case 1:
+        quad->address_1.kind = atoi(word);
+        item++;
+        break;
+      case 2:
+        quad->address_2.kind = atoi(word);
+        item++;
+        break;
+      case 3:
+        quad->address_3.kind = atoi(word);
+        item++;
+        break;
+      case 4:
+        quad->address_1.value = atoi(word);
+        item++;
+        break;
+      case 5:
+        quad->address_2.value = atoi(word);
+        item++;
+        break;
+      case 6:
+        quad->address_3.value = atoi(word);
+        item++;
+        break;
+      case 7:
+        strcpy(quad->address_1.name, word);
+        item++;
+        break;
+      case 8:
+        strcpy(quad->address_2.name, word);
+        item++;
+        break;
+      case 9:
+        strcpy(quad->address_3.name, word);
+        item = 0;
+
+        insert_quadruple(quad_list, quad);
+          break;
+      default:
+        break;
     }
-    p->next = quad;
   }
 }
 
@@ -168,7 +253,6 @@ void print_quadruple_list(list_quadruple *quad_list){
         default: break;
       }
       printf("\n");
-
         break;
       case EqlK:
       switch (p->address_3.kind) {
@@ -191,10 +275,6 @@ void print_quadruple_list(list_quadruple *quad_list){
         default: break;
       }
 
-      if (p->address_2.kind==Empty) {
-        printf("\n");
-        break;
-      }
       printf("== ");
       switch (p->address_2.kind) {
         case String: printf("%s ", p->address_2.name);
@@ -393,8 +473,41 @@ void print_quadruple_list(list_quadruple *quad_list){
 
         break;
       case AsvK:
+        printf("%s = ", p->address_3.name);
+        if (p->address_1.kind==String) {
+          printf("%s\n", p->address_1.name);
+        } else if (p->address_1.kind == IntConst) {
+          printf("%d\n", p->address_1.value);
+        }else if(p->address_1.kind==Temp){
+          printf("t%d\n", p->address_1.value);
+        }else printf("%d wrong\n", p->address_1.kind);
         break;
       case AsaK:
+      if (p->address_2.kind==String) {
+        printf("%s[%s] =\n", p->address_3.name, p->address_2.name);
+      } else if (p->address_2.kind == IntConst) {
+        printf("%s[%d] =\n", p->address_3.name, p->address_2.value);
+      }else if(p->address_2.kind==Temp){
+        printf("%s[t%d] =\n", p->address_3.name, p->address_2.value);
+      }
+
+      if (p->address_1.kind==String) {
+        printf("%s\n", p->address_1.name);
+      } else if (p->address_1.kind == IntConst) {
+        printf("%d\n", p->address_1.value);
+      }else if(p->address_1.kind==Temp){
+        printf("t%d\n", p->address_1.value);
+      }
+
+
+
+      if (p->address_1.kind==String) {
+        printf("%s\n", p->address_1.name);
+      } else if (p->address_1.kind == IntConst) {
+        printf("%d\n", p->address_1.value);
+      }else if(p->address_1.kind==Temp){
+        printf("t%d\n", p->address_1.value);
+      }else printf("%d wrong\n", p->address_1.kind);
         break;
       case InnK:
         break;
@@ -405,26 +518,48 @@ void print_quadruple_list(list_quadruple *quad_list){
           printf("param %s\n", p->address_3.name);
         }else if (p->address_3.kind==Temp) {
           printf("param t%d\n", p->address_3.value);
-        }else{
+        }else {
           printf("oops\n");
         }
         break;
       case CalK:
+      printf("Call %s, %d\n", p->address_3.name, p->address_1.value);
         break;
       case RetK:
+        switch (p->address_3.kind) {
+          case Empty:
+            printf("Return\n");
+            break;
+          case Temp:
+            printf("Return t%d\n", p->address_3.value);
+            break;
+          case String:
+            printf("Return %s\n", p->address_3.name);
+            break;
+          case IntConst:
+            printf("Return %d\n", p->address_3.value);
+          default: break;
+        }
+
         break;
       case IffK:
+        printf("If_false t%d goto L%d\n", p->address_1.value, p->address_3.value);
         break;
       case GtoK:
+        printf("goto L%d\n", p->address_3.value);
         break;
       case HltK:
         break;
       case LblK:
+        if (p->address_3.kind==String) {
+          printf("%s: ", p->address_3.name);
+        }else
+        printf("L%d: ", p->address_3.value);
         break;
       default:
         break;
     }
-    printf("%d\n", p->op);
+    // printf("%d\n", p->op);
     p = p->next;
   }
 }
@@ -444,14 +579,14 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
       if(c0->kind.stmt == VarK){
         strcpy(quad->address_1.name, c0->attr.name);
         quad->address_1.kind = String;
-        printf("%s\n", quad->address_1.name);
+        // printf("%s\n", quad->address_1.name);
       }else if (c0->kind.exp == ConstK) {
         quad->address_1.value = c0->attr.value;
         quad->address_1.kind = IntConst;
-        printf("%d\n", quad->address_1.value);
+        // printf("%d\n", quad->address_1.value);
       }else{
         generate_intermediate_code(quad_list, c0);
-        printf("%d\n", temporary);
+        // printf("%d\n", temporary);
         quad->address_1.value = temporary;
         quad->address_1.kind = Temp;
         temporary++;
@@ -462,14 +597,14 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
       if(c1->kind.stmt == VarK){
         strcpy(quad->address_2.name, c1->attr.name);
         quad->address_2.kind = String;
-        printf("%s\n", quad->address_2.name);
+        // printf("%s\n", quad->address_2.name);
       }else if (c1->kind.exp == ConstK) {
         quad->address_2.value = c1->attr.value;
         quad->address_2.kind = IntConst;
-        printf("%d\n", quad->address_2.value);
+        // printf("%d\n", quad->address_2.value);
       }else{
         generate_intermediate_code(quad_list, c1);
-        printf("%d\n", temporary);
+        // printf("%d\n", temporary);
         quad->address_2.value = temporary;
         quad->address_2.kind = Temp;
         temporary++;
@@ -477,24 +612,57 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
     }
     quad->address_3.value = temporary;
     quad->address_3.kind = Temp;
-    temporary++;
+    // temporary++;
 
     quad->op = EqlK;
+    switch (quad->address_3.kind) {
+      case String: printf("%s ", quad->address_3.name);
+        break;
+        case IntConst: printf("%d ", quad->address_3.value);
+        break;
+        case Temp: printf("t%d ", quad->address_3.value);
+        default: break;
+      }
+      printf("= ");
+
+    switch (quad->address_1.kind) {
+      case String: printf("%s ", quad->address_1.name);
+        break;
+      case IntConst: printf("%d ", quad->address_1.value);
+        break;
+      case Temp: printf("t%d ", quad->address_1.value);
+      default: break;
+    }
+
+    printf("== ");
+    switch (quad->address_2.kind) {
+      case String: printf("%s ", quad->address_2.name);
+        break;
+      case IntConst: printf("%d ", quad->address_2.value);
+        break;
+      case Temp: printf("t%d ", quad->address_2.value);
+      default: break;
+    }
+    printf("\n");
+
     insert_quadruple(quad_list, quad);
+    store_quadruple(quad->op, quad->address_1.kind, quad->address_2.kind, quad->address_3.kind,
+                    quad->address_1.value, quad->address_2.value, quad->address_3.value,
+                    quad->address_1.name, quad->address_2.name, quad->address_3.name);
       break;
     case NEQ:
     if(c0){
       if(c0->kind.stmt == VarK){
         strcpy(quad->address_1.name, c0->attr.name);
         quad->address_1.kind = String;
-        printf("%s\n", quad->address_1.name);
+        // printf("%s\n", quad->address_1.name);
       }else if (c0->kind.exp == ConstK) {
         quad->address_1.value = c0->attr.value;
         quad->address_1.kind = IntConst;
-        printf("%d\n", quad->address_1.value);
+        // printf("%d\n", quad->address_1.value);
       }else{
         generate_intermediate_code(quad_list, c0);
-        printf("%d\n", temporary);
+        // printf("%d\n", temporary);
         quad->address_1.value = temporary;
         quad->address_1.kind = Temp;
         temporary++;
@@ -505,14 +673,14 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
       if(c1->kind.stmt == VarK){
         strcpy(quad->address_2.name, c1->attr.name);
         quad->address_2.kind = String;
-        printf("%s\n", quad->address_2.name);
+        // printf("%s\n", quad->address_2.name);
       }else if (c1->kind.exp == ConstK) {
         quad->address_2.value = c1->attr.value;
         quad->address_2.kind = IntConst;
-        printf("%d\n", quad->address_2.value);
+        // printf("%d\n", quad->address_2.value);
       }else{
         generate_intermediate_code(quad_list, c1);
-        printf("%d\n", temporary);
+        // printf("%d\n", temporary);
         quad->address_2.value = temporary;
         quad->address_2.kind = Temp;
         temporary++;
@@ -520,25 +688,58 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
     }
     quad->address_3.value = temporary;
     quad->address_3.kind = Temp;
-    temporary++;
+    // temporary++;
 
     quad->op = NeqK;
     insert_quadruple(quad_list, quad);
+    store_quadruple(quad->op, quad->address_1.kind, quad->address_2.kind, quad->address_3.kind,
+                    quad->address_1.value, quad->address_2.value, quad->address_3.value,
+                    quad->address_1.name, quad->address_2.name, quad->address_3.name);
 
+
+                    switch (quad->address_3.kind) {
+                      case String: printf("%s ", quad->address_3.name);
+                        break;
+                        case IntConst: printf("%d ", quad->address_3.value);
+                        break;
+                        case Temp: printf("t%d ", quad->address_3.value);
+                        default: break;
+                      }
+                      printf("= ");
+
+                    switch (quad->address_1.kind) {
+                      case String: printf("%s ", quad->address_1.name);
+                        break;
+                      case IntConst: printf("%d ", quad->address_1.value);
+                        break;
+                      case Temp: printf("t%d ", quad->address_1.value);
+                      default: break;
+                    }
+
+                    printf("!= ");
+                    switch (quad->address_2.kind) {
+                      case String: printf("%s ", quad->address_2.name);
+                        break;
+                      case IntConst: printf("%d ", quad->address_2.value);
+                        break;
+                      case Temp: printf("t%d ", quad->address_2.value);
+                      default: break;
+                    }
+                    printf("\n");
     break;
     case LT:
       if(c0){
         if(c0->kind.stmt == VarK){
           strcpy(quad->address_1.name, c0->attr.name);
           quad->address_1.kind = String;
-          printf("%s\n", quad->address_1.name);
+          // printf("%s\n", quad->address_1.name);
         }else if (c0->kind.exp == ConstK) {
           quad->address_1.value = c0->attr.value;
           quad->address_1.kind = IntConst;
-          printf("%d\n", quad->address_1.value);
+          // printf("%d\n", quad->address_1.value);
         }else{
           generate_intermediate_code(quad_list, c0);
-          printf("%d\n", temporary);
+          // printf("%d\n", temporary);
           quad->address_1.value = temporary;
           quad->address_1.kind = Temp;
           temporary++;
@@ -549,14 +750,14 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
         if(c1->kind.stmt == VarK){
           strcpy(quad->address_2.name, c1->attr.name);
           quad->address_2.kind = String;
-          printf("%s\n", quad->address_2.name);
+          // printf("%s\n", quad->address_2.name);
         }else if (c1->kind.exp == ConstK) {
           quad->address_2.value = c1->attr.value;
           quad->address_2.kind = IntConst;
-          printf("%d\n", quad->address_2.value);
+          // printf("%d\n", quad->address_2.value);
         }else{
           generate_intermediate_code(quad_list, c1);
-          printf("%d\n", temporary);
+          // printf("%d\n", temporary);
           quad->address_2.value = temporary;
           quad->address_2.kind = Temp;
           temporary++;
@@ -564,25 +765,56 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
       }
       quad->address_3.value = temporary;
       quad->address_3.kind = Temp;
-      temporary++;
+      // temporary++;
 
       quad->op = LsrK;
       insert_quadruple(quad_list, quad);
+      store_quadruple(quad->op, quad->address_1.kind, quad->address_2.kind, quad->address_3.kind,
+                      quad->address_1.value, quad->address_2.value, quad->address_3.value,
+                      quad->address_1.name, quad->address_2.name, quad->address_3.name);
+                      switch (quad->address_3.kind) {
+                        case String: printf("%s ", quad->address_3.name);
+                          break;
+                          case IntConst: printf("%d ", quad->address_3.value);
+                          break;
+                          case Temp: printf("t%d ", quad->address_3.value);
+                          default: break;
+                        }
+                        printf("= ");
 
+                      switch (quad->address_1.kind) {
+                        case String: printf("%s ", quad->address_1.name);
+                          break;
+                        case IntConst: printf("%d ", quad->address_1.value);
+                          break;
+                        case Temp: printf("t%d ", quad->address_1.value);
+                        default: break;
+                      }
+
+                      printf("< ");
+                      switch (quad->address_2.kind) {
+                        case String: printf("%s ", quad->address_2.name);
+                          break;
+                        case IntConst: printf("%d ", quad->address_2.value);
+                          break;
+                        case Temp: printf("t%d ", quad->address_2.value);
+                        default: break;
+                      }
+                      printf("\n");
       break;
     case LET:
       if(c0){
         if(c0->kind.stmt == VarK){
           strcpy(quad->address_1.name, c0->attr.name);
           quad->address_1.kind = String;
-          printf("%s\n", quad->address_1.name);
+          // printf("%s\n", quad->address_1.name);
         }else if (c0->kind.exp == ConstK) {
           quad->address_1.value = c0->attr.value;
           quad->address_1.kind = IntConst;
-          printf("%d\n", quad->address_1.value);
+          // printf("%d\n", quad->address_1.value);
         }else{
           generate_intermediate_code(quad_list, c0);
-          printf("%d\n", temporary);
+          // printf("%d\n", temporary);
           quad->address_1.value = temporary;
           quad->address_1.kind = Temp;
           temporary++;
@@ -593,14 +825,14 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
         if(c1->kind.stmt == VarK){
           strcpy(quad->address_2.name, c1->attr.name);
           quad->address_2.kind = String;
-          printf("%s\n", quad->address_2.name);
+          // printf("%s\n", quad->address_2.name);
         }else if (c1->kind.exp == ConstK) {
           quad->address_2.value = c1->attr.value;
           quad->address_2.kind = IntConst;
-          printf("%d\n", quad->address_2.value);
+          // printf("%d\n", quad->address_2.value);
         }else{
           generate_intermediate_code(quad_list, c1);
-          printf("%d\n", temporary);
+          // printf("%d\n", temporary);
           quad->address_2.value = temporary;
           quad->address_2.kind = Temp;
           temporary++;
@@ -608,25 +840,56 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
       }
       quad->address_3.value = temporary;
       quad->address_3.kind = Temp;
-      temporary++;
+      // temporary++;
 
       quad->op = LeqK;
       insert_quadruple(quad_list, quad);
+      store_quadruple(quad->op, quad->address_1.kind, quad->address_2.kind, quad->address_3.kind,
+                      quad->address_1.value, quad->address_2.value, quad->address_3.value,
+                      quad->address_1.name, quad->address_2.name, quad->address_3.name);
+                      switch (quad->address_3.kind) {
+                        case String: printf("%s ", quad->address_3.name);
+                          break;
+                          case IntConst: printf("%d ", quad->address_3.value);
+                          break;
+                          case Temp: printf("t%d ", quad->address_3.value);
+                          default: break;
+                        }
+                        printf("= ");
 
+                      switch (quad->address_1.kind) {
+                        case String: printf("%s ", quad->address_1.name);
+                          break;
+                        case IntConst: printf("%d ", quad->address_1.value);
+                          break;
+                        case Temp: printf("t%d ", quad->address_1.value);
+                        default: break;
+                      }
+
+                      printf("<= ");
+                      switch (quad->address_2.kind) {
+                        case String: printf("%s ", quad->address_2.name);
+                          break;
+                        case IntConst: printf("%d ", quad->address_2.value);
+                          break;
+                        case Temp: printf("t%d ", quad->address_2.value);
+                        default: break;
+                      }
+                      printf("\n");
       break;
     case HT:
       if(c0){
         if(c0->kind.stmt == VarK){
           strcpy(quad->address_1.name, c0->attr.name);
           quad->address_1.kind = String;
-          printf("%s\n", quad->address_1.name);
+          // printf("%s\n", quad->address_1.name);
         }else if (c0->kind.exp == ConstK) {
           quad->address_1.value = c0->attr.value;
           quad->address_1.kind = IntConst;
-          printf("%d\n", quad->address_1.value);
+          // printf("%d\n", quad->address_1.value);
         }else{
           generate_intermediate_code(quad_list, c0);
-          printf("%d\n", temporary);
+          // printf("%d\n", temporary);
           quad->address_1.value = temporary;
           quad->address_1.kind = Temp;
           temporary++;
@@ -637,14 +900,14 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
         if(c1->kind.stmt == VarK){
           strcpy(quad->address_2.name, c1->attr.name);
           quad->address_2.kind = String;
-          printf("%s\n", quad->address_2.name);
+          // printf("%s\n", quad->address_2.name);
         }else if (c1->kind.exp == ConstK) {
           quad->address_2.value = c1->attr.value;
           quad->address_2.kind = IntConst;
-          printf("%d\n", quad->address_2.value);
+          // printf("%d\n", quad->address_2.value);
         }else{
           generate_intermediate_code(quad_list, c1);
-          printf("%d\n", temporary);
+          // printf("%d\n", temporary);
           quad->address_2.value = temporary;
           quad->address_2.kind = Temp;
           temporary++;
@@ -652,25 +915,56 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
       }
       quad->address_3.value = temporary;
       quad->address_3.kind = Temp;
-      temporary++;
+      // temporary++;
 
       quad->op = GtrK;
       insert_quadruple(quad_list, quad);
+      store_quadruple(quad->op, quad->address_1.kind, quad->address_2.kind, quad->address_3.kind,
+                      quad->address_1.value, quad->address_2.value, quad->address_3.value,
+                      quad->address_1.name, quad->address_2.name, quad->address_3.name);
+                      switch (quad->address_3.kind) {
+                        case String: printf("%s ", quad->address_3.name);
+                          break;
+                          case IntConst: printf("%d ", quad->address_3.value);
+                          break;
+                          case Temp: printf("t%d ", quad->address_3.value);
+                          default: break;
+                        }
+                        printf("= ");
 
+                      switch (quad->address_1.kind) {
+                        case String: printf("%s ", quad->address_1.name);
+                          break;
+                        case IntConst: printf("%d ", quad->address_1.value);
+                          break;
+                        case Temp: printf("t%d ", quad->address_1.value);
+                        default: break;
+                      }
+
+                      printf("> ");
+                      switch (quad->address_2.kind) {
+                        case String: printf("%s ", quad->address_2.name);
+                          break;
+                        case IntConst: printf("%d ", quad->address_2.value);
+                          break;
+                        case Temp: printf("t%d ", quad->address_2.value);
+                        default: break;
+                      }
+                      printf("\n");
       break;
     case HET:
       if(c0){
         if(c0->kind.stmt == VarK){
           strcpy(quad->address_1.name, c0->attr.name);
           quad->address_1.kind = String;
-          printf("%s\n", quad->address_1.name);
+          // printf("%s\n", quad->address_1.name);
         }else if (c0->kind.exp == ConstK) {
           quad->address_1.value = c0->attr.value;
           quad->address_1.kind = IntConst;
-          printf("%d\n", quad->address_1.value);
+          // printf("%d\n", quad->address_1.value);
         }else{
           generate_intermediate_code(quad_list, c0);
-          printf("%d\n", temporary);
+          // printf("%d\n", temporary);
           quad->address_1.value = temporary;
           quad->address_1.kind = Temp;
           temporary++;
@@ -681,14 +975,14 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
         if(c1->kind.stmt == VarK){
           strcpy(quad->address_2.name, c1->attr.name);
           quad->address_2.kind = String;
-          printf("%s\n", quad->address_2.name);
+          // printf("%s\n", quad->address_2.name);
         }else if (c1->kind.exp == ConstK) {
           quad->address_2.value = c1->attr.value;
           quad->address_2.kind = IntConst;
-          printf("%d\n", quad->address_2.value);
+          // printf("%d\n", quad->address_2.value);
         }else{
           generate_intermediate_code(quad_list, c1);
-          printf("%d\n", temporary);
+          // printf("%d\n", temporary);
           quad->address_2.value = temporary;
           quad->address_2.kind = Temp;
           temporary++;
@@ -696,11 +990,42 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
       }
       quad->address_3.value = temporary;
       quad->address_3.kind = Temp;
-      temporary++;
+      // temporary++;
 
       quad->op = GeqK;
       insert_quadruple(quad_list, quad);
+      store_quadruple(quad->op, quad->address_1.kind, quad->address_2.kind, quad->address_3.kind,
+                      quad->address_1.value, quad->address_2.value, quad->address_3.value,
+                      quad->address_1.name, quad->address_2.name, quad->address_3.name);
+                      switch (quad->address_3.kind) {
+                        case String: printf("%s ", quad->address_3.name);
+                          break;
+                          case IntConst: printf("%d ", quad->address_3.value);
+                          break;
+                          case Temp: printf("t%d ", quad->address_3.value);
+                          default: break;
+                        }
+                        printf("= ");
 
+                      switch (quad->address_1.kind) {
+                        case String: printf("%s ", quad->address_1.name);
+                          break;
+                        case IntConst: printf("%d ", quad->address_1.value);
+                          break;
+                        case Temp: printf("t%d ", quad->address_1.value);
+                        default: break;
+                      }
+
+                      printf(">= ");
+                      switch (quad->address_2.kind) {
+                        case String: printf("%s ", quad->address_2.name);
+                          break;
+                        case IntConst: printf("%d ", quad->address_2.value);
+                          break;
+                        case Temp: printf("t%d ", quad->address_2.value);
+                        default: break;
+                      }
+                      printf("\n");
       break;
     default:
       break;
@@ -725,15 +1050,15 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
         if(c0->kind.stmt == VarK){
           strcpy(quad->address_1.name, c0->attr.name);
           quad->address_1.kind = String;
-          printf("%s\n", quad->address_1.name);
+          // printf("%s\n", quad->address_1.name);
         }else if (c0->kind.exp == ConstK) {
           quad->address_1.value = c0->attr.value;
           quad->address_1.kind = IntConst;
-          printf("%d\n", quad->address_1.value);
+          // printf("%d\n", quad->address_1.value);
         }else{
           generate_intermediate_code(quad_list, c0);
-          printf("%d\n", temporary);
-          quad->address_1.value = temporary;
+          // printf("%d\n", temporary);
+          quad->address_1.value = temporary-1;
           quad->address_1.kind = Temp;
           temporary++;
         }
@@ -743,15 +1068,15 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
         if(c1->kind.stmt == VarK){
           strcpy(quad->address_2.name, c1->attr.name);
           quad->address_2.kind = String;
-          printf("%s\n", quad->address_2.name);
+          // printf("%s\n", quad->address_2.name);
         }else if (c1->kind.exp == ConstK) {
           quad->address_2.value = c1->attr.value;
           quad->address_2.kind = IntConst;
-          printf("%d\n", quad->address_2.value);
+          // printf("%d\n", quad->address_2.value);
         }else{
           generate_intermediate_code(quad_list, c1);
-          printf("%d\n", temporary);
-          quad->address_2.value = temporary;
+          // printf("%d\n", temporary);
+          quad->address_2.value = temporary-1;
           quad->address_2.kind = Temp;
           temporary++;
         }
@@ -760,27 +1085,56 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
 
       quad->address_3.value = temporary;
       quad->address_3.kind = Temp;
-      temporary++;
+      // temporary++;
 
       quad->op = AddK;
       insert_quadruple(quad_list, quad);
+      store_quadruple(quad->op, quad->address_1.kind, quad->address_2.kind, quad->address_3.kind,
+                      quad->address_1.value, quad->address_2.value, quad->address_3.value,
+                      quad->address_1.name, quad->address_2.name, quad->address_3.name);
+                      switch (quad->address_3.kind) {
+                        case String: printf("%s ", quad->address_3.name);
+                          break;
+                          case IntConst: printf("%d ", quad->address_3.value);
+                          break;
+                          case Temp: printf("t%d ", quad->address_3.value);
+                          default: break;
+                        }
+                        printf("= ");
 
+                      switch (quad->address_1.kind) {
+                        case String: printf("%s ", quad->address_1.name);
+                          break;
+                        case IntConst: printf("%d ", quad->address_1.value);
+                          break;
+                        case Temp: printf("t%d ", quad->address_1.value);
+                        default: break;
+                      }
 
-
+                      printf("+ ");
+                      switch (quad->address_2.kind) {
+                        case String: printf("%s ", quad->address_2.name);
+                          break;
+                        case IntConst: printf("%d ", quad->address_2.value);
+                          break;
+                        case Temp: printf("t%d ", quad->address_2.value);
+                        default: break;
+                      }
+                      printf("\n");
       break;
     case MINUS:
       if(c0){
         if(c0->kind.stmt == VarK){
           strcpy(quad->address_1.name, c0->attr.name);
           quad->address_1.kind = String;
-          printf("%s\n", quad->address_1.name);
+          // printf("%s\n", quad->address_1.name);
         }else if (c0->kind.exp == ConstK) {
           quad->address_1.value = c0->attr.value;
           quad->address_1.kind = IntConst;
-          printf("%d\n", quad->address_1.value);
+          // printf("%d\n", quad->address_1.value);
         }else{
           generate_intermediate_code(quad_list, c0);
-          printf("t%d\n", temporary);
+          // printf("t%d\n", temporary);
           quad->address_1.value = temporary;
           quad->address_1.kind = Temp;
           temporary++;
@@ -791,14 +1145,14 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
         if(c1->kind.stmt == VarK){
           strcpy(quad->address_2.name, c1->attr.name);
           quad->address_2.kind = String;
-          printf("%s\n", quad->address_2.name);
+          // printf("%s\n", quad->address_2.name);
         }else if (c1->kind.exp == ConstK) {
           quad->address_2.value = c1->attr.value;
           quad->address_2.kind = IntConst;
-          printf("%d\n", quad->address_2.value);
+          // printf("%d\n", quad->address_2.value);
         }else{
           generate_intermediate_code(quad_list, c1);
-          printf("t%d\n", temporary);
+          // printf("t%d\n", temporary);
           quad->address_2.value = temporary;
           quad->address_2.kind = Temp;
           temporary++;
@@ -806,25 +1160,56 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
       }
       quad->address_3.value = temporary;
       quad->address_3.kind = Temp;
-      temporary++;
+      // temporary++;
 
       quad->op = SubK;
       insert_quadruple(quad_list, quad);
+      store_quadruple(quad->op, quad->address_1.kind, quad->address_2.kind, quad->address_3.kind,
+                      quad->address_1.value, quad->address_2.value, quad->address_3.value,
+                      quad->address_1.name, quad->address_2.name, quad->address_3.name);
+                      switch (quad->address_3.kind) {
+                        case String: printf("%s ", quad->address_3.name);
+                          break;
+                          case IntConst: printf("%d ", quad->address_3.value);
+                          break;
+                          case Temp: printf("t%d ", quad->address_3.value);
+                          default: break;
+                        }
+                        printf("= ");
 
+                      switch (quad->address_1.kind) {
+                        case String: printf("%s ", quad->address_1.name);
+                          break;
+                        case IntConst: printf("%d ", quad->address_1.value);
+                          break;
+                        case Temp: printf("t%d ", quad->address_1.value);
+                        default: break;
+                      }
+
+                      printf("- ");
+                      switch (quad->address_2.kind) {
+                        case String: printf("%s ", quad->address_2.name);
+                          break;
+                        case IntConst: printf("%d ", quad->address_2.value);
+                          break;
+                        case Temp: printf("t%d ", quad->address_2.value);
+                        default: break;
+                      }
+                      printf("\n");
       break;
     case TIMES:
       if(c0){
         if(c0->kind.stmt == VarK){
           strcpy(quad->address_1.name, c0->attr.name);
           quad->address_1.kind = String;
-          printf("%s\n", quad->address_1.name);
+          // printf("%s\n", quad->address_1.name);
         }else if (c0->kind.exp == ConstK) {
           quad->address_1.value = c0->attr.value;
           quad->address_1.kind = IntConst;
-          printf("%d\n", quad->address_1.value);
+          // printf("%d\n", quad->address_1.value);
         }else{
           generate_intermediate_code(quad_list, c0);
-          printf("t%d\n", temporary);
+          // printf("t%d\n", temporary);
           quad->address_1.value = temporary;
           quad->address_1.kind = Temp;
           temporary++;
@@ -835,14 +1220,14 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
         if(c1->kind.stmt == VarK){
           strcpy(quad->address_2.name, c1->attr.name);
           quad->address_2.kind = String;
-          printf("%s\n", quad->address_2.name);
+          // printf("%s\n", quad->address_2.name);
         }else if (c1->kind.exp == ConstK) {
           quad->address_2.value = c1->attr.value;
           quad->address_2.kind = IntConst;
-          printf("%d\n", quad->address_2.value);
+          // printf("%d\n", quad->address_2.value);
         }else{
           generate_intermediate_code(quad_list, c1);
-          printf("t%d\n", temporary);
+          // printf("t%d\n", temporary);
           quad->address_2.value = temporary;
           quad->address_2.kind = Temp;
           temporary++;
@@ -850,25 +1235,56 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
       }
       quad->address_3.value = temporary;
       quad->address_3.kind = Temp;
-      temporary++;
+      // temporary++;
 
       quad->op = TimK;
       insert_quadruple(quad_list, quad);
+      store_quadruple(quad->op, quad->address_1.kind, quad->address_2.kind, quad->address_3.kind,
+                      quad->address_1.value, quad->address_2.value, quad->address_3.value,
+                      quad->address_1.name, quad->address_2.name, quad->address_3.name);
+                      switch (quad->address_3.kind) {
+                        case String: printf("%s ", quad->address_3.name);
+                          break;
+                          case IntConst: printf("%d ", quad->address_3.value);
+                          break;
+                          case Temp: printf("t%d ", quad->address_3.value);
+                          default: break;
+                        }
+                        printf("= ");
 
+                      switch (quad->address_1.kind) {
+                        case String: printf("%s ", quad->address_1.name);
+                          break;
+                        case IntConst: printf("%d ", quad->address_1.value);
+                          break;
+                        case Temp: printf("t%d ", quad->address_1.value);
+                        default: break;
+                      }
+
+                      printf("* ");
+                      switch (quad->address_2.kind) {
+                        case String: printf("%s ", quad->address_2.name);
+                          break;
+                        case IntConst: printf("%d ", quad->address_2.value);
+                          break;
+                        case Temp: printf("t%d ", quad->address_2.value);
+                        default: break;
+                      }
+                      printf("\n");
       break;
     case OVER:
       if(c0){
         if(c0->kind.stmt == VarK){
           strcpy(quad->address_1.name, c0->attr.name);
           quad->address_1.kind = String;
-          printf("%s\n", quad->address_1.name);
+          // printf("%s\n", quad->address_1.name);
         }else if (c0->kind.exp == ConstK) {
           quad->address_1.value = c0->attr.value;
           quad->address_1.kind = IntConst;
-          printf("%d\n", quad->address_1.value);
+          // printf("%d\n", quad->address_1.value);
         }else{
           generate_intermediate_code(quad_list, c0);
-          printf("t%d\n", temporary);
+          // printf("t%d\n", temporary);
           quad->address_1.value = temporary;
           quad->address_1.kind = Temp;
           temporary++;
@@ -879,14 +1295,14 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
         if(c1->kind.stmt == VarK){
           strcpy(quad->address_2.name, c1->attr.name);
           quad->address_2.kind = String;
-          printf("%s\n", quad->address_2.name);
+          // printf("%s\n", quad->address_2.name);
         }else if (c1->kind.exp == ConstK) {
           quad->address_2.value = c1->attr.value;
           quad->address_2.kind = IntConst;
-          printf("%d\n", quad->address_2.value);
+          // printf("%d\n", quad->address_2.value);
         }else{
           generate_intermediate_code(quad_list, c1);
-          printf("t%d\n", temporary);
+          // printf("t%d\n", temporary);
           quad->address_2.value = temporary;
           quad->address_2.kind = Temp;
           temporary++;
@@ -894,11 +1310,42 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
       }
       quad->address_3.value = temporary;
       quad->address_3.kind = Temp;
-      temporary++;
+      // temporary++;
 
       quad->op = OvrK;
       insert_quadruple(quad_list, quad);
+      store_quadruple(quad->op, quad->address_1.kind, quad->address_2.kind, quad->address_3.kind,
+                      quad->address_1.value, quad->address_2.value, quad->address_3.value,
+                      quad->address_1.name, quad->address_2.name, quad->address_3.name);
+                      switch (quad->address_3.kind) {
+                        case String: printf("%s ", quad->address_3.name);
+                          break;
+                          case IntConst: printf("%d ", quad->address_3.value);
+                          break;
+                          case Temp: printf("t%d ", quad->address_3.value);
+                          default: break;
+                        }
+                        printf("= ");
 
+                      switch (quad->address_1.kind) {
+                        case String: printf("%s ", quad->address_1.name);
+                          break;
+                        case IntConst: printf("%d ", quad->address_1.value);
+                          break;
+                        case Temp: printf("t%d ", quad->address_1.value);
+                        default: break;
+                      }
+
+                      printf("/ ");
+                      switch (quad->address_2.kind) {
+                        case String: printf("%s ", quad->address_2.name);
+                          break;
+                        case IntConst: printf("%d ", quad->address_2.value);
+                          break;
+                        case Temp: printf("t%d ", quad->address_2.value);
+                        default: break;
+                      }
+                      printf("\n");
       break;
     default:
       break;
@@ -941,7 +1388,7 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
       // if
       if(c0){
         generate_intermediate_code(quad_list, c0);
-        aux = temporary - 1;
+        aux = temporary;
         aux2 = label;
         label++;
         printf("If_false t%d goto L%d\n", aux, aux2);
@@ -952,6 +1399,9 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
         quad0->address_3.value = aux2;
         quad0->op = IffK;
         insert_quadruple(quad_list, quad0);
+        store_quadruple(quad0->op, quad0->address_1.kind, quad0->address_2.kind, quad0->address_3.kind,
+                        quad0->address_1.value, quad0->address_2.value, quad0->address_3.value,
+                        quad0->address_1.name, quad0->address_2.name, quad0->address_3.name);
 
         //add quad0
       }
@@ -968,6 +1418,9 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
         quad1->address_3.value = aux3;
         quad1->op = GtoK;
         insert_quadruple(quad_list, quad1);
+        store_quadruple(quad1->op, quad1->address_1.kind, quad1->address_2.kind, quad1->address_3.kind,
+                        quad1->address_1.value, quad1->address_2.value, quad1->address_3.value,
+                        quad1->address_1.name, quad1->address_2.name, quad1->address_3.name);
 
         //add quad1
       }
@@ -978,6 +1431,9 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
       quad2->address_3.value = aux2;
       quad2->op = LblK;
       insert_quadruple(quad_list, quad2);
+      store_quadruple(quad2->op, quad2->address_1.kind, quad2->address_2.kind, quad2->address_3.kind,
+                      quad2->address_1.value, quad2->address_2.value, quad2->address_3.value,
+                      quad2->address_1.name, quad2->address_2.name, quad2->address_3.name);
       // add quad2
       // else
       if(c2){
@@ -988,8 +1444,11 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
         quad3->address_3.value = aux3;
         quad3->op = LblK;
         insert_quadruple(quad_list, quad3);
+        store_quadruple(quad3->op, quad3->address_1.kind, quad3->address_2.kind, quad3->address_3.kind,
+                        quad3->address_1.value, quad3->address_2.value, quad3->address_3.value,
+                        quad3->address_1.name, quad3->address_2.name, quad3->address_3.name);
         // add quad3
-        // printf("L%d: ", aux3);
+        printf("L%d: ", aux3);
       }
       break;
     case WhileK:
@@ -1005,10 +1464,13 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
         quad0->address_3.value = aux2;
         quad0->op = LblK;
         insert_quadruple(quad_list, quad0);
+        store_quadruple(quad0->op, quad0->address_1.kind, quad0->address_2.kind, quad0->address_3.kind,
+                        quad0->address_1.value, quad0->address_2.value, quad0->address_3.value,
+                        quad0->address_1.name, quad0->address_2.name, quad0->address_3.name);
 
         // add quad0
         generate_intermediate_code(quad_list, c0);
-        aux = temporary - 1;
+        aux = temporary;
         printf("If_false t%d goto L%d\n", aux, aux3);
         quad1->address_1.kind = Temp;
         quad1->address_1.value = aux;
@@ -1017,6 +1479,9 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
         quad1->address_3.value = aux3;
         quad1->op = IffK;
         insert_quadruple(quad_list, quad1);
+        store_quadruple(quad1->op, quad1->address_1.kind, quad1->address_2.kind, quad1->address_3.kind,
+                        quad1->address_1.value, quad1->address_2.value, quad1->address_3.value,
+                        quad1->address_1.name, quad1->address_2.name, quad1->address_3.name);
 
         // add quad1
       }
@@ -1029,6 +1494,9 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
         quad2->address_3.value = aux2;
         quad2->op = GtoK;
         insert_quadruple(quad_list, quad2);
+        store_quadruple(quad2->op, quad2->address_1.kind, quad2->address_2.kind, quad2->address_3.kind,
+                        quad2->address_1.value, quad2->address_2.value, quad2->address_3.value,
+                        quad2->address_1.name, quad2->address_2.name, quad2->address_3.name);
         // add quad2
 
         printf("L%d:\n", aux3);
@@ -1038,55 +1506,73 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
         quad3->address_3.value = aux3;
         quad3->op = LblK;
         insert_quadruple(quad_list, quad3);
+        store_quadruple(quad3->op, quad3->address_1.kind, quad3->address_2.kind, quad3->address_3.kind,
+                        quad3->address_1.value, quad3->address_2.value, quad3->address_3.value,
+                        quad3->address_1.name, quad3->address_2.name, quad3->address_3.name);
         // add quad3
       break;
     case AssignK://PROBLEMS
       // printf("AssignK\n");
-      if (c0) {
-        if (c0->child[0]) {
-          TreeNode *g1 = c0->child[0];
-          if (g1->child[0]){
-            generate_intermediate_code(quad_list, g1);
-            aux = temporary-1;
-            printf("Array assigned: %s [t%d] =\n", c0->attr.name, aux);
-            quad0->address_2.kind = Temp;
-            quad0->address_2.value = aux;
-          }else{
-            printf("Array assigned: %s [%s] =\n", c0->attr.name, g1->attr.name);
-            quad0->address_2.kind = String;
-            strcpy(quad0->address_2.name, g1->attr.name);
-          }
-          quad0->op = AsaK;
-
+      printf("%s", c0->attr.name);
+      quad0->op = AsvK;
+      quad0->address_2.kind = Empty;
+      quad0->address_3.kind = String;
+      strcpy(quad0->address_3.name, c0->attr.name);
+      if (c0->child[0]) {
+        quad0->op = AsaK;
+        TreeNode *g0 = c0->child[0];
+        if (g0->kind.exp==ConstK) {
+          quad0->address_2.kind = IntConst;
+          quad0->address_2.value = g0->attr.value;
+          printf("[%d] =", quad0->address_2.value);
+        }else if (g0->kind.exp==VarK) {
+          quad0->address_2.kind = String;
+          strcpy(quad0->address_2.name, g0->attr.name);
+          printf("[%s] =", quad0->address_2.name);
         }else{
-          printf("Variable assigned: %s = \n", c0->attr.name);
-          quad0->address_2.kind = Empty;
-          quad0->op = AsvK;
+          generate_intermediate_code(quad_list, c0);
+          aux = temporary;
+          quad0->address_2.kind = Temp;
+          quad0->address_2.value = aux;
+          printf("[t%d] =", quad0->address_2.value);
         }
-        quad0->address_3.kind = String;
-        strcpy(quad0->address_3.name, c0->attr.name);
-        printf("%s %s %s\n", quad0->address_1.name, quad0->address_2.name, quad0->address_3.name);
-        insert_quadruple(quad_list, quad0);
-      }
+      }else
+        printf(" =");
 
-      if (c1){
-        TreeNode *g2 = c1->child[0];
-        if (g2) {
-          generate_intermediate_code(quad_list, c1);
-          aux2 = temporary-1;
-          quad1->address_1.kind = Temp;
-          quad1->address_1.value = aux2;
-        }else if(c1->attr.oprtr==ConstK){
-          quad1->address_1.kind = IntConst;
-          quad1->address_1.value = c1->attr.value;
-        }else if(c1->attr.oprtr==VarK){
-          quad1->address_1.kind = String;
-          strcpy(quad1->address_1.name, c1->attr.name);
-        }
-        quad1->op = AsvK;
-        insert_quadruple(quad_list, quad1);
+      TreeNode *g1 = c1->child[0];
+      if(g1)
+      while (g1->child[0]) {
+        g1 = g1->child[0];
       }
-      // add quad0
+      if(c1->kind.exp == CallK){
+        generate_intermediate_code(quad_list, c1);
+        quad0->address_1.kind = Temp;
+        quad0->address_1.value = temporary;
+        temporary++;
+        printf(" t%d\n", quad0->address_1.value);
+      }else if(g1){
+      if(g1->kind.exp = ConstK){
+          quad0->address_1.kind = IntConst;
+          quad0->address_1.value = g1->attr.value;
+          printf(" %d\n", quad0->address_1.value);
+      }else if(g1->kind.exp = VarK){
+          quad0->address_1.kind = String;
+          strcpy(quad0->address_1.name, g1->attr.name);
+          printf(" %s\n", quad0->address_1.name);
+      }
+      }
+      else {
+        generate_intermediate_code(quad_list, c1);
+        quad0->address_1.kind = Temp;
+        quad0->address_1.value = temporary;
+        temporary++;
+        printf(" t%d\n", quad0->address_1.value);
+      }
+        // quad0->next = NULL;
+        insert_quadruple(quad_list, quad0);
+        store_quadruple(quad0->op, quad0->address_1.kind, quad0->address_2.kind, quad0->address_3.kind,
+                        quad0->address_1.value, quad0->address_2.value, quad0->address_3.value,
+                        quad0->address_1.name, quad0->address_2.name, quad0->address_3.name);
       break;
     case ReturnK:
       // printf("ReturnK\n");
@@ -1116,6 +1602,9 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
       }
       quad0->op = RetK;
       insert_quadruple(quad_list, quad0);
+      store_quadruple(quad0->op, quad0->address_1.kind, quad0->address_2.kind, quad0->address_3.kind,
+                      quad0->address_1.value, quad0->address_2.value, quad0->address_3.value,
+                      quad0->address_1.name, quad0->address_2.name, quad0->address_3.name);
       // add quad0
       break;
     case VarK:
@@ -1128,13 +1617,16 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
       break;
     case FuncK:
       // printf("FuncK\n");
-      printf("Label: %s \n", tree->attr.name);
+      printf("%s: ", tree->attr.name);
       quad0->address_1.kind = Empty;
       quad0->address_2.kind = Empty;
       quad0->address_3.kind = String;
       strcpy(quad0->address_3.name, tree->attr.name);
       quad0->op = LblK;
       insert_quadruple(quad_list, quad0);
+      store_quadruple(quad0->op, quad0->address_1.kind, quad0->address_2.kind, quad0->address_3.kind,
+                      quad0->address_1.value, quad0->address_2.value, quad0->address_3.value,
+                      quad0->address_1.name, quad0->address_2.name, quad0->address_3.name);
 
       // add quad0
       if (c1) {
@@ -1159,10 +1651,18 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
   TreeNode *c0, *c1;
   c0 = tree->child[0];
   c1 = tree->child[1];
+  int count;
+  int i;
 
   quadruple *quad0 = malloc(sizeof(quadruple));
   quadruple *quad1 = malloc(sizeof(quadruple));
   quadruple *quad2 = malloc(sizeof(quadruple));
+
+  quadruple *quad_aux[9];
+
+  for (i = 0; i < 9; i++) {
+    quad_aux[i] = malloc(sizeof(quadruple));
+  }
 
 
   quad0->address_1.kind = Empty;
@@ -1188,70 +1688,141 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
       generate_arithop(quad_list, tree);
       break;
     case ConstK:
-      printf("ConstK\n");
+      // printf("ConstK\n");
       break;
     case IdK:
       // if (!c0&&!c1) {
-      //   printf("Variable %s\n", tree->attr.name);
+        // printf("Variable %s\n", tree->attr.name);
       // }
       break;
     case VecIndexK:
-      printf("VecIndexK\n");
+      // printf("VecIndexK\n");
       break;
-    case CallK://PARAM STILL HAS PROBLEMS
-    {
-      int count;
+    case CallK:
+
+      i=0;
+
       count = 0;
+      quad0->address_3.kind = String;
+      strcpy(quad0->address_3.name, tree->attr.name);
+      quad0->op = CalK;
+
       if (!c0) {
-        printf("call %s, 0\n", tree->attr.name);
-        quad0->op = CalK;
         insert_quadruple(quad_list, quad0);
+        store_quadruple(quad0->op, quad0->address_1.kind, quad0->address_2.kind, quad0->address_3.kind,
+                        quad0->address_1.value, quad0->address_2.value, quad0->address_3.value,
+                        quad0->address_1.name, quad0->address_2.name, quad0->address_3.name);
         break;
-      }else{
-        do{
-          if (c0->child[0]) {
-            int aux;
-            TreeNode *g0 = c0->child[0];
-            generate_intermediate_code(quad_list, c0);
-            aux = temporary-1;
-            printf("param t%d\n", aux);
-            quad0->address_1.kind = Empty;
-            quad0->address_2.kind = Empty;
-            quad0->address_3.kind = Temp;
-            quad0->address_3.value = aux;
-          }else if(!c0->child[0]){
-            flag_param = 1;
-            printf("param %s\n", c0->attr.name);
-            quad0->address_1.kind = Empty;
-            quad0->address_2.kind = Empty;
-            quad0->address_3.kind = String;
-            strcpy(quad0->address_3.name, c0->attr.name);
-          }
-          count++;
-            c0 = c0->sibling;
-
-            if(!c0)
-              break;
-
-            quad0->op = PrmK;
-            insert_quadruple(quad_list, quad0);
-          // add quad0
-        }while(1);
-        printf("call %s, %d\n", tree->attr.name, count);
       }
 
-      quad1->address_1.kind = IntConst;
-      quad1->address_1.value = count;
-      quad1->address_2.kind = Empty;
-      quad1->address_3.kind = String;
-      strcpy(quad1->address_3.name, tree->attr.name);
-      quad1->op = CalK;
+      do{
+              if (c0->child[0]) {
+                int aux;
+                TreeNode *g0 = c0->child[0];
+                generate_intermediate_code(quad_list, c0);
+                aux = temporary;
+                printf("param t%d\n", aux);
+                quad0->address_1.kind = Empty;
+                quad0->address_2.kind = Empty;
+                quad0->address_3.kind = Temp;
+                quad0->address_3.value = aux;
+              }else if(!c0->child[0]){
+                printf("param %s\n", c0->attr.name);
+                quad0->address_1.kind = Empty;
+                quad0->address_2.kind = Empty;
+                quad0->address_3.kind = String;
+                strcpy(quad0->address_3.name, c0->attr.name);
+              }
+              count++;
+                c0 = c0->sibling;
 
-      insert_quadruple(quad_list, quad1);
+                quad0->op = PrmK;
+                // insert_quadruple(quad_list, quad0);
+                store_quadruple(quad0->op, quad0->address_1.kind, quad0->address_2.kind, quad0->address_3.kind,
+                                quad0->address_1.value, quad0->address_2.value, quad0->address_3.value,
+                                quad0->address_1.name, quad0->address_2.name, quad0->address_3.name);
+              // add quad0
+            }while (c0);
 
-      // add quad1
+
+        // if (c0->kind.exp==VarK) {
+        //   quad0->address_3.kind = String;
+        //   strcpy(quad0->address_3.name, c0->attr.name);
+        // }
+        // else{
+        //   generate_intermediate_code(quad_list, c0);
+        //   int aux;
+        //   aux = temporary-1;
+        //   quad0->address_3.kind = Temp;
+        //   quad0->address_3.value = aux;
+        // }
+        // quad0->op = PrmK;
+        // quad0->next = NULL;
+        // insert_quadruple(quad_list, quad0);
+        //
+        // count++;
+        //   c0 = c0->sibling;
+        //       }
+        //
+              quad1->address_1.kind = IntConst;
+              quad1->address_1.value = count;
+              quad1->address_2.kind = Empty;
+              quad1->address_3.kind = String;
+              strcpy(quad1->address_3.name, tree->attr.name);
+              quad1->op = CalK;
+
+              insert_quadruple(quad_list, quad1);
+              store_quadruple(quad1->op, quad1->address_1.kind, quad1->address_2.kind, quad1->address_3.kind,
+                              quad1->address_1.value, quad1->address_2.value, quad1->address_3.value,
+                              quad1->address_1.name, quad1->address_2.name, quad1->address_3.name);
+
+
+    // {
+    //   int count;
+    //   count = 0;
+    //   if (!c0) {
+    //     // printf("call %s, 0\n", tree->attr.name);
+    //     quad0->op = CalK;
+    //     insert_quadruple(quad_list, quad0);
+    //     break;
+    //   }else{
+    //     do{
+    //       if (c0->child[0]) {
+    //         int aux;
+    //         TreeNode *g0 = c0->child[0];
+    //         generate_intermediate_code(quad_list, c0);
+    //         aux = temporary-1;
+    //         // printf("param t%d\n", aux);
+    //         quad0->address_1.kind = Empty;
+    //         quad0->address_2.kind = Empty;
+    //         quad0->address_3.kind = Temp;
+    //         quad0->address_3.value = aux;
+    //       }else if(!c0->child[0]){
+    //         flag_param = 1;
+    //         // printf("param %s\n", c0->attr.name);
+    //         quad0->address_1.kind = Empty;
+    //         quad0->address_2.kind = Empty;
+    //         quad0->address_3.kind = String;
+    //         strcpy(quad0->address_3.name, c0->attr.name);
+    //       }
+    //       count++;
+    //         c0 = c0->sibling;
+    //
+    //         if(!c0)
+    //           break;
+    //
+    //         quad0->op = PrmK;
+    //         insert_quadruple(quad_list, quad0);
+    //       // add quad0
+    //     }while(1);
+        printf("call %s, %d\n", tree->attr.name, count);
+    //   }
+    //
+
+    //
+    //   // add quad1
       break;
-    }
+    // }
     default:
       break;
   }
@@ -1273,4 +1844,14 @@ void generate_intermediate_code(list_quadruple *quad_list, TreeNode *tree){
     }
     generate_intermediate_code(quad_list, tree->sibling);
   }
+}
+
+void generate_icode_launcher(list_quadruple *quad_list, TreeNode *tree){
+    file_quadruples = fopen("file_quadruples.txt", "w");
+    quad_list->start = NULL;
+    generate_intermediate_code(quad_list, tree);
+    fclose( file_quadruples );
+    file_read_quadruples = fopen("file_quadruples.txt", "r");
+    // insert_quadruples(quad_list);
+    fclose( file_read_quadruples );
 }

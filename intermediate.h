@@ -6,6 +6,7 @@
 #ifndef _INTERMEDIATE_H
 #define _INTERMEDIATE_H_
 
+
 /* Function parse returns the newly
  * constructed syntax tree
  */
@@ -50,11 +51,23 @@ typedef struct{
     quadruple *start;
 }list_quadruple;
 
+void insert_quadruple(list_quadruple *quad_list, quadruple *quad);
+
+
+void insert_quadruples(list_quadruple *quad_list);
+
+
+void generate_icode_launcher(list_quadruple *quad_list, TreeNode *tree);
+
 static void generate_statement(list_quadruple *quad_list, TreeNode *tree);
 
 void generate_intermediate_code(list_quadruple *quad_list, TreeNode *tree);
 
 void print_quadruple_list(list_quadruple *quad_list);
+
+void store_quadruple(OpKind o, AddrKind k1, AddrKind k2, AddrKind k3,
+                     int v1, int v2, int v3,
+                     char n1[], char n2[], char n3[]);
 
 
 #endif

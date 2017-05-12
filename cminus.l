@@ -13,6 +13,7 @@
   #include "intermediate.h"
 
 
+
 char tokenString[MAXTOKENLEN+1];
 
 
@@ -122,6 +123,8 @@ char L_side[20];
 char R_side[20];
 int verState = 0;
 int voidFlag = 0;
+
+
 
 /*typedef struct TipoID{
     char nomeID[20];
@@ -481,7 +484,6 @@ for(i = 0; i < 211; i++) {
 }
 
 id_list.start = NULL;
-quad_list.start = NULL;
 
 for (i=0;i<=100000;i++) buf[i] = 0;
 
@@ -693,12 +695,11 @@ i = 0;
   /*while(getToken() != ENDFILE);*/
   syntaxTree = parse();
 
-  printTree(syntaxTree);
-
-  generate_intermediate_code(&quad_list, syntaxTree);
+  /*printTree(syntaxTree);*/
+  generate_icode_launcher(&quad_list, syntaxTree);
 
   printf("\n");
-  print_quadruple_list(&quad_list);
+  /*print_quadruple_list(&quad_list);*/
 
   /*printf("Name(ID)  Type(ID)  Type(Data)   Scope    Appears in lines\n");
   for(i = 0;i<211;i++){

@@ -1,7 +1,6 @@
 /****************************************************/
 /* File: util.h                                     */
 /* Utility functions for the C- compiler            */
-/* Rodrigo de Farias Ramires                        */
 /****************************************************/
 
 #ifndef _UTIL_H_
