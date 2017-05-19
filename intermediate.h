@@ -16,7 +16,7 @@ typedef enum {
   // relational
   EqlK, NeqK, GtrK, GeqK, LsrK, LeqK,
   // data transfer
-  AsvK, AsaK,
+  AsvK, AsaK, CstK, VstK, AstK,
   // i|o
   InnK, OutK,
   // function/procedure

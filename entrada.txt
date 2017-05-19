@@ -1,51 +1,44 @@
-/* gdc sem erros */
-
-/* teste de função com parâmetros e corpo sem declarações */
-int gdc (int u, int v)
-{
-    /* teste de seleção, expressões, return e chamada de função */
-    if (v == 0) return u;
-    else return gdc(v,u-u/v*v);
+int x[10];
+int minloc ( int a[], int low, int high ){
+  int i;
+  int x;
+  int k;
+  k = low;
+  x = a[low];
+  i = low + 1;
+  while(i<high){
+    if(a[i] < x){
+      x = a[i];
+      k = i;
+    }
+    i = i + 1;
+  }
+  return k;
 }
-
-/* teste de função sem parâmetros e sem corpo */
-int input(void)
-{
+void sort(int a[], int low, int high){
+  int i;
+  int k;
+  i = low;
+  while(i < high - 1){
+    int t;
+    k = minloc(a,i,high);
+    t = a[k];
+    a[k] = a[i];
+    a[i] = t;
+    i = i + 1;
+  }
 }
-
-/* teste de função com parâmetro e sem corpo */
-void output(int x)
-{
-}
-
-/* teste de função sem parâmetro e com corpo completo */
-void main(void)
-{
-
-   /* teste de diferentes tipos de variáveis, incluindo vetor */
-   int x;
-   int y;
-   int u;
-   int i;
-   int v[10];
-
-
-   /* chamadas de funções */
-   x = input();
-   y = input();
-   output(gdc(x,y));
-
-   /* teste atribuição e repetição */
-   u = 0;
-   x = 1;
-   while (x <= 10)
-   {
-      u = u + 1;
-      v[i] = u;
-      x = x + 1;
-   }
-
-   /* teste return simples */
-   return;
-
+void main(void){
+  int i;
+  i = 0;
+  while(i<10){
+    x[i] = input();
+    i = i + 1;
+  }
+  sort(x,0,10);
+  i = 0;
+  while(i<10){
+    output(x[i]);
+    i = i + 1;
+  }
 }
