@@ -3,6 +3,9 @@
 /* The parser interface for the C- compiler         */
 /****************************************************/
 
+#include "globals.h"
+#include "util.h"
+
 #ifndef _INTERMEDIATE_H
 #define _INTERMEDIATE_H_
 

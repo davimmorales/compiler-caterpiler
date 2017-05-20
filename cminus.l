@@ -10,7 +10,8 @@
   #include "util.h"
   #include "scan.h"
   #include "parse.h"
-  #include "intermediate.h"
+  /*#include "intermediate.h"*/
+  #include "object.h"
 
 
 
@@ -697,6 +698,8 @@ i = 0;
 
   /*printTree(syntaxTree);*/
   generate_icode_launcher(&quad_list, syntaxTree);
+
+  generate_code_launcher(&quad_list);
 
   printf("\n");
   /*print_quadruple_list(&quad_list);*/

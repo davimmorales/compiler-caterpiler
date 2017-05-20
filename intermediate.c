@@ -1,5 +1,4 @@
-#include "globals.h"
-#include "util.h"
+
 #include "intermediate.h"
 
 static int temporary = 0;
