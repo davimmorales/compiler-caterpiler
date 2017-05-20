@@ -1632,6 +1632,7 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
       break;
     case FuncK:
       // printf("FuncK\n");
+      printf("%s: ", tree->attr.name);
       quad0->address_1.kind = Empty;
       quad0->address_2.kind = Empty;
       quad0->address_3.kind = String;
