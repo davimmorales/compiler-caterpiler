@@ -10,15 +10,18 @@ int number_of_quadruples = 0;
 FILE *file_quadruples;
 FILE *file_read_quadruples;
 
+int counter = 0;
+int flag_later = 0;
+
 void store_quadruple(OpKind o, AddrKind k1, AddrKind k2, AddrKind k3,
                      int v1, int v2, int v3,
                      char n1[], char n2[], char n3[]){
-                      if(k1!=IntConst)
-                        v1 = 1;
-                      if(k2!=IntConst)
-                        v2 = 1;
-                      if(k3!=IntConst)
-                        v3 = 1;
+                      // if(k1!=IntConst)
+                      //   v1 = 0;
+                      // if(k2!=IntConst)
+                      //   v2 = 0;
+                      // if(k3!=IntConst)
+                      //   v3 = 0;
                       if(k1!=String)
                         strcpy(n1, "empty");
                       if(k2!=String)
@@ -26,49 +29,58 @@ void store_quadruple(OpKind o, AddrKind k1, AddrKind k2, AddrKind k3,
                       if(k3!=String)
                         strcpy(n3, "empty");
                       number_of_quadruples++;
-                        fprintf(file_quadruples, "%d %d %d %d %d %d %d %s %s %s\n",
+                        fprintf(file_quadruples, "%d %d %d %d %d %d %d %s %s %s ",
                         o, k1, k2, k3, v1, v2, v3, n1, n2, n3);
                      }
 
 void insert_quadruple(list_quadruple *quad_list, quadruple *quad){
    quadruple *p = quad_list->start;
-   if(p==NULL)
-     quad_list->start = quad;
+   quadruple *alloc_quad = malloc(sizeof(quadruple));
+   *alloc_quad = *quad;
+  //  printf("                               %d\n", quad->op);
+   int breaker = 0;
+   if(p==NULL){
+     quad_list->start = alloc_quad;
+     quad_list->start->next = NULL;
+   }
    else{
      while(p->next!=NULL){
        p = p->next;
-      //  printf("%d\n", p->op);
      }
-      p->next = quad;
+      p->next = alloc_quad;
+      p->next->next = NULL;
    }
 }
 
 void insert_quadruples(list_quadruple *quad_list){
+  flag_later = 1;
   char word[1024];
   int item;
   item = 0;
+  // quad_list->start = NULL;
+  // quad = NULL;
   quadruple *quad = malloc(sizeof(quadruple));
-  quad_list->start = NULL;
-  quad = NULL;
-  quad->next = NULL;
+
 
   while (fscanf(file_read_quadruples, "%1023s", word) == 1) {
+    // quad->next = NULL;
+    // printf("%d %s\n", item, word);
     switch (item) {
       case 0:
-        quad->op = atoi(word);
-        // printf("%d %s\n", quad->op, word);
+        quad->op = (OpKind)atoi(word);
+        // printf("%d\n", quad->op);
         item++;
         break;
       case 1:
-        quad->address_1.kind = atoi(word);
+        quad->address_1.kind = (AddrKind)atoi(word);
         item++;
         break;
       case 2:
-        quad->address_2.kind = atoi(word);
+        quad->address_2.kind = (AddrKind)atoi(word);
         item++;
         break;
       case 3:
-        quad->address_3.kind = atoi(word);
+        quad->address_3.kind = (AddrKind)atoi(word);
         item++;
         break;
       case 4:
@@ -93,10 +105,11 @@ void insert_quadruples(list_quadruple *quad_list){
         break;
       case 9:
         strcpy(quad->address_3.name, word);
+        // printf("%d\n", item);
         item = 0;
-
         insert_quadruple(quad_list, quad);
-          break;
+        quadruple *quad = malloc(sizeof(quadruple));
+        break;
       default:
         break;
     }
@@ -106,6 +119,7 @@ void insert_quadruples(list_quadruple *quad_list){
 void print_quadruple_list(list_quadruple *quad_list){
   quadruple *p = quad_list->start;
   while (p!=NULL) {
+    // printf("%d\n", p->op);
     switch (p->op) {
       case AddK:
         switch (p->address_3.kind) {
@@ -117,7 +131,7 @@ void print_quadruple_list(list_quadruple *quad_list){
             default: break;
           }
 
-          printf("= ");
+          printf("= galetito");
 
         switch (p->address_1.kind) {
           case String: printf("%s ", p->address_1.name);
@@ -514,6 +528,7 @@ void print_quadruple_list(list_quadruple *quad_list){
       case OutK:
         break;
       case PrmK:
+        // printf("galetos organicos\n");
         if (p->address_3.kind==String) {
           printf("param %s\n", p->address_3.name);
         }else if (p->address_3.kind==Temp) {
@@ -1666,7 +1681,6 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
     quad_aux[i] = malloc(sizeof(quadruple));
   }
 
-
   quad0->address_1.kind = Empty;
   quad0->address_2.kind = Empty;
   quad0->address_3.kind = Empty;
@@ -1780,6 +1794,11 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
 
                 generate_intermediate_code(quad_list, c0);
 
+                quad0 = malloc(sizeof(quadruple));
+                quad0->address_1.kind = Empty;
+                quad0->address_2.kind = Empty;
+                quad0->address_3.kind = Empty;
+
                 aux = temporary;
                 printf("param t%d\n", aux);
                 quad0->address_1.kind = Empty;
@@ -1808,7 +1827,7 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
                 c0 = c0->sibling;
 
                 quad0->op = PrmK;
-                // insert_quadruple(quad_list, quad0);
+                insert_quadruple(quad_list, quad0);
                 store_quadruple(quad0->op, quad0->address_1.kind, quad0->address_2.kind, quad0->address_3.kind,
                                 quad0->address_1.value, quad0->address_2.value, quad0->address_3.value,
                                 quad0->address_1.name, quad0->address_2.name, quad0->address_3.name);
@@ -1835,9 +1854,12 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
         //   c0 = c0->sibling;
         //       }
         //
+              temporary++;
+
               quad1->address_1.kind = IntConst;
               quad1->address_1.value = count;
-              quad1->address_2.kind = Empty;
+              quad1->address_2.kind = Temp;
+              quad1->address_2.kind = temporary;
               quad1->address_3.kind = String;
               strcpy(quad1->address_3.name, tree->attr.name);
               quad1->op = CalK;
@@ -1886,7 +1908,6 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
     //         insert_quadruple(quad_list, quad0);
     //       // add quad0
     //     }while(1);
-        temporary++;
         printf("t%d = call %s, %d\n", temporary, tree->attr.name, count);
     //   }
     //
@@ -1923,7 +1944,14 @@ void generate_icode_launcher(list_quadruple *quad_list, TreeNode *tree){
     quad_list->start = NULL;
     generate_intermediate_code(quad_list, tree);
     fclose( file_quadruples );
+    printf("\n\n\n\n\n\n\n\n");
+    print_quadruple_list(quad_list);
+
+
     file_read_quadruples = fopen("file_quadruples.txt", "r");
-    // insert_quadruples(quad_list);
+    quad_list->start = NULL;
+    printf("\n\n\n\n\n\n\n\n");
+    insert_quadruples(quad_list);
+    print_quadruple_list(quad_list);
     fclose( file_read_quadruples );
 }
