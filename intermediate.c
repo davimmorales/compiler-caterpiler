@@ -1633,7 +1633,6 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
       break;
     case FuncK:
       // printf("FuncK\n");
-      printf("%s: ", tree->attr.name);
       quad0->address_1.kind = Empty;
       quad0->address_2.kind = Empty;
       quad0->address_3.kind = String;
@@ -1834,26 +1833,6 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
               // add quad0
             }while (c0);
 
-
-        // if (c0->kind.exp==VarK) {
-        //   quad0->address_3.kind = String;
-        //   strcpy(quad0->address_3.name, c0->attr.name);
-        // }
-        // else{
-        //   generate_intermediate_code(quad_list, c0);
-        //   int aux;
-        //   aux = temporary-1;
-        //   quad0->address_3.kind = Temp;
-        //   quad0->address_3.value = aux;
-        // }
-        // quad0->op = PrmK;
-        // quad0->next = NULL;
-        // insert_quadruple(quad_list, quad0);
-        //
-        // count++;
-        //   c0 = c0->sibling;
-        //       }
-        //
               temporary++;
 
               quad1->address_1.kind = IntConst;
@@ -1870,44 +1849,6 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
                               quad1->address_1.name, quad1->address_2.name, quad1->address_3.name);
 
 
-    // {
-    //   int count;
-    //   count = 0;
-    //   if (!c0) {
-    //     // printf("call %s, 0\n", tree->attr.name);
-    //     quad0->op = CalK;
-    //     insert_quadruple(quad_list, quad0);
-    //     break;
-    //   }else{
-    //     do{
-    //       if (c0->child[0]) {
-    //         int aux;
-    //         TreeNode *g0 = c0->child[0];
-    //         generate_intermediate_code(quad_list, c0);
-    //         aux = temporary-1;
-    //         // printf("param t%d\n", aux);
-    //         quad0->address_1.kind = Empty;
-    //         quad0->address_2.kind = Empty;
-    //         quad0->address_3.kind = Temp;
-    //         quad0->address_3.value = aux;
-    //       }else if(!c0->child[0]){
-    //         flag_param = 1;
-    //         // printf("param %s\n", c0->attr.name);
-    //         quad0->address_1.kind = Empty;
-    //         quad0->address_2.kind = Empty;
-    //         quad0->address_3.kind = String;
-    //         strcpy(quad0->address_3.name, c0->attr.name);
-    //       }
-    //       count++;
-    //         c0 = c0->sibling;
-    //
-    //         if(!c0)
-    //           break;
-    //
-    //         quad0->op = PrmK;
-    //         insert_quadruple(quad_list, quad0);
-    //       // add quad0
-    //     }while(1);
         printf("t%d = call %s, %d\n", temporary, tree->attr.name, count);
     //   }
     //
@@ -1942,16 +1883,29 @@ void generate_intermediate_code(list_quadruple *quad_list, TreeNode *tree){
 void generate_icode_launcher(list_quadruple *quad_list, TreeNode *tree){
     file_quadruples = fopen("file_quadruples.txt", "w");
     quad_list->start = NULL;
+
+    quadruple *quad = malloc(sizeof(quadruple));
+    quad->address_1.kind = Empty;
+    quad->address_2.kind = Empty;
+    quad->address_3.kind = String;
+    strcpy(quad->address_3.name, "main");
+    quad->op = GtoK;
+    insert_quadruple(quad_list, quad);
+
     generate_intermediate_code(quad_list, tree);
+    quad->address_3.kind = Empty;
+    quad->op = HltK;
+    insert_quadruple(quad_list, quad);
+
     fclose( file_quadruples );
-    printf("\n\n\n\n\n\n\n\n");
-    print_quadruple_list(quad_list);
+    // printf("\n\n\n\n\n\n\n\n");
 
+    // print_quadruple_list(quad_list);
 
-    file_read_quadruples = fopen("file_quadruples.txt", "r");
-    quad_list->start = NULL;
-    printf("\n\n\n\n\n\n\n\n");
-    insert_quadruples(quad_list);
-    print_quadruple_list(quad_list);
-    fclose( file_read_quadruples );
+    // file_read_quadruples = fopen("file_quadruples.txt", "r");
+    // quad_list->start = NULL;
+    // printf("\n\n\n\n\n\n\n\n");
+    // insert_quadruples(quad_list);
+    // print_quadruple_list(quad_list);
+    // fclose( file_read_quadruples );
 }
