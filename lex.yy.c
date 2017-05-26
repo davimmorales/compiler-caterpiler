@@ -2080,6 +2080,7 @@ char L_side[20];
 char R_side[20];
 int verState = 0;
 int voidFlag = 0;
+int arrayFlag = 0;
 
 
 
@@ -2156,7 +2157,7 @@ void insert(SyncList *list, char scope[], char nameID[], char typeID[]){
 }
 
 
-void insere(TipoLista *lista, char scope[], char nameID[], char typeID[], char typeData[], int nline, int index)
+void insere(TipoLista *lista, char scope[], char nameID[], char typeID[], char typeData[], int nline, int index, int size)
 {
     // Alocação do nó que será indexado
     TipoID *novoNo = malloc(sizeof(TipoID));
@@ -2188,6 +2189,8 @@ void insere(TipoLista *lista, char scope[], char nameID[], char typeID[], char t
     strcpy(novoNo->tipoData, typeData);
     strcpy(novoNo->nomeID, nameID);
     strcpy(novoNo->tipoID, typeID);
+    if(!strcmp(typeID,"vet")&&!strcmp(scope,"global"))
+        novoNo->array_size = size;
     /*printf("%s\n", novoNo->escopo);*/
     TipoID *p = lista[index].start;
 
@@ -2240,6 +2243,8 @@ void printWTable(TipoLista *lista, int index) {
             printf(",");
           i++;
         }
+        if(!strcmp(p->tipoID,"vet")&&!strcmp(p->escopo,"global"))
+          printf("\t %d", p->array_size);
 
         printf("\n");
       }
@@ -2437,7 +2442,7 @@ char nomeID[20];  //  nome do ID
 char tipoID[3];   //  tipo nenhum <var, fun, vet>
 char tipoData[10]; //  tipo de dados <int, float, void>
 char nomeIDAnt[20];
-char array_size_char;
+char array_size_char[30];
 int line = 1;
 int hash = 0;
 // Alocando o vetor estático e inicializando ponteiros com NULL
@@ -2466,8 +2471,8 @@ w = 0;
 
 
 // Inserindo funções predefinidas int input() e void output()
-insere(vetor, escopo, "input", "func", "int", -1, 39);
-insere(vetor, escopo, "output", "func", "void", -1, 34);
+insere(vetor, escopo, "input", "func", "int", -1, 39, 0);
+insere(vetor, escopo, "output", "func", "void", -1, 34, 0);
 
 while ((token=yylex()) != '\0') {
   buf[w] = token;
@@ -2505,13 +2510,14 @@ while ((token=yylex()) != '\0') {
       break;
 
       case ID:
-       hash = string2int(nomeID);
+        hash = string2int(nomeID);
         strcpy(nomeID, yytext);
         token = yylex();
         buf[w] = token;
         /*printf("%d\t", token);*/
         w++;
         // IDS.linhas[0] = noline;
+
         if(token == LPAREN) {
           strcpy(tipoID, "func");
           if(strcmp(escopo,"global") == 0) {
@@ -2521,13 +2527,15 @@ while ((token=yylex()) != '\0') {
             printf("\nSemantic Error: Non declared function called, '%s()'. Line %d\n", nomeID, lineno);
         } else {
           if(token == LBRACK) {
-            // vetor
-            // printf("Vetor\n");
+
             token = yylex();
-            if(token == INT){
-              strcpy(array_size_char, yytext);
+            buf[w] = token;
+            w++;
+
+            if(token == NUM){
+              if(flag==1 && !(buscaVariavel(vetor, nomeID, escopo)))
+                strcpy(array_size_char, yytext);
               array_size = string2int(array_size_char);
-              printf("%d\n", array_size);
             }
 
             strcpy(tipoID, "vet");
@@ -2547,7 +2555,7 @@ while ((token=yylex()) != '\0') {
         hash = string2int(nomeID)%211;
         int newID = checkExistance(vetor, nomeID, lineno, hash, escopo, flag);
         if(!newID){
-          insere(vetor, escopo, nomeID, tipoID, tipoData, lineno, hash);
+          insere(vetor, escopo, nomeID, tipoID, tipoData, lineno, hash, array_size);
         }
         insert(&id_list, escopo, nomeID,tipoID);
         if(token==SEMI) flag = 0;
@@ -2677,7 +2685,7 @@ i = 0;
   /*print_quadruple_list(&quad_list);*/
 
 
-  printf("Name(ID)  Type(ID)  Type(Data)   Scope   Intermediate Index      Appears in lines\n");
+  printf("Name(ID)  Type(ID)  Type(Data)   Scope   Intermediate Index      Appears in lines       Array Size\n");
   for(i = 0;i<211;i++){
     if(&vetor[i]!=NULL)
     printWTable(vetor, i);
