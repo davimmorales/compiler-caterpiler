@@ -2175,6 +2175,8 @@ void insere(TipoLista *lista, char scope[], char nameID[], char typeID[], char t
       novoNo->top = 1; // proxima posição de inserir numero da linha
     }
 
+    novoNo->intermediate_index = 0;
+
     // Inicialização dos demais campos do nó com os parâmetros de entrada
     if(!strcmp(typeID,"func")) {
       strcpy(novoNo->escopo, "none");
@@ -2228,12 +2230,17 @@ void printWTable(TipoLista *lista, int index) {
       i = 0;
       if(p->linhas[0] != 0) {
         printf("%6s    %6s    %6s    %6s        ", p->nomeID, p->tipoID, p->tipoData, p->escopo);
+        if(!strcmp(p->tipoID, "func"))
+          printf("     %d \t \t ", p->intermediate_index);
+        else
+          printf("\t \t \t ");
         while(p->linhas[i]!=0){
           printf("%d", p->linhas[i]);
           if(i<p->top-1)
             printf(",");
           i++;
         }
+
         printf("\n");
       }
         p = p->prox;
@@ -2420,6 +2427,7 @@ yydebug = 1;
 TreeNode * syntaxTree;
 FILE *f_in;
 FILE *f_out;
+int array_size;
 int i;
 int w;
 int flag;
@@ -2429,6 +2437,7 @@ char nomeID[20];  //  nome do ID
 char tipoID[3];   //  tipo nenhum <var, fun, vet>
 char tipoData[10]; //  tipo de dados <int, float, void>
 char nomeIDAnt[20];
+char array_size_char;
 int line = 1;
 int hash = 0;
 // Alocando o vetor estático e inicializando ponteiros com NULL
@@ -2514,6 +2523,13 @@ while ((token=yylex()) != '\0') {
           if(token == LBRACK) {
             // vetor
             // printf("Vetor\n");
+            token = yylex();
+            if(token == INT){
+              strcpy(array_size_char, yytext);
+              array_size = string2int(array_size_char);
+              printf("%d\n", array_size);
+            }
+
             strcpy(tipoID, "vet");
             if(flag == 0 && !(buscaVariavel(vetor, nomeID, escopo)))
               printf("\nSemantic error: bad declaration for Variable '%s'. Line %d\n", nomeID, lineno);
@@ -2653,19 +2669,19 @@ i = 0;
   syntaxTree = parse();
 
   /*printTree(syntaxTree);*/
-  generate_icode_launcher(&quad_list, syntaxTree);
+  generate_icode_launcher(&quad_list, syntaxTree, &vetor);
 
-  generate_code_launcher(&quad_list);
+  generate_code_launcher(&quad_list, &vetor);
 
   printf("\n");
   /*print_quadruple_list(&quad_list);*/
 
-  /*printf("Name(ID)  Type(ID)  Type(Data)   Scope    Appears in lines\n");
-  for(i = 0;i<211;i++){
-      if(&vetor[i]!=NULL)
-      printWTable(vetor, i);
-  }*/
 
+  printf("Name(ID)  Type(ID)  Type(Data)   Scope   Intermediate Index      Appears in lines\n");
+  for(i = 0;i<211;i++){
+    if(&vetor[i]!=NULL)
+    printWTable(vetor, i);
+  }
   return 0;
 }
 

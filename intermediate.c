@@ -11,6 +11,32 @@ FILE *file_read_quadruples;
 
 int counter = 0;
 int flag_later = 0;
+int indx = 0;
+
+void add_indexes_to_table(TipoLista *table, list_quadruple *quad_list){
+  int hash;
+  quadruple *p = quad_list->start;
+  TipoID *q;
+
+  while (p!=NULL) {
+    if (p->op==LblK) {
+        if (p->address_3.kind==String) {
+          hash = string2int(p->address_3.name)%211;
+          q = table[hash].start;
+          while (q!=NULL) {
+            if (!strcmp(q->tipoID,"func")) {
+              q->intermediate_index = p->index;
+              break;
+            }
+            q = q->prox;
+          }
+        }
+    }
+    p = p->next;
+  }
+
+
+}
 
 void store_quadruple(OpKind o, AddrKind k1, AddrKind k2, AddrKind k3,
                      int v1, int v2, int v3,
@@ -38,6 +64,8 @@ void insert_quadruple(list_quadruple *quad_list, quadruple *quad){
    *alloc_quad = *quad;
   //  printf("                               %d\n", quad->op);
    int breaker = 0;
+   alloc_quad->index = indx;
+   indx++;
    if(p==NULL){
      quad_list->start = alloc_quad;
      quad_list->start->next = NULL;
@@ -118,7 +146,7 @@ void insert_quadruples(list_quadruple *quad_list){
 void print_quadruple_list(list_quadruple *quad_list){
   quadruple *p = quad_list->start;
   while (p!=NULL) {
-    // printf("%d\n", p->op);
+    printf("[%d] ", p->index);
     switch (p->op) {
       case AddK:
         switch (p->address_3.kind) {
@@ -1880,7 +1908,8 @@ void generate_intermediate_code(list_quadruple *quad_list, TreeNode *tree){
   }
 }
 
-void generate_icode_launcher(list_quadruple *quad_list, TreeNode *tree){
+void generate_icode_launcher(list_quadruple *quad_list, TreeNode *tree, TipoLista *vetor){
+    int i;
     file_quadruples = fopen("file_quadruples.txt", "w");
     quad_list->start = NULL;
 
@@ -1898,8 +1927,12 @@ void generate_icode_launcher(list_quadruple *quad_list, TreeNode *tree){
     insert_quadruple(quad_list, quad);
 
     fclose( file_quadruples );
-    // printf("\n\n\n\n\n\n\n\n");
 
+
+
+    add_indexes_to_table(vetor, quad_list);
+    // printf("\n\n\n\n\n\n\n\n");
+    //
     // print_quadruple_list(quad_list);
 
     // file_read_quadruples = fopen("file_quadruples.txt", "r");

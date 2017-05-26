@@ -48,9 +48,9 @@ void format_two(galetype type, int register_source, int register_target, int imm
 
 void format_three(galetype type, int register_source_a, int register_source_b, int register_target);
 
-void generate_code(list_quadruple *quad_list);
+void generate_code(list_quadruple *quad_list, TipoLista *table);
 
-void generate_code_launcher(list_quadruple *quad_list);
+void generate_code_launcher(list_quadruple *quad_list, TipoLista *table);
 
 
 

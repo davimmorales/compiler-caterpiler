@@ -96,6 +96,7 @@ typedef struct TipoID{
     char tipoData[10];
     char escopo[30];
     int linhas[50];
+    int intermediate_index;
     int top;
     struct TipoID *prox;
 }TipoID;

@@ -45,6 +45,7 @@ typedef struct{
 } Address;
 
 typedef struct quadruple{
+  int index;
   OpKind op;
   Address address_1, address_2, address_3;
   struct quadruple *next;
@@ -56,11 +57,13 @@ typedef struct{
 
 void insert_quadruple(list_quadruple *quad_list, quadruple *quad);
 
+int string2int(const char *num);
 
 void insert_quadruples(list_quadruple *quad_list);
 
+void printWTable(TipoLista *lista, int index);
 
-void generate_icode_launcher(list_quadruple *quad_list, TreeNode *tree);
+void generate_icode_launcher(list_quadruple *quad_list, TreeNode *tree, TipoLista *vetor);
 
 static void generate_statement(list_quadruple *quad_list, TreeNode *tree);
 
@@ -71,6 +74,8 @@ void print_quadruple_list(list_quadruple *quad_list);
 void store_quadruple(OpKind o, AddrKind k1, AddrKind k2, AddrKind k3,
                      int v1, int v2, int v3,
                      char n1[], char n2[], char n3[]);
+
+void add_indexes_to_table(TipoLista *table, list_quadruple *quad_list);
 
 
 #endif

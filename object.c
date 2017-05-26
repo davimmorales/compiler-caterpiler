@@ -35,7 +35,7 @@ void format_three(galetype type, int register_source_a, int register_source_b, i
   line_counter++;
 }
 
-void generate_code(list_quadruple *quad_list){
+void generate_code(list_quadruple *quad_list, TipoLista *table){
     quadruple *p = quad_list->start;
     while (p!=NULL) {
       switch (p->op) {
@@ -88,13 +88,30 @@ void generate_code(list_quadruple *quad_list){
   }
 
 
-void generate_code_launcher(list_quadruple *quad_list){
+void generate_code_launcher(list_quadruple *quad_list, TipoLista *table){
+  int i;
+  TipoID *table_item;
   file_target_code = fopen("target_code.gc", "w");
-  generate_code(quad_list);
+
+// adding global variables to the beggining of execution
+  for(i = 0;i<211;i++){
+    if(&table[i]!=NULL){
+      table_item = table[i].start;
+      while (table_item!=NULL) {
+        if (!strcmp(table_item->escopo, "global")&&(!strcmp(table_item->tipoID, "var")||!strcmp(table_item->tipoID, "vet"))) {
+          printf("good\n");
+        }
+        table_item = table_item->prox;
+      }
+    }
+  }
+
+
+  generate_code(quad_list, table);
   fclose( file_target_code );
 }
 
-to do:
-- attribute index to quadruples
-- find functions declarations and specify them in symbols table
-- allocate global/main variables in memory (static)
+// to do:
+// - attribute index to quadruples
+// - find functions declarations and specify them in symbols table
+// - allocate global/main variables in memory (static)
