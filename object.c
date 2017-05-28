@@ -34,6 +34,23 @@ void insert_variable(list_variables *variables_list, int index, int index_array,
    }
 }
 
+//searches the position in memory of a variable given its name, scope and array index
+int search_variable(list_variables *variables_list, char name[], int array_position, char scope[]){
+  type_variable *p = variables_list->start;
+  while (p!=NULL) {
+    if(!strcmp(p->scope, scope)||!strcmp(p->scope,"global")){
+      if(!strcmp(p->id, name)){
+        if(p->kind==variable_kind)
+          return p->index;
+        else return p->index+array_position;
+      }
+    }
+    p = p->next;
+  }
+  printf("ERROR: variable not found!\n");
+  return 0;
+}
+
 //reserves spaces in memory for variables of a given function
 void declaration_variables(list_variables *variables_list, TipoLista *table, char scope[]){
   int i;
@@ -88,13 +105,70 @@ void format_three(galetype type, int register_source_a, int register_source_b, i
   line_counter++;
 }
 
-void generate_code(list_quadruple *quad_list, TipoLista *table){
+void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *variables_list){
     quadruple *p = quad_list->start;
+    char current_scope[50];
+    int flag_immediate_left = 0;
+    int flag_immediate_right = 0;
+    int immediate_left = 0;
+    int immediate_right = 0;
+
     while (p!=NULL) {
       switch (p->op) {
         case AddK:
-        // printf("galeto\n");
-          // format_three(G_ADD, , register_result)
+//left operand
+          if (p->address_1.kind==Temp) {
+            format_two(G_ADDI, register_result, register_operator_left, 0);
+          }else if(p->address_1.kind==String){
+            int memory_position_left = 0;
+            memory_position_left = search_variable(variables_list, p->address_1.name, 0, current_scope);
+            format_one(G_LD, register_operator_left, memory_position_left);
+          }else if(p->address_1.kind==IntConst){
+            if(p->address_1.value<65000){
+              flag_immediate_left = 1;
+              immediate_left = p->address_1.value;
+            }
+            else{
+              format_one(G_LDI, register_operator_left, p->address_1.value);
+            }
+          }else{
+            printf("ERROR: intermediate variable kind unknown!\n");
+          }
+
+//right operand
+          if (p->address_2.kind==Temp) {
+            format_two(G_ADDI, register_result, register_operator_right, 0);
+          }else if(p->address_2.kind==String){
+            int memory_position_right = 0;
+            memory_position_right = search_variable(variables_list, p->address_2.name, 0, current_scope);
+            format_one(G_LD, register_operator_right, memory_position_right);
+          }else if(p->address_2.kind==IntConst){
+            if(p->address_2.value<65000){
+              flag_immediate_right = 1;
+              immediate_right = p->address_2.value;
+            }
+            else{
+              format_one(G_LDI, register_operator_right, p->address_2.value);
+            }
+          }else{
+            printf("ERROR: intermediate variable kind unknown!\n");
+          }
+
+//operation
+          if(flag_immediate_left&&flag_immediate_right){
+            format_one(G_LDI, register_result, immediate_left+immediate_right);
+            flag_immediate_left = 0;
+            flag_immediate_right = 0;
+          }else if (flag_immediate_left) {
+            format_two(G_ADDI, register_operator_right, register_result, immediate_left);
+            flag_immediate_left = 0;
+          }else if (flag_immediate_right) {
+            format_two(G_ADDI, register_operator_left, register_result, immediate_right);
+            flag_immediate_right = 0;
+          }else{
+            format_three(G_ADD, register_operator_left, register_operator_right, register_result);
+          }
+
           break;
         case SubK:
           break;
@@ -149,28 +223,11 @@ void generate_code_launcher(list_quadruple *quad_list, TipoLista *table){
 
   file_target_code = fopen("target_code.gc", "w");
 
+//global variables' memory allocation
   declaration_variables(variables_list, table, "global");
 
-// adding global variables to the beggining of execution
-  // for(i = 0;i<211;i++){
-  //   if(&table[i]!=NULL){
-  //     table_item = table[i].start;
-  //     while (table_item!=NULL) {
-  //       if (!strcmp(table_item->escopo, "global")) {
-  //         if (!strcmp(table_item->tipoID, "var")) {
-  //           // insert_variable(variables_list, memory_index, 0, variable_kind, table_item->nomeID);
-  //           // memory_index++;
-  //         }
-  //         else if(!strcmp(table_item->tipoID, "vet")){
-  //         }
-  //       }
-  //       table_item = table_item->prox;
-  //     }
-  //   }
-  // }
-  //
+  generate_code(quad_list, table, variables_list);
 
-  generate_code(quad_list, table);
   fclose( file_target_code );
 }
 

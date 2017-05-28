@@ -65,6 +65,9 @@ void declaration_variables(list_variables *variables_list, TipoLista *table, cha
 //numbers relate to amount of registers in the operation
 void insert_variable(list_variables *variables_list, int index, int index_array, kind_variable kind, char id[], char scope[]);
 
+//searches the position in memory of a variable given its name, scope and array index
+int search_variable(list_variables *variables_list, char name[], int array_position, char scope[]);
+
 void format_zero(galetype type, int immediate);
 
 void format_one(galetype type, int register_a, int immediate);
@@ -73,7 +76,7 @@ void format_two(galetype type, int register_source, int register_target, int imm
 
 void format_three(galetype type, int register_source_a, int register_source_b, int register_target);
 
-void generate_code(list_quadruple *quad_list, TipoLista *table);
+void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *variables_list);
 
 void generate_code_launcher(list_quadruple *quad_list, TipoLista *table);
 

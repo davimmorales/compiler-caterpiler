@@ -30,14 +30,6 @@ typedef enum {
 
 typedef enum {Empty, IntConst, String, Temp, LabAddr} AddrKind;
 
-// typedef struct {
-//   AddrKind kind;
-//     union{
-//       int val;
-//       char *name;
-//     }contents;
-// } Address;
-
 typedef struct{
     AddrKind kind;
     int value;
