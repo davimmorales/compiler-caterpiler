@@ -37,9 +37,34 @@ typedef enum{
   /* Saída  011110 &*/ G_OUT // Displays <- R[SA]
 }galetype;
 
+typedef enum{
+  array_kind,
+  variable_kind
+}kind_variable;
+
 FILE *file_target_code;
 
+
+
+typedef struct type_variable{
+    int index;
+    int index_array;
+    char id[50];
+    char scope[50];
+    kind_variable kind;
+    struct type_variable *next;
+}type_variable;
+
+typedef struct{
+    type_variable *start;
+}list_variables;
+
+//reserves spaces in memory for variables of a given function
+void declaration_variables(list_variables *variables_list, TipoLista *table, char scope[]);
+
 //numbers relate to amount of registers in the operation
+void insert_variable(list_variables *variables_list, int index, int index_array, kind_variable kind, char id[], char scope[]);
+
 void format_zero(galetype type, int immediate);
 
 void format_one(galetype type, int register_a, int immediate);
