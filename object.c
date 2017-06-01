@@ -10,6 +10,57 @@ int register_operator_offset = 6;
 int line_counter = 0;
 int memory_index = 0;
 
+/* macro to control processor register file overflow */
+#define MAXREGISTER 20
+#define OFFSET 7
+
+
+/* array to control available temporaries
+ * at current intermediate code instruction
+ */
+static int temporaries[MAXREGISTER];
+
+/* Function get_temporary returns
+ * next available temporary,
+ * terminating execution of the program
+ * if there is no available temporary
+*/
+void map_temporary(int register_temporary){
+	int i, temp = -1;
+	for(i = 0; i < MAXREGISTER; ++i){
+		if(temporaries[i] == 0){
+			temporaries[i] = register_temporary;
+			temp = i+OFFSET;
+			break;
+		}
+	}
+	if(temp < 0){
+		printf("ERROR: register file overflow: no temporaries available at instruction %d\n");
+		exit(0);
+	}
+}
+
+/* Function releaseTemp releases
+ * specified temporary
+*/
+void release_temporary(int temp){
+  int t = temp-OFFSET;
+	if(t >= 0 && t < MAXREGISTER)
+		temporaries[t] = 0;
+}
+
+/*Function search_temporary searches
+  a specific temporary*/
+  int search_temporary(int index_temporary){
+    int i;
+    for (i = 0; i < MAXREGISTER; i++) {
+      if (temporaries[i]==index_temporary) {
+        return i+OFFSET;
+      }
+    }
+  }
+
+
 //insertion function for variables
 void insert_variable(list_variables *variables_list, int index, int index_array, kind_variable kind, char id[], char scope[]){
    type_variable *p = variables_list->start;
@@ -112,13 +163,16 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
     int flag_immediate_right = 0;
     int immediate_left = 0;
     int immediate_right = 0;
+    int register_temporary_left;
+    int register_temporary_right;
 
     while (p!=NULL) {
       switch (p->op) {
         case AddK:
 //left operand
           if (p->address_1.kind==Temp) {
-            format_two(G_ADDI, register_result, register_operator_left, 0);
+            register_temporary_left = search_temporary(p->address_1.value);
+            format_two(G_ADDI, register_temporary_left, register_operator_left, 0);
           }else if(p->address_1.kind==String){
             int memory_position_left = 0;
             memory_position_left = search_variable(variables_list, p->address_1.name, 0, current_scope);
@@ -137,7 +191,8 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
 
 //right operand
           if (p->address_2.kind==Temp) {
-            format_two(G_ADDI, register_result, register_operator_right, 0);
+            register_temporary_right = search_temporary(p->address_2.value);
+            format_two(G_ADDI, register_temporary_right, register_operator_right, 0);
           }else if(p->address_2.kind==String){
             int memory_position_right = 0;
             memory_position_right = search_variable(variables_list, p->address_2.name, 0, current_scope);
@@ -168,6 +223,10 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
           }else{
             format_three(G_ADD, register_operator_left, register_operator_right, register_result);
           }
+
+          map_temporary(p->address_3.value);
+          release_temporary(register_operator_left);
+          release_temporary(register_operator_right);
 
           break;
         case SubK:
