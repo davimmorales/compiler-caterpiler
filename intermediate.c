@@ -48,7 +48,6 @@ void add_indexes_to_table(TipoLista *table, list_quadruple *quad_list){
   q = table[hash].start;
   q->intermediate_finish = main_id->index;
 
-
 }
 
 void store_quadruple(OpKind o, AddrKind k1, AddrKind k2, AddrKind k3,

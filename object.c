@@ -168,7 +168,7 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
 
     while (p!=NULL) {
       switch (p->op) {
-        case AddK:
+				case AddK:
 //left operand
           if (p->address_1.kind==Temp) {
             register_temporary_left = search_temporary(p->address_1.value);
@@ -209,7 +209,8 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
             printf("ERROR: intermediate variable kind unknown!\n");
           }
 
-//operation
+//plus operation
+				if(p->op==AddK){
           if(flag_immediate_left&&flag_immediate_right){
             format_one(G_LDI, register_result, immediate_left+immediate_right);
             flag_immediate_left = 0;
@@ -223,21 +224,106 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
           }else{
             format_three(G_ADD, register_operator_left, register_operator_right, register_result);
           }
+				}else{//minus operation
+					if(flag_immediate_left&&flag_immediate_right){
+						format_one(G_LDI, register_result, immediate_left-immediate_right);
+						flag_immediate_left = 0;
+						flag_immediate_right = 0;
+					}else if (flag_immediate_left) {
+						format_two(G_SUBI, register_operator_right, register_result, immediate_left);
+						flag_immediate_left = 0;
+					}else if (flag_immediate_right) {
+						format_two(G_SUBI, register_operator_left, register_result, immediate_right);
+						flag_immediate_right = 0;
+					}else{
+						format_three(G_SUB, register_operator_left, register_operator_right, register_result);
+					}
+					switch (p->op) {
+						case SubK:
+						break;
+						case EqlK:
+						
+						break;
+						case NeqK:
+						break;
+						case GtrK:
+						break;
+						case GeqK:
+						break;
+						case LsrK:
+						break;
+						case LeqK:
+						break;
+						case AsvK:
+
+					}
+				}
 
           map_temporary(p->address_3.value);
           release_temporary(register_operator_left);
           release_temporary(register_operator_right);
 
           break;
-        case SubK:
-          break;
         case TimK:
-          break;
-        case EqlK:
-          break;
-        case GeqK:
-          break;
-        case AsvK:
+				case OvrK:
+				//left operand
+				          if (p->address_1.kind==Temp) {
+				            register_temporary_left = search_temporary(p->address_1.value);
+				            format_two(G_ADDI, register_temporary_left, register_operator_left, 0);
+				          }else if(p->address_1.kind==String){
+				            int memory_position_left = 0;
+				            memory_position_left = search_variable(variables_list, p->address_1.name, 0, current_scope);
+				            format_one(G_LD, register_operator_left, memory_position_left);
+				          }else if(p->address_1.kind==IntConst){
+				            if(p->address_1.value<65000){
+				              flag_immediate_left = 1;
+				              immediate_left = p->address_1.value;
+				            }
+			              format_one(G_LDI, register_operator_left, p->address_1.value);
+				          }else{
+				            printf("ERROR: intermediate variable kind unknown!\n");
+				          }
+
+				//right operand
+				          if (p->address_2.kind==Temp) {
+				            register_temporary_right = search_temporary(p->address_2.value);
+				            format_two(G_ADDI, register_temporary_right, register_operator_right, 0);
+				          }else if(p->address_2.kind==String){
+				            int memory_position_right = 0;
+				            memory_position_right = search_variable(variables_list, p->address_2.name, 0, current_scope);
+				            format_one(G_LD, register_operator_right, memory_position_right);
+				          }else if(p->address_2.kind==IntConst){
+				            if(p->address_2.value<65000){
+				              flag_immediate_right = 1;
+				              immediate_right = p->address_2.value;
+				            }
+				              format_one(G_LDI, register_operator_right, p->address_2.value);
+				          }else{
+				            printf("ERROR: intermediate variable kind unknown!\n");
+				          }
+
+				//operation
+								if(p->op==TimK){
+				          if(flag_immediate_left&&flag_immediate_right){
+				            format_one(G_LDI, register_result, immediate_left*immediate_right);
+				            flag_immediate_left = 0;
+				            flag_immediate_right = 0;
+				          }else{
+				            format_three(G_MUL, register_operator_left, register_operator_right, register_result);
+				          }
+								}else{
+									if(flag_immediate_left&&flag_immediate_right){
+										format_one(G_LDI, register_result, immediate_left/immediate_right);
+										flag_immediate_left = 0;
+										flag_immediate_right = 0;
+									}else{
+										format_three(G_DIV, register_operator_left, register_operator_right, register_result);
+									}
+								}
+
+				          map_temporary(p->address_3.value);
+				          release_temporary(register_operator_left);
+				          release_temporary(register_operator_right);
           break;
         case AsaK:
           break;
