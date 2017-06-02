@@ -1,3 +1,5 @@
+//RISK: READING AND WRITING IN THE SAME REGISTER
+
 #include "object.h"
 
 int register_zero = 0;
@@ -169,6 +171,7 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
     while (p!=NULL) {
       switch (p->op) {
 				case AddK:
+				case SubK:
 //left operand
           if (p->address_1.kind==Temp) {
             register_temporary_left = search_temporary(p->address_1.value);
@@ -209,55 +212,38 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
             printf("ERROR: intermediate variable kind unknown!\n");
           }
 
-//plus operation
-				if(p->op==AddK){
-          if(flag_immediate_left&&flag_immediate_right){
-            format_one(G_LDI, register_result, immediate_left+immediate_right);
-            flag_immediate_left = 0;
-            flag_immediate_right = 0;
-          }else if (flag_immediate_left) {
-            format_two(G_ADDI, register_operator_right, register_result, immediate_left);
-            flag_immediate_left = 0;
-          }else if (flag_immediate_right) {
-            format_two(G_ADDI, register_operator_left, register_result, immediate_right);
-            flag_immediate_right = 0;
-          }else{
-            format_three(G_ADD, register_operator_left, register_operator_right, register_result);
-          }
-				}else{//minus operation
-					if(flag_immediate_left&&flag_immediate_right){
-						format_one(G_LDI, register_result, immediate_left-immediate_right);
-						flag_immediate_left = 0;
-						flag_immediate_right = 0;
-					}else if (flag_immediate_left) {
-						format_two(G_SUBI, register_operator_right, register_result, immediate_left);
-						flag_immediate_left = 0;
-					}else if (flag_immediate_right) {
-						format_two(G_SUBI, register_operator_left, register_result, immediate_right);
-						flag_immediate_right = 0;
-					}else{
-						format_three(G_SUB, register_operator_left, register_operator_right, register_result);
-					}
 					switch (p->op) {
+						case AddK:
+						if(flag_immediate_left&&flag_immediate_right){
+							format_one(G_LDI, register_result, immediate_left+immediate_right);
+							flag_immediate_left = 0;
+							flag_immediate_right = 0;
+						}else if (flag_immediate_left) {
+							format_two(G_ADDI, register_operator_right, register_result, immediate_left);
+							flag_immediate_left = 0;
+						}else if (flag_immediate_right) {
+							format_two(G_ADDI, register_operator_left, register_result, immediate_right);
+							flag_immediate_right = 0;
+						}else{
+							format_three(G_ADD, register_operator_left, register_operator_right, register_result);
+						}
+						break;
 						case SubK:
-						break;
-						case EqlK:
-						
-						break;
-						case NeqK:
-						break;
-						case GtrK:
-						break;
-						case GeqK:
-						break;
-						case LsrK:
-						break;
-						case LeqK:
-						break;
-						case AsvK:
-
+						if(flag_immediate_left&&flag_immediate_right){
+							format_one(G_LDI, register_result, immediate_left-immediate_right);
+							flag_immediate_left = 0;
+							flag_immediate_right = 0;
+						}else if (flag_immediate_left) {
+							format_two(G_SUBI, register_operator_right, register_result, immediate_left);
+							flag_immediate_left = 0;
+						}else if (flag_immediate_right) {
+							format_two(G_SUBI, register_operator_left, register_result, immediate_right);
+							flag_immediate_right = 0;
+						}else{
+							format_three(G_SUB, register_operator_left, register_operator_right, register_result);
+						}
 					}
-				}
+
 
           map_temporary(p->address_3.value);
           release_temporary(register_operator_left);
@@ -266,6 +252,12 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
           break;
         case TimK:
 				case OvrK:
+				case EqlK:
+				case NeqK:
+				case GtrK:
+				case GeqK:
+				case LsrK:
+				case LeqK:
 				//left operand
 				          if (p->address_1.kind==Temp) {
 				            register_temporary_left = search_temporary(p->address_1.value);
@@ -302,16 +294,17 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
 				            printf("ERROR: intermediate variable kind unknown!\n");
 				          }
 
-				//operation
-								if(p->op==TimK){
-				          if(flag_immediate_left&&flag_immediate_right){
-				            format_one(G_LDI, register_result, immediate_left*immediate_right);
-				            flag_immediate_left = 0;
-				            flag_immediate_right = 0;
-				          }else{
-				            format_three(G_MUL, register_operator_left, register_operator_right, register_result);
-				          }
-								}else{
+								switch (p->op) {
+									case TimK:
+									if(flag_immediate_left&&flag_immediate_right){
+										format_one(G_LDI, register_result, immediate_left*immediate_right);
+										flag_immediate_left = 0;
+										flag_immediate_right = 0;
+									}else{
+										format_three(G_MUL, register_operator_left, register_operator_right, register_result);
+									}
+									break;
+									case OvrK:
 									if(flag_immediate_left&&flag_immediate_right){
 										format_one(G_LDI, register_result, immediate_left/immediate_right);
 										flag_immediate_left = 0;
@@ -319,12 +312,76 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
 									}else{
 										format_three(G_DIV, register_operator_left, register_operator_right, register_result);
 									}
+									break;
+									case EqlK:
+									if(flag_immediate_left&&flag_immediate_right){
+										format_one(G_LDI, register_result, immediate_left==immediate_right);
+										flag_immediate_left = 0;
+										flag_immediate_right = 0;
+									}else{
+										format_three(G_SLT, register_operator_left, register_operator_right, register_result);
+										format_three(G_SLT, register_operator_right, register_operator_left, register_operator_left);
+										format_three(G_OR, register_result, register_operator_left, register_result);
+										format_two(G_NOT, register_result, register_result, 0);
+									}
+									break;
+									case NeqK:
+									if(flag_immediate_left&&flag_immediate_right){
+										format_one(G_LDI, register_result, immediate_left!=immediate_right);
+										flag_immediate_left = 0;
+										flag_immediate_right = 0;
+									}else{
+										format_three(G_SLT, register_operator_left, register_operator_right, register_result);
+										format_three(G_SLT, register_operator_right, register_operator_left, register_operator_left);
+										format_three(G_OR, register_result, register_operator_left, register_result);
+									}
+									break;
+									case GtrK:
+									if(flag_immediate_left&&flag_immediate_right){
+										format_one(G_LDI, register_result, immediate_left!=immediate_right);
+										flag_immediate_left = 0;
+										flag_immediate_right = 0;
+									}else{
+										format_three(G_SLT, register_operator_right, register_operator_left, register_operator_left);
+									}
+									break;
+									case GeqK:
+									if(flag_immediate_left&&flag_immediate_right){
+										format_one(G_LDI, register_result, immediate_left!=immediate_right);
+										flag_immediate_left = 0;
+										flag_immediate_right = 0;
+									}else{
+										format_three(G_SLT, register_operator_left, register_operator_right, register_result);
+										format_two(G_NOT, register_result, register_result, 0);
+									}
+									break;
+									case LsrK:
+									if(flag_immediate_left&&flag_immediate_right){
+										format_one(G_LDI, register_result, immediate_left!=immediate_right);
+										flag_immediate_left = 0;
+										flag_immediate_right = 0;
+									}else{
+										format_three(G_SLT, register_operator_left, register_operator_right, register_result);
+									}
+									break;
+									case LeqK:
+									if(flag_immediate_left&&flag_immediate_right){
+										format_one(G_LDI, register_result, immediate_left!=immediate_right);
+										flag_immediate_left = 0;
+										flag_immediate_right = 0;
+									}else{
+										format_three(G_SLT, register_operator_right, register_operator_left, register_operator_left);
+										format_two(G_NOT, register_result, register_result, 0);
+									}
+									break;
 								}
 
-				          map_temporary(p->address_3.value);
+									map_temporary(p->address_3.value);
 				          release_temporary(register_operator_left);
 				          release_temporary(register_operator_right);
           break;
+				case AsvK:
+						break;
         case AsaK:
           break;
         case InnK:
