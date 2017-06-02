@@ -220,7 +220,8 @@ void insere(TipoLista *lista, char scope[], char nameID[], char typeID[], char t
       novoNo->top = 1; // proxima posição de inserir numero da linha
     }
 
-    novoNo->intermediate_index = 0;
+    novoNo->intermediate_start = 0;
+    novoNo->intermediate_finish = 0;
 
     // Inicialização dos demais campos do nó com os parâmetros de entrada
     if(!strcmp(typeID,"func")) {
@@ -278,7 +279,7 @@ void printWTable(TipoLista *lista, int index) {
       if(p->linhas[0] != 0) {
         printf("%6s    %6s    %6s    %6s        ", p->nomeID, p->tipoID, p->tipoData, p->escopo);
         if(!strcmp(p->tipoID, "func"))
-          printf("     %d \t \t ", p->intermediate_index);
+          printf("     %d, %d \t \t ", p->intermediate_start, p->intermediate_finish);
         else
           printf("\t \t \t ");
         while(p->linhas[i]!=0){

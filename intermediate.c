@@ -14,9 +14,15 @@ int flag_later = 0;
 int indx = 0;
 
 void add_indexes_to_table(TipoLista *table, list_quadruple *quad_list){
+
   int hash;
   quadruple *p = quad_list->start;
+  quadruple *main_id;
   TipoID *q;
+  TipoID *previous_function;
+
+
+  previous_function = NULL;
 
   while (p!=NULL) {
     if (p->op==LblK) {
@@ -25,15 +31,22 @@ void add_indexes_to_table(TipoLista *table, list_quadruple *quad_list){
           q = table[hash].start;
           while (q!=NULL) {
             if (!strcmp(q->tipoID,"func")) {
-              q->intermediate_index = p->index;
+              if(previous_function!=NULL)
+                previous_function->intermediate_finish = p->index-1;
+              q->intermediate_start = p->index;
+              previous_function = q;
               break;
             }
             q = q->prox;
           }
         }
     }
+    main_id = p;
     p = p->next;
   }
+  hash = string2int("main")%211;
+  q = table[hash].start;
+  q->intermediate_finish = main_id->index;
 
 
 }

@@ -35,7 +35,7 @@ void map_temporary(int register_temporary){
 		}
 	}
 	if(temp < 0){
-		printf("ERROR: register file overflow: no temporaries available at instruction %d\n");
+		printf("ERROR: register file overflow: no temporaries available at requested instruction\n");
 		exit(0);
 	}
 }
