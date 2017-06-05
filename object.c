@@ -420,8 +420,14 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
 void generate_code_launcher(list_quadruple *quad_list, TipoLista *table){
   //stores all variables positions
   list_variables *variables_list;
+	list_galetos *galetos_list;
+
+	variables_list = (list_variables*) malloc(sizeof(list_variables));
+	galetos_list = (list_galetos*) malloc(sizeof(list_galetos));
+
 
   variables_list->start = NULL;
+	galetos_list->start = NULL;
 
   file_target_code = fopen("target_code.gc", "w");
 

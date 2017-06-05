@@ -59,6 +59,19 @@ typedef struct{
     type_variable *start;
 }list_variables;
 
+typedef struct type_galeto{
+    int index;
+    int index_array;
+    char id[50];
+    char scope[50];
+    kind_variable kind;
+    struct type_galeto *next;
+}type_galeto;
+
+typedef struct{
+    type_galeto *start;
+}list_galetos;
+
 //reserves spaces in memory for variables of a given function
 void declaration_variables(list_variables *variables_list, TipoLista *table, char scope[]);
 
