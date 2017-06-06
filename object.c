@@ -148,7 +148,10 @@ void format_zero(list_instructions *instructions_list,  galetype type, int immed
 	new_instruction->register_c = 0;
 	new_instruction->immediate = immediate;
 	new_instruction->type = type;
-	new_instruction->target_label = 0;
+	if(type==G_BOZ)
+		new_instruction->target_label = immediate;
+	else
+		new_instruction->target_label = 0;
 
 
 
@@ -497,6 +500,9 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
         case RetK:
           break;
         case IffK:
+					register_temporary_left = search_temporary(p->address_1.value);
+					format_one(instructions_list, G_PBC, register_operator_left, 0);
+					format_zero(instructions_list, G_BOZ, p->address_3.value);
           break;
         case GtoK:
           break;
@@ -527,10 +533,8 @@ void generate_code_launcher(list_quadruple *quad_list, TipoLista *table){
 	variables_list = (list_variables*) malloc(sizeof(list_variables));
 	instructions_list = (list_instructions*) malloc(sizeof(list_instructions));
 
-
   variables_list->start = NULL;
 	instructions_list->start = NULL;
-
 
   file_target_code = fopen("target_code.gc", "w");
 
