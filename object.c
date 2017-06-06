@@ -133,32 +133,134 @@ void declaration_variables(list_variables *variables_list, TipoLista *table, cha
 
 }
 //numbers relate to amount of registers in the operation
-void format_zero(galetype type, int immediate){
+void format_zero(list_instructions *instructions_list,  galetype type, int immediate){
   if(type==G_HLT||type==G_NOP)
     printf("%4d: \ttype: %d\n", line_counter, type);
   else
     printf("%4d: \ttype: %d \timmediate: %d\n", line_counter, type, immediate);
+
+	type_instruction *p =instructions_list->start;
+	type_instruction *new_instruction = malloc(sizeof(type_instruction));
+
+	new_instruction->line = line_counter;
+	new_instruction->register_a = 0;
+	new_instruction->register_b = 0;
+	new_instruction->register_c = 0;
+	new_instruction->immediate = immediate;
+	new_instruction->type = type;
+	new_instruction->target_label = 0;
+
+
+
+	if (p==NULL) {
+		instructions_list->start = new_instruction;
+		instructions_list->start->next = NULL;
+	}
+	else{
+		while (p->next!=NULL) {
+			p = p->next;
+		}
+		p->next = new_instruction;
+		p->next->next = NULL;
+	}
   line_counter++;
 }
 
-void format_one(galetype type, int register_a, int immediate){
+void format_one(list_instructions *instructions_list, galetype type, int register_a, int immediate){
   printf("%4d: \ttype: %d \tregister: %d \timmediate: %d\n", line_counter, type, register_a, immediate);
+
+	type_instruction *p =instructions_list->start;
+	type_instruction *new_instruction = malloc(sizeof(type_instruction));
+
+	new_instruction->line = line_counter;
+	new_instruction->register_a = register_a;
+	new_instruction->register_b = 0;
+	new_instruction->register_c = 0;
+	new_instruction->immediate = immediate;
+	new_instruction->type = type;
+	new_instruction->target_label = 0;
+
+
+
+	if (p==NULL) {
+		instructions_list->start = new_instruction;
+		instructions_list->start->next = NULL;
+	}
+	else{
+		while (p->next!=NULL) {
+			p = p->next;
+		}
+		p->next = new_instruction;
+		p->next->next = NULL;
+	}
   line_counter++;
 }
 
-void format_two(galetype type, int register_source, int register_target, int immediate){
+void format_two(list_instructions *instructions_list, galetype type, int register_source, int register_target, int immediate){
   printf("%4d: \ttype: %d \tsource: %d \ttarget: %d \timmediate: %d\n",
   line_counter, type, register_source,register_target, immediate);
+
+	type_instruction *p =instructions_list->start;
+	type_instruction *new_instruction = malloc(sizeof(type_instruction));
+
+	new_instruction->line = line_counter;
+	new_instruction->register_a = register_source;
+	new_instruction->register_b = 0;
+	new_instruction->register_c = register_target;
+	new_instruction->immediate = immediate;
+	new_instruction->type = type;
+	new_instruction->target_label = 0;
+
+
+
+	if (p==NULL) {
+		instructions_list->start = new_instruction;
+		instructions_list->start->next = NULL;
+	}
+	else{
+		while (p->next!=NULL) {
+			p = p->next;
+		}
+		p->next = new_instruction;
+		p->next->next = NULL;
+	}
   line_counter++;
 }
 
-void format_three(galetype type, int register_source_a, int register_source_b, int register_target){
+
+
+void format_three(list_instructions *instructions_list, galetype type, int register_source_a, int register_source_b, int register_target){
   printf("%4d: \ttype: %d \tsource_a: %d \tsource_b: %d \ttarget: %d\n",
   line_counter, type, register_source_a, register_source_b, register_target);
+
+	type_instruction *p =instructions_list->start;
+	type_instruction *new_instruction = malloc(sizeof(type_instruction));
+
+	new_instruction->line = line_counter;
+	new_instruction->register_a = register_source_a;
+	new_instruction->register_b = register_source_b;
+	new_instruction->register_c = register_target;
+	new_instruction->immediate = 0;
+	new_instruction->type = type;
+	new_instruction->target_label = 0;
+
+
+
+	if (p==NULL) {
+		instructions_list->start = new_instruction;
+		instructions_list->start->next = NULL;
+	}
+	else{
+		while (p->next!=NULL) {
+			p = p->next;
+		}
+		p->next = new_instruction;
+		p->next->next = NULL;
+	}
   line_counter++;
 }
 
-void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *variables_list){
+void generate_code(list_instructions *instructions_list, list_quadruple *quad_list, TipoLista *table, list_variables *variables_list){
     quadruple *p = quad_list->start;
     char current_scope[50];
     int flag_immediate_left = 0;
@@ -175,18 +277,18 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
 //left operand
           if (p->address_1.kind==Temp) {
             register_temporary_left = search_temporary(p->address_1.value);
-            format_two(G_ADDI, register_temporary_left, register_operator_left, 0);
+            format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_left, 0);
           }else if(p->address_1.kind==String){
             int memory_position_left = 0;
             memory_position_left = search_variable(variables_list, p->address_1.name, 0, current_scope);
-            format_one(G_LD, register_operator_left, memory_position_left);
+            format_one(instructions_list, G_LD, register_operator_left, memory_position_left);
           }else if(p->address_1.kind==IntConst){
             if(p->address_1.value<65000){
               flag_immediate_left = 1;
               immediate_left = p->address_1.value;
             }
             else{
-              format_one(G_LDI, register_operator_left, p->address_1.value);
+              format_one(instructions_list, G_LDI, register_operator_left, p->address_1.value);
             }
           }else{
             printf("ERROR: intermediate variable kind unknown!\n");
@@ -195,18 +297,18 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
 //right operand
           if (p->address_2.kind==Temp) {
             register_temporary_right = search_temporary(p->address_2.value);
-            format_two(G_ADDI, register_temporary_right, register_operator_right, 0);
+            format_two(instructions_list, G_ADDI, register_temporary_right, register_operator_right, 0);
           }else if(p->address_2.kind==String){
             int memory_position_right = 0;
             memory_position_right = search_variable(variables_list, p->address_2.name, 0, current_scope);
-            format_one(G_LD, register_operator_right, memory_position_right);
+            format_one(instructions_list, G_LD, register_operator_right, memory_position_right);
           }else if(p->address_2.kind==IntConst){
             if(p->address_2.value<65000){
               flag_immediate_right = 1;
               immediate_right = p->address_2.value;
             }
             else{
-              format_one(G_LDI, register_operator_right, p->address_2.value);
+              format_one(instructions_list, G_LDI, register_operator_right, p->address_2.value);
             }
           }else{
             printf("ERROR: intermediate variable kind unknown!\n");
@@ -215,32 +317,32 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
 					switch (p->op) {
 						case AddK:
 						if(flag_immediate_left&&flag_immediate_right){
-							format_one(G_LDI, register_result, immediate_left+immediate_right);
+							format_one(instructions_list, G_LDI, register_result, immediate_left+immediate_right);
 							flag_immediate_left = 0;
 							flag_immediate_right = 0;
 						}else if (flag_immediate_left) {
-							format_two(G_ADDI, register_operator_right, register_result, immediate_left);
+							format_two(instructions_list, G_ADDI, register_operator_right, register_result, immediate_left);
 							flag_immediate_left = 0;
 						}else if (flag_immediate_right) {
-							format_two(G_ADDI, register_operator_left, register_result, immediate_right);
+							format_two(instructions_list, G_ADDI, register_operator_left, register_result, immediate_right);
 							flag_immediate_right = 0;
 						}else{
-							format_three(G_ADD, register_operator_left, register_operator_right, register_result);
+							format_three(instructions_list, G_ADD, register_operator_left, register_operator_right, register_result);
 						}
 						break;
 						case SubK:
 						if(flag_immediate_left&&flag_immediate_right){
-							format_one(G_LDI, register_result, immediate_left-immediate_right);
+							format_one(instructions_list, G_LDI, register_result, immediate_left-immediate_right);
 							flag_immediate_left = 0;
 							flag_immediate_right = 0;
 						}else if (flag_immediate_left) {
-							format_two(G_SUBI, register_operator_right, register_result, immediate_left);
+							format_two(instructions_list, G_SUBI, register_operator_right, register_result, immediate_left);
 							flag_immediate_left = 0;
 						}else if (flag_immediate_right) {
-							format_two(G_SUBI, register_operator_left, register_result, immediate_right);
+							format_two(instructions_list, G_SUBI, register_operator_left, register_result, immediate_right);
 							flag_immediate_right = 0;
 						}else{
-							format_three(G_SUB, register_operator_left, register_operator_right, register_result);
+							format_three(instructions_list, G_SUB, register_operator_left, register_operator_right, register_result);
 						}
 					}
 
@@ -261,17 +363,17 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
 				//left operand
 				          if (p->address_1.kind==Temp) {
 				            register_temporary_left = search_temporary(p->address_1.value);
-				            format_two(G_ADDI, register_temporary_left, register_operator_left, 0);
+				            format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_left, 0);
 				          }else if(p->address_1.kind==String){
 				            int memory_position_left = 0;
 				            memory_position_left = search_variable(variables_list, p->address_1.name, 0, current_scope);
-				            format_one(G_LD, register_operator_left, memory_position_left);
+				            format_one(instructions_list, G_LD, register_operator_left, memory_position_left);
 				          }else if(p->address_1.kind==IntConst){
 				            if(p->address_1.value<65000){
 				              flag_immediate_left = 1;
 				              immediate_left = p->address_1.value;
 				            }
-			              format_one(G_LDI, register_operator_left, p->address_1.value);
+			              format_one(instructions_list, G_LDI, register_operator_left, p->address_1.value);
 				          }else{
 				            printf("ERROR: intermediate variable kind unknown!\n");
 				          }
@@ -279,17 +381,17 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
 				//right operand
 				          if (p->address_2.kind==Temp) {
 				            register_temporary_right = search_temporary(p->address_2.value);
-				            format_two(G_ADDI, register_temporary_right, register_operator_right, 0);
+				            format_two(instructions_list, G_ADDI, register_temporary_right, register_operator_right, 0);
 				          }else if(p->address_2.kind==String){
 				            int memory_position_right = 0;
 				            memory_position_right = search_variable(variables_list, p->address_2.name, 0, current_scope);
-				            format_one(G_LD, register_operator_right, memory_position_right);
+				            format_one(instructions_list, G_LD, register_operator_right, memory_position_right);
 				          }else if(p->address_2.kind==IntConst){
 				            if(p->address_2.value<65000){
 				              flag_immediate_right = 1;
 				              immediate_right = p->address_2.value;
 				            }
-				              format_one(G_LDI, register_operator_right, p->address_2.value);
+				              format_one(instructions_list, G_LDI, register_operator_right, p->address_2.value);
 				          }else{
 				            printf("ERROR: intermediate variable kind unknown!\n");
 				          }
@@ -297,81 +399,81 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
 								switch (p->op) {
 									case TimK:
 									if(flag_immediate_left&&flag_immediate_right){
-										format_one(G_LDI, register_result, immediate_left*immediate_right);
+										format_one(instructions_list, G_LDI, register_result, immediate_left*immediate_right);
 										flag_immediate_left = 0;
 										flag_immediate_right = 0;
 									}else{
-										format_three(G_MUL, register_operator_left, register_operator_right, register_result);
+										format_three(instructions_list, G_MUL, register_operator_left, register_operator_right, register_result);
 									}
 									break;
 									case OvrK:
 									if(flag_immediate_left&&flag_immediate_right){
-										format_one(G_LDI, register_result, immediate_left/immediate_right);
+										format_one(instructions_list, G_LDI, register_result, immediate_left/immediate_right);
 										flag_immediate_left = 0;
 										flag_immediate_right = 0;
 									}else{
-										format_three(G_DIV, register_operator_left, register_operator_right, register_result);
+										format_three(instructions_list, G_DIV, register_operator_left, register_operator_right, register_result);
 									}
 									break;
 									case EqlK:
 									if(flag_immediate_left&&flag_immediate_right){
-										format_one(G_LDI, register_result, immediate_left==immediate_right);
+										format_one(instructions_list, G_LDI, register_result, immediate_left==immediate_right);
 										flag_immediate_left = 0;
 										flag_immediate_right = 0;
 									}else{
-										format_three(G_SLT, register_operator_left, register_operator_right, register_result);
-										format_three(G_SLT, register_operator_right, register_operator_left, register_operator_left);
-										format_three(G_OR, register_result, register_operator_left, register_result);
-										format_two(G_NOT, register_result, register_result, 0);
+										format_three(instructions_list, G_SLT, register_operator_left, register_operator_right, register_result);
+										format_three(instructions_list, G_SLT, register_operator_right, register_operator_left, register_operator_left);
+										format_three(instructions_list, G_OR, register_result, register_operator_left, register_result);
+										format_two(instructions_list, G_NOT, register_result, register_result, 0);
 									}
 									break;
 									case NeqK:
 									if(flag_immediate_left&&flag_immediate_right){
-										format_one(G_LDI, register_result, immediate_left!=immediate_right);
+										format_one(instructions_list, G_LDI, register_result, immediate_left!=immediate_right);
 										flag_immediate_left = 0;
 										flag_immediate_right = 0;
 									}else{
-										format_three(G_SLT, register_operator_left, register_operator_right, register_result);
-										format_three(G_SLT, register_operator_right, register_operator_left, register_operator_left);
-										format_three(G_OR, register_result, register_operator_left, register_result);
+										format_three(instructions_list, G_SLT, register_operator_left, register_operator_right, register_result);
+										format_three(instructions_list, G_SLT, register_operator_right, register_operator_left, register_operator_left);
+										format_three(instructions_list, G_OR, register_result, register_operator_left, register_result);
 									}
 									break;
 									case GtrK:
 									if(flag_immediate_left&&flag_immediate_right){
-										format_one(G_LDI, register_result, immediate_left!=immediate_right);
+										format_one(instructions_list, G_LDI, register_result, immediate_left!=immediate_right);
 										flag_immediate_left = 0;
 										flag_immediate_right = 0;
 									}else{
-										format_three(G_SLT, register_operator_right, register_operator_left, register_operator_left);
+										format_three(instructions_list, G_SLT, register_operator_right, register_operator_left, register_operator_left);
 									}
 									break;
 									case GeqK:
 									if(flag_immediate_left&&flag_immediate_right){
-										format_one(G_LDI, register_result, immediate_left!=immediate_right);
+										format_one(instructions_list, G_LDI, register_result, immediate_left!=immediate_right);
 										flag_immediate_left = 0;
 										flag_immediate_right = 0;
 									}else{
-										format_three(G_SLT, register_operator_left, register_operator_right, register_result);
-										format_two(G_NOT, register_result, register_result, 0);
+										format_three(instructions_list, G_SLT, register_operator_left, register_operator_right, register_result);
+										format_two(instructions_list, G_NOT, register_result, register_result, 0);
 									}
 									break;
 									case LsrK:
 									if(flag_immediate_left&&flag_immediate_right){
-										format_one(G_LDI, register_result, immediate_left!=immediate_right);
+										format_one(instructions_list, G_LDI, register_result, immediate_left!=immediate_right);
 										flag_immediate_left = 0;
 										flag_immediate_right = 0;
 									}else{
-										format_three(G_SLT, register_operator_left, register_operator_right, register_result);
+										format_three(instructions_list, G_SLT, register_operator_left, register_operator_right, register_result);
 									}
 									break;
 									case LeqK:
 									if(flag_immediate_left&&flag_immediate_right){
-										format_one(G_LDI, register_result, immediate_left!=immediate_right);
+										format_one(instructions_list, G_LDI, register_result, immediate_left!=immediate_right);
 										flag_immediate_left = 0;
 										flag_immediate_right = 0;
 									}else{
-										format_three(G_SLT, register_operator_right, register_operator_left, register_operator_left);
-										format_two(G_NOT, register_result, register_result, 0);
+										format_three(instructions_list, G_SLT, register_operator_right, register_operator_left, register_operator_left);
+										format_two(instructions_list, G_NOT, register_result, register_result, 0);
 									}
 									break;
 								}
@@ -420,22 +522,22 @@ void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *
 void generate_code_launcher(list_quadruple *quad_list, TipoLista *table){
   //stores all variables positions
   list_variables *variables_list;
-	list_galetos *galetos_list;
+	list_instructions *instructions_list;
 
 	variables_list = (list_variables*) malloc(sizeof(list_variables));
-	galetos_list = (list_galetos*) malloc(sizeof(list_galetos));
+	instructions_list = (list_instructions*) malloc(sizeof(list_instructions));
 
 
   variables_list->start = NULL;
-	galetos_list->start = NULL;
+	instructions_list->start = NULL;
+
 
   file_target_code = fopen("target_code.gc", "w");
 
 //global variables' memory allocation
   declaration_variables(variables_list, table, "global");
 
-  generate_code(quad_list, table, variables_list);
-
+  generate_code(instructions_list, quad_list, table, variables_list);
   fclose( file_target_code );
 }
 

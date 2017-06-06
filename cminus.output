@@ -1,14 +1,14 @@
-Terminals unused in grammar
+Terminais sem uso na gramática
 
    FLOAT
    NEWLINE
    ERROR
 
 
-State 109 conflicts: 1 shift/reduce
+Estado 109 conflitos: 1 de deslocamento/redução
 
 
-Grammar
+Gramática
 
     0 $accept: programa $end
 
@@ -108,7 +108,7 @@ Grammar
    66 num: NUM
 
 
-Terminals, with rules where they appear
+Terminais, com as regras onde eles aparecem
 
 $end (0) 0
 error (256)
@@ -144,1280 +144,1280 @@ IF (335) 32 33
 ELSE (336) 33
 
 
-Nonterminals, with rules where they appear
+Não terminais com as regras onde eles aparecem
 
 $accept (33)
-    on left: 0
+    à esquerda: 0
 programa (34)
-    on left: 1 2, on right: 0
+    à esquerda: 1 2, à direita: 0
 declaration-list (35)
-    on left: 3 4, on right: 2 3
+    à esquerda: 3 4, à direita: 2 3
 declaration (36)
-    on left: 5 6, on right: 3 4
+    à esquerda: 5 6, à direita: 3 4
 variable_declaration (37)
-    on left: 7 8, on right: 5 21 22
+    à esquerda: 7 8, à direita: 5 21 22
 function_declaration (38)
-    on left: 9 10, on right: 6
+    à esquerda: 9 10, à direita: 6
 parameters (39)
-    on left: 11 12, on right: 9 10
+    à esquerda: 11 12, à direita: 9 10
 list_parameters (40)
-    on left: 13 14, on right: 11 13
+    à esquerda: 13 14, à direita: 11 13
 parameter (41)
-    on left: 15 16, on right: 13 14
+    à esquerda: 15 16, à direita: 13 14
 compound_declaration (42)
-    on left: 17 18 19 20, on right: 9 10 26
+    à esquerda: 17 18 19 20, à direita: 9 10 26
 local_declarations (43)
-    on left: 21 22, on right: 17 18 21
+    à esquerda: 21 22, à direita: 17 18 21
 list_statement (44)
-    on left: 23 24, on right: 17 19 23
+    à esquerda: 23 24, à direita: 17 19 23
 statement (45)
-    on left: 25 26 27 28 29, on right: 23 24 32 33 34
+    à esquerda: 25 26 27 28 29, à direita: 23 24 32 33 34
 expression_declaration (46)
-    on left: 30 31, on right: 25
+    à esquerda: 30 31, à direita: 25
 selection_declaration (47)
-    on left: 32 33, on right: 27
+    à esquerda: 32 33, à direita: 27
 iteration_declaration (48)
-    on left: 34, on right: 28
+    à esquerda: 34, à direita: 28
 return_declaration (49)
-    on left: 35 36, on right: 29
+    à esquerda: 35 36, à direita: 29
 expression (50)
-    on left: 37 38, on right: 30 32 33 34 36 37 40 57 63 64
+    à esquerda: 37 38, à direita: 30 32 33 34 36 37 40 57 63 64
 variable (51)
-    on left: 39 40, on right: 37 58
+    à esquerda: 39 40, à direita: 37 58
 simple_expression (52)
-    on left: 41 42, on right: 38
+    à esquerda: 41 42, à direita: 38
 relational_operator (53)
-    on left: 43 44 45 46 47 48, on right: 41
+    à esquerda: 43 44 45 46 47 48, à direita: 41
 plus_minus_expression (54)
-    on left: 49 50, on right: 41 42 49
+    à esquerda: 49 50, à direita: 41 42 49
 plus_minus (55)
-    on left: 51 52, on right: 49
+    à esquerda: 51 52, à direita: 49
 term (56)
-    on left: 53 54, on right: 49 50 53
+    à esquerda: 53 54, à direita: 49 50 53
 times_over (57)
-    on left: 55 56, on right: 53
+    à esquerda: 55 56, à direita: 53
 factor (58)
-    on left: 57 58 59 60, on right: 53 54
+    à esquerda: 57 58 59 60, à direita: 53 54
 function_call (59)
-    on left: 61 62, on right: 59
+    à esquerda: 61 62, à direita: 59
 list_arguments (60)
-    on left: 63 64, on right: 61 63
+    à esquerda: 63 64, à direita: 61 63
 id (61)
-    on left: 65, on right: 7 8 9 10 15 16 39 40 61 62
+    à esquerda: 65, à direita: 7 8 9 10 15 16 39 40 61 62
 num (62)
-    on left: 66, on right: 8 60
+    à esquerda: 66, à direita: 8 60
 
 
-State 0
+Estado 0
 
     0 $accept: . programa $end
 
-    INT   shift, and go to state 1
-    VOID  shift, and go to state 2
+    INT   deslocar, e ir ao estado 1
+    VOID  deslocar, e ir ao estado 2
 
-    $default  reduce using rule 1 (programa)
+    $padrão  reduzir usando a regra 1 (programa)
 
-    programa              go to state 3
-    declaration-list      go to state 4
-    declaration           go to state 5
-    variable_declaration  go to state 6
-    function_declaration  go to state 7
+    programa              ir ao estado 3
+    declaration-list      ir ao estado 4
+    declaration           ir ao estado 5
+    variable_declaration  ir ao estado 6
+    function_declaration  ir ao estado 7
 
 
-State 1
+Estado 1
 
     7 variable_declaration: INT . id SEMI
     8                     | INT . id LBRACK num RBRACK SEMI
     9 function_declaration: INT . id LPAREN parameters RPAREN compound_declaration
 
-    ID  shift, and go to state 8
+    ID  deslocar, e ir ao estado 8
 
-    id  go to state 9
+    id  ir ao estado 9
 
 
-State 2
+Estado 2
 
    10 function_declaration: VOID . id LPAREN parameters RPAREN compound_declaration
 
-    ID  shift, and go to state 8
+    ID  deslocar, e ir ao estado 8
 
-    id  go to state 10
+    id  ir ao estado 10
 
 
-State 3
+Estado 3
 
     0 $accept: programa . $end
 
-    $end  shift, and go to state 11
+    $end  deslocar, e ir ao estado 11
 
 
-State 4
+Estado 4
 
     2 programa: declaration-list .
     3 declaration-list: declaration-list . declaration
 
-    INT   shift, and go to state 1
-    VOID  shift, and go to state 2
+    INT   deslocar, e ir ao estado 1
+    VOID  deslocar, e ir ao estado 2
 
-    $default  reduce using rule 2 (programa)
+    $padrão  reduzir usando a regra 2 (programa)
 
-    declaration           go to state 12
-    variable_declaration  go to state 6
-    function_declaration  go to state 7
+    declaration           ir ao estado 12
+    variable_declaration  ir ao estado 6
+    function_declaration  ir ao estado 7
 
 
-State 5
+Estado 5
 
     4 declaration-list: declaration .
 
-    $default  reduce using rule 4 (declaration-list)
+    $padrão  reduzir usando a regra 4 (declaration-list)
 
 
-State 6
+Estado 6
 
     5 declaration: variable_declaration .
 
-    $default  reduce using rule 5 (declaration)
+    $padrão  reduzir usando a regra 5 (declaration)
 
 
-State 7
+Estado 7
 
     6 declaration: function_declaration .
 
-    $default  reduce using rule 6 (declaration)
+    $padrão  reduzir usando a regra 6 (declaration)
 
 
-State 8
+Estado 8
 
    65 id: ID .
 
-    $default  reduce using rule 65 (id)
+    $padrão  reduzir usando a regra 65 (id)
 
 
-State 9
+Estado 9
 
     7 variable_declaration: INT id . SEMI
     8                     | INT id . LBRACK num RBRACK SEMI
     9 function_declaration: INT id . LPAREN parameters RPAREN compound_declaration
 
-    SEMI    shift, and go to state 13
-    LPAREN  shift, and go to state 14
-    LBRACK  shift, and go to state 15
+    SEMI    deslocar, e ir ao estado 13
+    LPAREN  deslocar, e ir ao estado 14
+    LBRACK  deslocar, e ir ao estado 15
 
 
-State 10
+Estado 10
 
    10 function_declaration: VOID id . LPAREN parameters RPAREN compound_declaration
 
-    LPAREN  shift, and go to state 16
+    LPAREN  deslocar, e ir ao estado 16
 
 
-State 11
+Estado 11
 
     0 $accept: programa $end .
 
-    $default  accept
+    $padrão  aceitar
 
 
-State 12
+Estado 12
 
     3 declaration-list: declaration-list declaration .
 
-    $default  reduce using rule 3 (declaration-list)
+    $padrão  reduzir usando a regra 3 (declaration-list)
 
 
-State 13
+Estado 13
 
     7 variable_declaration: INT id SEMI .
 
-    $default  reduce using rule 7 (variable_declaration)
+    $padrão  reduzir usando a regra 7 (variable_declaration)
 
 
-State 14
+Estado 14
 
     9 function_declaration: INT id LPAREN . parameters RPAREN compound_declaration
 
-    INT   shift, and go to state 17
-    VOID  shift, and go to state 18
+    INT   deslocar, e ir ao estado 17
+    VOID  deslocar, e ir ao estado 18
 
-    parameters       go to state 19
-    list_parameters  go to state 20
-    parameter        go to state 21
+    parameters       ir ao estado 19
+    list_parameters  ir ao estado 20
+    parameter        ir ao estado 21
 
 
-State 15
+Estado 15
 
     8 variable_declaration: INT id LBRACK . num RBRACK SEMI
 
-    NUM  shift, and go to state 22
+    NUM  deslocar, e ir ao estado 22
 
-    num  go to state 23
+    num  ir ao estado 23
 
 
-State 16
+Estado 16
 
    10 function_declaration: VOID id LPAREN . parameters RPAREN compound_declaration
 
-    INT   shift, and go to state 17
-    VOID  shift, and go to state 18
+    INT   deslocar, e ir ao estado 17
+    VOID  deslocar, e ir ao estado 18
 
-    parameters       go to state 24
-    list_parameters  go to state 20
-    parameter        go to state 21
+    parameters       ir ao estado 24
+    list_parameters  ir ao estado 20
+    parameter        ir ao estado 21
 
 
-State 17
+Estado 17
 
    15 parameter: INT . id
    16          | INT . id LBRACK RBRACK
 
-    ID  shift, and go to state 8
+    ID  deslocar, e ir ao estado 8
 
-    id  go to state 25
+    id  ir ao estado 25
 
 
-State 18
+Estado 18
 
    12 parameters: VOID .
 
-    $default  reduce using rule 12 (parameters)
+    $padrão  reduzir usando a regra 12 (parameters)
 
 
-State 19
+Estado 19
 
     9 function_declaration: INT id LPAREN parameters . RPAREN compound_declaration
 
-    RPAREN  shift, and go to state 26
+    RPAREN  deslocar, e ir ao estado 26
 
 
-State 20
+Estado 20
 
    11 parameters: list_parameters .
    13 list_parameters: list_parameters . COMMA parameter
 
-    COMMA  shift, and go to state 27
+    COMMA  deslocar, e ir ao estado 27
 
-    $default  reduce using rule 11 (parameters)
+    $padrão  reduzir usando a regra 11 (parameters)
 
 
-State 21
+Estado 21
 
    14 list_parameters: parameter .
 
-    $default  reduce using rule 14 (list_parameters)
+    $padrão  reduzir usando a regra 14 (list_parameters)
 
 
-State 22
+Estado 22
 
    66 num: NUM .
 
-    $default  reduce using rule 66 (num)
+    $padrão  reduzir usando a regra 66 (num)
 
 
-State 23
+Estado 23
 
     8 variable_declaration: INT id LBRACK num . RBRACK SEMI
 
-    RBRACK  shift, and go to state 28
+    RBRACK  deslocar, e ir ao estado 28
 
 
-State 24
+Estado 24
 
    10 function_declaration: VOID id LPAREN parameters . RPAREN compound_declaration
 
-    RPAREN  shift, and go to state 29
+    RPAREN  deslocar, e ir ao estado 29
 
 
-State 25
+Estado 25
 
    15 parameter: INT id .
    16          | INT id . LBRACK RBRACK
 
-    LBRACK  shift, and go to state 30
+    LBRACK  deslocar, e ir ao estado 30
 
-    $default  reduce using rule 15 (parameter)
+    $padrão  reduzir usando a regra 15 (parameter)
 
 
-State 26
+Estado 26
 
     9 function_declaration: INT id LPAREN parameters RPAREN . compound_declaration
 
-    LCAPSULE  shift, and go to state 31
+    LCAPSULE  deslocar, e ir ao estado 31
 
-    compound_declaration  go to state 32
+    compound_declaration  ir ao estado 32
 
 
-State 27
+Estado 27
 
    13 list_parameters: list_parameters COMMA . parameter
 
-    INT  shift, and go to state 17
+    INT  deslocar, e ir ao estado 17
 
-    parameter  go to state 33
+    parameter  ir ao estado 33
 
 
-State 28
+Estado 28
 
     8 variable_declaration: INT id LBRACK num RBRACK . SEMI
 
-    SEMI  shift, and go to state 34
+    SEMI  deslocar, e ir ao estado 34
 
 
-State 29
+Estado 29
 
    10 function_declaration: VOID id LPAREN parameters RPAREN . compound_declaration
 
-    LCAPSULE  shift, and go to state 31
+    LCAPSULE  deslocar, e ir ao estado 31
 
-    compound_declaration  go to state 35
+    compound_declaration  ir ao estado 35
 
 
-State 30
+Estado 30
 
    16 parameter: INT id LBRACK . RBRACK
 
-    RBRACK  shift, and go to state 36
+    RBRACK  deslocar, e ir ao estado 36
 
 
-State 31
+Estado 31
 
    17 compound_declaration: LCAPSULE . local_declarations list_statement RCAPSULE
    18                     | LCAPSULE . local_declarations RCAPSULE
    19                     | LCAPSULE . list_statement RCAPSULE
    20                     | LCAPSULE . RCAPSULE
 
-    INT       shift, and go to state 37
-    IF        shift, and go to state 38
-    RETURN    shift, and go to state 39
-    WHILE     shift, and go to state 40
-    SEMI      shift, and go to state 41
-    LPAREN    shift, and go to state 42
-    LCAPSULE  shift, and go to state 31
-    RCAPSULE  shift, and go to state 43
-    NUM       shift, and go to state 22
-    ID        shift, and go to state 8
+    INT       deslocar, e ir ao estado 37
+    IF        deslocar, e ir ao estado 38
+    RETURN    deslocar, e ir ao estado 39
+    WHILE     deslocar, e ir ao estado 40
+    SEMI      deslocar, e ir ao estado 41
+    LPAREN    deslocar, e ir ao estado 42
+    LCAPSULE  deslocar, e ir ao estado 31
+    RCAPSULE  deslocar, e ir ao estado 43
+    NUM       deslocar, e ir ao estado 22
+    ID        deslocar, e ir ao estado 8
 
-    variable_declaration    go to state 44
-    compound_declaration    go to state 45
-    local_declarations      go to state 46
-    list_statement          go to state 47
-    statement               go to state 48
-    expression_declaration  go to state 49
-    selection_declaration   go to state 50
-    iteration_declaration   go to state 51
-    return_declaration      go to state 52
-    expression              go to state 53
-    variable                go to state 54
-    simple_expression       go to state 55
-    plus_minus_expression   go to state 56
-    term                    go to state 57
-    factor                  go to state 58
-    function_call           go to state 59
-    id                      go to state 60
-    num                     go to state 61
+    variable_declaration    ir ao estado 44
+    compound_declaration    ir ao estado 45
+    local_declarations      ir ao estado 46
+    list_statement          ir ao estado 47
+    statement               ir ao estado 48
+    expression_declaration  ir ao estado 49
+    selection_declaration   ir ao estado 50
+    iteration_declaration   ir ao estado 51
+    return_declaration      ir ao estado 52
+    expression              ir ao estado 53
+    variable                ir ao estado 54
+    simple_expression       ir ao estado 55
+    plus_minus_expression   ir ao estado 56
+    term                    ir ao estado 57
+    factor                  ir ao estado 58
+    function_call           ir ao estado 59
+    id                      ir ao estado 60
+    num                     ir ao estado 61
 
 
-State 32
+Estado 32
 
     9 function_declaration: INT id LPAREN parameters RPAREN compound_declaration .
 
-    $default  reduce using rule 9 (function_declaration)
+    $padrão  reduzir usando a regra 9 (function_declaration)
 
 
-State 33
+Estado 33
 
    13 list_parameters: list_parameters COMMA parameter .
 
-    $default  reduce using rule 13 (list_parameters)
+    $padrão  reduzir usando a regra 13 (list_parameters)
 
 
-State 34
+Estado 34
 
     8 variable_declaration: INT id LBRACK num RBRACK SEMI .
 
-    $default  reduce using rule 8 (variable_declaration)
+    $padrão  reduzir usando a regra 8 (variable_declaration)
 
 
-State 35
+Estado 35
 
    10 function_declaration: VOID id LPAREN parameters RPAREN compound_declaration .
 
-    $default  reduce using rule 10 (function_declaration)
+    $padrão  reduzir usando a regra 10 (function_declaration)
 
 
-State 36
+Estado 36
 
    16 parameter: INT id LBRACK RBRACK .
 
-    $default  reduce using rule 16 (parameter)
+    $padrão  reduzir usando a regra 16 (parameter)
 
 
-State 37
+Estado 37
 
     7 variable_declaration: INT . id SEMI
     8                     | INT . id LBRACK num RBRACK SEMI
 
-    ID  shift, and go to state 8
+    ID  deslocar, e ir ao estado 8
 
-    id  go to state 62
+    id  ir ao estado 62
 
 
-State 38
+Estado 38
 
    32 selection_declaration: IF . LPAREN expression RPAREN statement
    33                      | IF . LPAREN expression RPAREN statement ELSE statement
 
-    LPAREN  shift, and go to state 63
+    LPAREN  deslocar, e ir ao estado 63
 
 
-State 39
+Estado 39
 
    35 return_declaration: RETURN . SEMI
    36                   | RETURN . expression SEMI
 
-    SEMI    shift, and go to state 64
-    LPAREN  shift, and go to state 42
-    NUM     shift, and go to state 22
-    ID      shift, and go to state 8
+    SEMI    deslocar, e ir ao estado 64
+    LPAREN  deslocar, e ir ao estado 42
+    NUM     deslocar, e ir ao estado 22
+    ID      deslocar, e ir ao estado 8
 
-    expression             go to state 65
-    variable               go to state 54
-    simple_expression      go to state 55
-    plus_minus_expression  go to state 56
-    term                   go to state 57
-    factor                 go to state 58
-    function_call          go to state 59
-    id                     go to state 60
-    num                    go to state 61
+    expression             ir ao estado 65
+    variable               ir ao estado 54
+    simple_expression      ir ao estado 55
+    plus_minus_expression  ir ao estado 56
+    term                   ir ao estado 57
+    factor                 ir ao estado 58
+    function_call          ir ao estado 59
+    id                     ir ao estado 60
+    num                    ir ao estado 61
 
 
-State 40
+Estado 40
 
    34 iteration_declaration: WHILE . LPAREN expression RPAREN statement
 
-    LPAREN  shift, and go to state 66
+    LPAREN  deslocar, e ir ao estado 66
 
 
-State 41
+Estado 41
 
    31 expression_declaration: SEMI .
 
-    $default  reduce using rule 31 (expression_declaration)
+    $padrão  reduzir usando a regra 31 (expression_declaration)
 
 
-State 42
+Estado 42
 
    57 factor: LPAREN . expression RPAREN
 
-    LPAREN  shift, and go to state 42
-    NUM     shift, and go to state 22
-    ID      shift, and go to state 8
+    LPAREN  deslocar, e ir ao estado 42
+    NUM     deslocar, e ir ao estado 22
+    ID      deslocar, e ir ao estado 8
 
-    expression             go to state 67
-    variable               go to state 54
-    simple_expression      go to state 55
-    plus_minus_expression  go to state 56
-    term                   go to state 57
-    factor                 go to state 58
-    function_call          go to state 59
-    id                     go to state 60
-    num                    go to state 61
+    expression             ir ao estado 67
+    variable               ir ao estado 54
+    simple_expression      ir ao estado 55
+    plus_minus_expression  ir ao estado 56
+    term                   ir ao estado 57
+    factor                 ir ao estado 58
+    function_call          ir ao estado 59
+    id                     ir ao estado 60
+    num                    ir ao estado 61
 
 
-State 43
+Estado 43
 
    20 compound_declaration: LCAPSULE RCAPSULE .
 
-    $default  reduce using rule 20 (compound_declaration)
+    $padrão  reduzir usando a regra 20 (compound_declaration)
 
 
-State 44
+Estado 44
 
    22 local_declarations: variable_declaration .
 
-    $default  reduce using rule 22 (local_declarations)
+    $padrão  reduzir usando a regra 22 (local_declarations)
 
 
-State 45
+Estado 45
 
    26 statement: compound_declaration .
 
-    $default  reduce using rule 26 (statement)
+    $padrão  reduzir usando a regra 26 (statement)
 
 
-State 46
+Estado 46
 
    17 compound_declaration: LCAPSULE local_declarations . list_statement RCAPSULE
    18                     | LCAPSULE local_declarations . RCAPSULE
    21 local_declarations: local_declarations . variable_declaration
 
-    INT       shift, and go to state 37
-    IF        shift, and go to state 38
-    RETURN    shift, and go to state 39
-    WHILE     shift, and go to state 40
-    SEMI      shift, and go to state 41
-    LPAREN    shift, and go to state 42
-    LCAPSULE  shift, and go to state 31
-    RCAPSULE  shift, and go to state 68
-    NUM       shift, and go to state 22
-    ID        shift, and go to state 8
+    INT       deslocar, e ir ao estado 37
+    IF        deslocar, e ir ao estado 38
+    RETURN    deslocar, e ir ao estado 39
+    WHILE     deslocar, e ir ao estado 40
+    SEMI      deslocar, e ir ao estado 41
+    LPAREN    deslocar, e ir ao estado 42
+    LCAPSULE  deslocar, e ir ao estado 31
+    RCAPSULE  deslocar, e ir ao estado 68
+    NUM       deslocar, e ir ao estado 22
+    ID        deslocar, e ir ao estado 8
 
-    variable_declaration    go to state 69
-    compound_declaration    go to state 45
-    list_statement          go to state 70
-    statement               go to state 48
-    expression_declaration  go to state 49
-    selection_declaration   go to state 50
-    iteration_declaration   go to state 51
-    return_declaration      go to state 52
-    expression              go to state 53
-    variable                go to state 54
-    simple_expression       go to state 55
-    plus_minus_expression   go to state 56
-    term                    go to state 57
-    factor                  go to state 58
-    function_call           go to state 59
-    id                      go to state 60
-    num                     go to state 61
+    variable_declaration    ir ao estado 69
+    compound_declaration    ir ao estado 45
+    list_statement          ir ao estado 70
+    statement               ir ao estado 48
+    expression_declaration  ir ao estado 49
+    selection_declaration   ir ao estado 50
+    iteration_declaration   ir ao estado 51
+    return_declaration      ir ao estado 52
+    expression              ir ao estado 53
+    variable                ir ao estado 54
+    simple_expression       ir ao estado 55
+    plus_minus_expression   ir ao estado 56
+    term                    ir ao estado 57
+    factor                  ir ao estado 58
+    function_call           ir ao estado 59
+    id                      ir ao estado 60
+    num                     ir ao estado 61
 
 
-State 47
+Estado 47
 
    19 compound_declaration: LCAPSULE list_statement . RCAPSULE
    23 list_statement: list_statement . statement
 
-    IF        shift, and go to state 38
-    RETURN    shift, and go to state 39
-    WHILE     shift, and go to state 40
-    SEMI      shift, and go to state 41
-    LPAREN    shift, and go to state 42
-    LCAPSULE  shift, and go to state 31
-    RCAPSULE  shift, and go to state 71
-    NUM       shift, and go to state 22
-    ID        shift, and go to state 8
+    IF        deslocar, e ir ao estado 38
+    RETURN    deslocar, e ir ao estado 39
+    WHILE     deslocar, e ir ao estado 40
+    SEMI      deslocar, e ir ao estado 41
+    LPAREN    deslocar, e ir ao estado 42
+    LCAPSULE  deslocar, e ir ao estado 31
+    RCAPSULE  deslocar, e ir ao estado 71
+    NUM       deslocar, e ir ao estado 22
+    ID        deslocar, e ir ao estado 8
 
-    compound_declaration    go to state 45
-    statement               go to state 72
-    expression_declaration  go to state 49
-    selection_declaration   go to state 50
-    iteration_declaration   go to state 51
-    return_declaration      go to state 52
-    expression              go to state 53
-    variable                go to state 54
-    simple_expression       go to state 55
-    plus_minus_expression   go to state 56
-    term                    go to state 57
-    factor                  go to state 58
-    function_call           go to state 59
-    id                      go to state 60
-    num                     go to state 61
+    compound_declaration    ir ao estado 45
+    statement               ir ao estado 72
+    expression_declaration  ir ao estado 49
+    selection_declaration   ir ao estado 50
+    iteration_declaration   ir ao estado 51
+    return_declaration      ir ao estado 52
+    expression              ir ao estado 53
+    variable                ir ao estado 54
+    simple_expression       ir ao estado 55
+    plus_minus_expression   ir ao estado 56
+    term                    ir ao estado 57
+    factor                  ir ao estado 58
+    function_call           ir ao estado 59
+    id                      ir ao estado 60
+    num                     ir ao estado 61
 
 
-State 48
+Estado 48
 
    24 list_statement: statement .
 
-    $default  reduce using rule 24 (list_statement)
+    $padrão  reduzir usando a regra 24 (list_statement)
 
 
-State 49
+Estado 49
 
    25 statement: expression_declaration .
 
-    $default  reduce using rule 25 (statement)
+    $padrão  reduzir usando a regra 25 (statement)
 
 
-State 50
+Estado 50
 
    27 statement: selection_declaration .
 
-    $default  reduce using rule 27 (statement)
+    $padrão  reduzir usando a regra 27 (statement)
 
 
-State 51
+Estado 51
 
    28 statement: iteration_declaration .
 
-    $default  reduce using rule 28 (statement)
+    $padrão  reduzir usando a regra 28 (statement)
 
 
-State 52
+Estado 52
 
    29 statement: return_declaration .
 
-    $default  reduce using rule 29 (statement)
+    $padrão  reduzir usando a regra 29 (statement)
 
 
-State 53
+Estado 53
 
    30 expression_declaration: expression . SEMI
 
-    SEMI  shift, and go to state 73
+    SEMI  deslocar, e ir ao estado 73
 
 
-State 54
+Estado 54
 
    37 expression: variable . ASSIGN expression
    58 factor: variable .
 
-    ASSIGN  shift, and go to state 74
+    ASSIGN  deslocar, e ir ao estado 74
 
-    $default  reduce using rule 58 (factor)
+    $padrão  reduzir usando a regra 58 (factor)
 
 
-State 55
+Estado 55
 
    38 expression: simple_expression .
 
-    $default  reduce using rule 38 (expression)
+    $padrão  reduzir usando a regra 38 (expression)
 
 
-State 56
+Estado 56
 
    41 simple_expression: plus_minus_expression . relational_operator plus_minus_expression
    42                  | plus_minus_expression .
    49 plus_minus_expression: plus_minus_expression . plus_minus term
 
-    PLUS   shift, and go to state 75
-    MINUS  shift, and go to state 76
-    LT     shift, and go to state 77
-    LET    shift, and go to state 78
-    HT     shift, and go to state 79
-    HET    shift, and go to state 80
-    EQ     shift, and go to state 81
-    NEQ    shift, and go to state 82
+    PLUS   deslocar, e ir ao estado 75
+    MINUS  deslocar, e ir ao estado 76
+    LT     deslocar, e ir ao estado 77
+    LET    deslocar, e ir ao estado 78
+    HT     deslocar, e ir ao estado 79
+    HET    deslocar, e ir ao estado 80
+    EQ     deslocar, e ir ao estado 81
+    NEQ    deslocar, e ir ao estado 82
 
-    $default  reduce using rule 42 (simple_expression)
+    $padrão  reduzir usando a regra 42 (simple_expression)
 
-    relational_operator  go to state 83
-    plus_minus           go to state 84
+    relational_operator  ir ao estado 83
+    plus_minus           ir ao estado 84
 
 
-State 57
+Estado 57
 
    50 plus_minus_expression: term .
    53 term: term . times_over factor
 
-    TIMES  shift, and go to state 85
-    OVER   shift, and go to state 86
+    TIMES  deslocar, e ir ao estado 85
+    OVER   deslocar, e ir ao estado 86
 
-    $default  reduce using rule 50 (plus_minus_expression)
+    $padrão  reduzir usando a regra 50 (plus_minus_expression)
 
-    times_over  go to state 87
+    times_over  ir ao estado 87
 
 
-State 58
+Estado 58
 
    54 term: factor .
 
-    $default  reduce using rule 54 (term)
+    $padrão  reduzir usando a regra 54 (term)
 
 
-State 59
+Estado 59
 
    59 factor: function_call .
 
-    $default  reduce using rule 59 (factor)
+    $padrão  reduzir usando a regra 59 (factor)
 
 
-State 60
+Estado 60
 
    39 variable: id .
    40         | id . LBRACK expression RBRACK
    61 function_call: id . LPAREN list_arguments RPAREN
    62              | id . LPAREN RPAREN
 
-    LPAREN  shift, and go to state 88
-    LBRACK  shift, and go to state 89
+    LPAREN  deslocar, e ir ao estado 88
+    LBRACK  deslocar, e ir ao estado 89
 
-    $default  reduce using rule 39 (variable)
+    $padrão  reduzir usando a regra 39 (variable)
 
 
-State 61
+Estado 61
 
    60 factor: num .
 
-    $default  reduce using rule 60 (factor)
+    $padrão  reduzir usando a regra 60 (factor)
 
 
-State 62
+Estado 62
 
     7 variable_declaration: INT id . SEMI
     8                     | INT id . LBRACK num RBRACK SEMI
 
-    SEMI    shift, and go to state 13
-    LBRACK  shift, and go to state 15
+    SEMI    deslocar, e ir ao estado 13
+    LBRACK  deslocar, e ir ao estado 15
 
 
-State 63
+Estado 63
 
    32 selection_declaration: IF LPAREN . expression RPAREN statement
    33                      | IF LPAREN . expression RPAREN statement ELSE statement
 
-    LPAREN  shift, and go to state 42
-    NUM     shift, and go to state 22
-    ID      shift, and go to state 8
+    LPAREN  deslocar, e ir ao estado 42
+    NUM     deslocar, e ir ao estado 22
+    ID      deslocar, e ir ao estado 8
 
-    expression             go to state 90
-    variable               go to state 54
-    simple_expression      go to state 55
-    plus_minus_expression  go to state 56
-    term                   go to state 57
-    factor                 go to state 58
-    function_call          go to state 59
-    id                     go to state 60
-    num                    go to state 61
+    expression             ir ao estado 90
+    variable               ir ao estado 54
+    simple_expression      ir ao estado 55
+    plus_minus_expression  ir ao estado 56
+    term                   ir ao estado 57
+    factor                 ir ao estado 58
+    function_call          ir ao estado 59
+    id                     ir ao estado 60
+    num                    ir ao estado 61
 
 
-State 64
+Estado 64
 
    35 return_declaration: RETURN SEMI .
 
-    $default  reduce using rule 35 (return_declaration)
+    $padrão  reduzir usando a regra 35 (return_declaration)
 
 
-State 65
+Estado 65
 
    36 return_declaration: RETURN expression . SEMI
 
-    SEMI  shift, and go to state 91
+    SEMI  deslocar, e ir ao estado 91
 
 
-State 66
+Estado 66
 
    34 iteration_declaration: WHILE LPAREN . expression RPAREN statement
 
-    LPAREN  shift, and go to state 42
-    NUM     shift, and go to state 22
-    ID      shift, and go to state 8
+    LPAREN  deslocar, e ir ao estado 42
+    NUM     deslocar, e ir ao estado 22
+    ID      deslocar, e ir ao estado 8
 
-    expression             go to state 92
-    variable               go to state 54
-    simple_expression      go to state 55
-    plus_minus_expression  go to state 56
-    term                   go to state 57
-    factor                 go to state 58
-    function_call          go to state 59
-    id                     go to state 60
-    num                    go to state 61
+    expression             ir ao estado 92
+    variable               ir ao estado 54
+    simple_expression      ir ao estado 55
+    plus_minus_expression  ir ao estado 56
+    term                   ir ao estado 57
+    factor                 ir ao estado 58
+    function_call          ir ao estado 59
+    id                     ir ao estado 60
+    num                    ir ao estado 61
 
 
-State 67
+Estado 67
 
    57 factor: LPAREN expression . RPAREN
 
-    RPAREN  shift, and go to state 93
+    RPAREN  deslocar, e ir ao estado 93
 
 
-State 68
+Estado 68
 
    18 compound_declaration: LCAPSULE local_declarations RCAPSULE .
 
-    $default  reduce using rule 18 (compound_declaration)
+    $padrão  reduzir usando a regra 18 (compound_declaration)
 
 
-State 69
+Estado 69
 
    21 local_declarations: local_declarations variable_declaration .
 
-    $default  reduce using rule 21 (local_declarations)
+    $padrão  reduzir usando a regra 21 (local_declarations)
 
 
-State 70
+Estado 70
 
    17 compound_declaration: LCAPSULE local_declarations list_statement . RCAPSULE
    23 list_statement: list_statement . statement
 
-    IF        shift, and go to state 38
-    RETURN    shift, and go to state 39
-    WHILE     shift, and go to state 40
-    SEMI      shift, and go to state 41
-    LPAREN    shift, and go to state 42
-    LCAPSULE  shift, and go to state 31
-    RCAPSULE  shift, and go to state 94
-    NUM       shift, and go to state 22
-    ID        shift, and go to state 8
+    IF        deslocar, e ir ao estado 38
+    RETURN    deslocar, e ir ao estado 39
+    WHILE     deslocar, e ir ao estado 40
+    SEMI      deslocar, e ir ao estado 41
+    LPAREN    deslocar, e ir ao estado 42
+    LCAPSULE  deslocar, e ir ao estado 31
+    RCAPSULE  deslocar, e ir ao estado 94
+    NUM       deslocar, e ir ao estado 22
+    ID        deslocar, e ir ao estado 8
 
-    compound_declaration    go to state 45
-    statement               go to state 72
-    expression_declaration  go to state 49
-    selection_declaration   go to state 50
-    iteration_declaration   go to state 51
-    return_declaration      go to state 52
-    expression              go to state 53
-    variable                go to state 54
-    simple_expression       go to state 55
-    plus_minus_expression   go to state 56
-    term                    go to state 57
-    factor                  go to state 58
-    function_call           go to state 59
-    id                      go to state 60
-    num                     go to state 61
+    compound_declaration    ir ao estado 45
+    statement               ir ao estado 72
+    expression_declaration  ir ao estado 49
+    selection_declaration   ir ao estado 50
+    iteration_declaration   ir ao estado 51
+    return_declaration      ir ao estado 52
+    expression              ir ao estado 53
+    variable                ir ao estado 54
+    simple_expression       ir ao estado 55
+    plus_minus_expression   ir ao estado 56
+    term                    ir ao estado 57
+    factor                  ir ao estado 58
+    function_call           ir ao estado 59
+    id                      ir ao estado 60
+    num                     ir ao estado 61
 
 
-State 71
+Estado 71
 
    19 compound_declaration: LCAPSULE list_statement RCAPSULE .
 
-    $default  reduce using rule 19 (compound_declaration)
+    $padrão  reduzir usando a regra 19 (compound_declaration)
 
 
-State 72
+Estado 72
 
    23 list_statement: list_statement statement .
 
-    $default  reduce using rule 23 (list_statement)
+    $padrão  reduzir usando a regra 23 (list_statement)
 
 
-State 73
+Estado 73
 
    30 expression_declaration: expression SEMI .
 
-    $default  reduce using rule 30 (expression_declaration)
+    $padrão  reduzir usando a regra 30 (expression_declaration)
 
 
-State 74
+Estado 74
 
    37 expression: variable ASSIGN . expression
 
-    LPAREN  shift, and go to state 42
-    NUM     shift, and go to state 22
-    ID      shift, and go to state 8
+    LPAREN  deslocar, e ir ao estado 42
+    NUM     deslocar, e ir ao estado 22
+    ID      deslocar, e ir ao estado 8
 
-    expression             go to state 95
-    variable               go to state 54
-    simple_expression      go to state 55
-    plus_minus_expression  go to state 56
-    term                   go to state 57
-    factor                 go to state 58
-    function_call          go to state 59
-    id                     go to state 60
-    num                    go to state 61
+    expression             ir ao estado 95
+    variable               ir ao estado 54
+    simple_expression      ir ao estado 55
+    plus_minus_expression  ir ao estado 56
+    term                   ir ao estado 57
+    factor                 ir ao estado 58
+    function_call          ir ao estado 59
+    id                     ir ao estado 60
+    num                    ir ao estado 61
 
 
-State 75
+Estado 75
 
    51 plus_minus: PLUS .
 
-    $default  reduce using rule 51 (plus_minus)
+    $padrão  reduzir usando a regra 51 (plus_minus)
 
 
-State 76
+Estado 76
 
    52 plus_minus: MINUS .
 
-    $default  reduce using rule 52 (plus_minus)
+    $padrão  reduzir usando a regra 52 (plus_minus)
 
 
-State 77
+Estado 77
 
    45 relational_operator: LT .
 
-    $default  reduce using rule 45 (relational_operator)
+    $padrão  reduzir usando a regra 45 (relational_operator)
 
 
-State 78
+Estado 78
 
    46 relational_operator: LET .
 
-    $default  reduce using rule 46 (relational_operator)
+    $padrão  reduzir usando a regra 46 (relational_operator)
 
 
-State 79
+Estado 79
 
    47 relational_operator: HT .
 
-    $default  reduce using rule 47 (relational_operator)
+    $padrão  reduzir usando a regra 47 (relational_operator)
 
 
-State 80
+Estado 80
 
    48 relational_operator: HET .
 
-    $default  reduce using rule 48 (relational_operator)
+    $padrão  reduzir usando a regra 48 (relational_operator)
 
 
-State 81
+Estado 81
 
    43 relational_operator: EQ .
 
-    $default  reduce using rule 43 (relational_operator)
+    $padrão  reduzir usando a regra 43 (relational_operator)
 
 
-State 82
+Estado 82
 
    44 relational_operator: NEQ .
 
-    $default  reduce using rule 44 (relational_operator)
+    $padrão  reduzir usando a regra 44 (relational_operator)
 
 
-State 83
+Estado 83
 
    41 simple_expression: plus_minus_expression relational_operator . plus_minus_expression
 
-    LPAREN  shift, and go to state 42
-    NUM     shift, and go to state 22
-    ID      shift, and go to state 8
+    LPAREN  deslocar, e ir ao estado 42
+    NUM     deslocar, e ir ao estado 22
+    ID      deslocar, e ir ao estado 8
 
-    variable               go to state 96
-    plus_minus_expression  go to state 97
-    term                   go to state 57
-    factor                 go to state 58
-    function_call          go to state 59
-    id                     go to state 60
-    num                    go to state 61
+    variable               ir ao estado 96
+    plus_minus_expression  ir ao estado 97
+    term                   ir ao estado 57
+    factor                 ir ao estado 58
+    function_call          ir ao estado 59
+    id                     ir ao estado 60
+    num                    ir ao estado 61
 
 
-State 84
+Estado 84
 
    49 plus_minus_expression: plus_minus_expression plus_minus . term
 
-    LPAREN  shift, and go to state 42
-    NUM     shift, and go to state 22
-    ID      shift, and go to state 8
+    LPAREN  deslocar, e ir ao estado 42
+    NUM     deslocar, e ir ao estado 22
+    ID      deslocar, e ir ao estado 8
 
-    variable       go to state 96
-    term           go to state 98
-    factor         go to state 58
-    function_call  go to state 59
-    id             go to state 60
-    num            go to state 61
+    variable       ir ao estado 96
+    term           ir ao estado 98
+    factor         ir ao estado 58
+    function_call  ir ao estado 59
+    id             ir ao estado 60
+    num            ir ao estado 61
 
 
-State 85
+Estado 85
 
    55 times_over: TIMES .
 
-    $default  reduce using rule 55 (times_over)
+    $padrão  reduzir usando a regra 55 (times_over)
 
 
-State 86
+Estado 86
 
    56 times_over: OVER .
 
-    $default  reduce using rule 56 (times_over)
+    $padrão  reduzir usando a regra 56 (times_over)
 
 
-State 87
+Estado 87
 
    53 term: term times_over . factor
 
-    LPAREN  shift, and go to state 42
-    NUM     shift, and go to state 22
-    ID      shift, and go to state 8
+    LPAREN  deslocar, e ir ao estado 42
+    NUM     deslocar, e ir ao estado 22
+    ID      deslocar, e ir ao estado 8
 
-    variable       go to state 96
-    factor         go to state 99
-    function_call  go to state 59
-    id             go to state 60
-    num            go to state 61
+    variable       ir ao estado 96
+    factor         ir ao estado 99
+    function_call  ir ao estado 59
+    id             ir ao estado 60
+    num            ir ao estado 61
 
 
-State 88
+Estado 88
 
    61 function_call: id LPAREN . list_arguments RPAREN
    62              | id LPAREN . RPAREN
 
-    LPAREN  shift, and go to state 42
-    RPAREN  shift, and go to state 100
-    NUM     shift, and go to state 22
-    ID      shift, and go to state 8
+    LPAREN  deslocar, e ir ao estado 42
+    RPAREN  deslocar, e ir ao estado 100
+    NUM     deslocar, e ir ao estado 22
+    ID      deslocar, e ir ao estado 8
 
-    expression             go to state 101
-    variable               go to state 54
-    simple_expression      go to state 55
-    plus_minus_expression  go to state 56
-    term                   go to state 57
-    factor                 go to state 58
-    function_call          go to state 59
-    list_arguments         go to state 102
-    id                     go to state 60
-    num                    go to state 61
+    expression             ir ao estado 101
+    variable               ir ao estado 54
+    simple_expression      ir ao estado 55
+    plus_minus_expression  ir ao estado 56
+    term                   ir ao estado 57
+    factor                 ir ao estado 58
+    function_call          ir ao estado 59
+    list_arguments         ir ao estado 102
+    id                     ir ao estado 60
+    num                    ir ao estado 61
 
 
-State 89
+Estado 89
 
    40 variable: id LBRACK . expression RBRACK
 
-    LPAREN  shift, and go to state 42
-    NUM     shift, and go to state 22
-    ID      shift, and go to state 8
+    LPAREN  deslocar, e ir ao estado 42
+    NUM     deslocar, e ir ao estado 22
+    ID      deslocar, e ir ao estado 8
 
-    expression             go to state 103
-    variable               go to state 54
-    simple_expression      go to state 55
-    plus_minus_expression  go to state 56
-    term                   go to state 57
-    factor                 go to state 58
-    function_call          go to state 59
-    id                     go to state 60
-    num                    go to state 61
+    expression             ir ao estado 103
+    variable               ir ao estado 54
+    simple_expression      ir ao estado 55
+    plus_minus_expression  ir ao estado 56
+    term                   ir ao estado 57
+    factor                 ir ao estado 58
+    function_call          ir ao estado 59
+    id                     ir ao estado 60
+    num                    ir ao estado 61
 
 
-State 90
+Estado 90
 
    32 selection_declaration: IF LPAREN expression . RPAREN statement
    33                      | IF LPAREN expression . RPAREN statement ELSE statement
 
-    RPAREN  shift, and go to state 104
+    RPAREN  deslocar, e ir ao estado 104
 
 
-State 91
+Estado 91
 
    36 return_declaration: RETURN expression SEMI .
 
-    $default  reduce using rule 36 (return_declaration)
+    $padrão  reduzir usando a regra 36 (return_declaration)
 
 
-State 92
+Estado 92
 
    34 iteration_declaration: WHILE LPAREN expression . RPAREN statement
 
-    RPAREN  shift, and go to state 105
+    RPAREN  deslocar, e ir ao estado 105
 
 
-State 93
+Estado 93
 
    57 factor: LPAREN expression RPAREN .
 
-    $default  reduce using rule 57 (factor)
+    $padrão  reduzir usando a regra 57 (factor)
 
 
-State 94
+Estado 94
 
    17 compound_declaration: LCAPSULE local_declarations list_statement RCAPSULE .
 
-    $default  reduce using rule 17 (compound_declaration)
+    $padrão  reduzir usando a regra 17 (compound_declaration)
 
 
-State 95
+Estado 95
 
    37 expression: variable ASSIGN expression .
 
-    $default  reduce using rule 37 (expression)
+    $padrão  reduzir usando a regra 37 (expression)
 
 
-State 96
+Estado 96
 
    58 factor: variable .
 
-    $default  reduce using rule 58 (factor)
+    $padrão  reduzir usando a regra 58 (factor)
 
 
-State 97
+Estado 97
 
    41 simple_expression: plus_minus_expression relational_operator plus_minus_expression .
    49 plus_minus_expression: plus_minus_expression . plus_minus term
 
-    PLUS   shift, and go to state 75
-    MINUS  shift, and go to state 76
+    PLUS   deslocar, e ir ao estado 75
+    MINUS  deslocar, e ir ao estado 76
 
-    $default  reduce using rule 41 (simple_expression)
+    $padrão  reduzir usando a regra 41 (simple_expression)
 
-    plus_minus  go to state 84
+    plus_minus  ir ao estado 84
 
 
-State 98
+Estado 98
 
    49 plus_minus_expression: plus_minus_expression plus_minus term .
    53 term: term . times_over factor
 
-    TIMES  shift, and go to state 85
-    OVER   shift, and go to state 86
+    TIMES  deslocar, e ir ao estado 85
+    OVER   deslocar, e ir ao estado 86
 
-    $default  reduce using rule 49 (plus_minus_expression)
+    $padrão  reduzir usando a regra 49 (plus_minus_expression)
 
-    times_over  go to state 87
+    times_over  ir ao estado 87
 
 
-State 99
+Estado 99
 
    53 term: term times_over factor .
 
-    $default  reduce using rule 53 (term)
+    $padrão  reduzir usando a regra 53 (term)
 
 
-State 100
+Estado 100
 
    62 function_call: id LPAREN RPAREN .
 
-    $default  reduce using rule 62 (function_call)
+    $padrão  reduzir usando a regra 62 (function_call)
 
 
-State 101
+Estado 101
 
    64 list_arguments: expression .
 
-    $default  reduce using rule 64 (list_arguments)
+    $padrão  reduzir usando a regra 64 (list_arguments)
 
 
-State 102
+Estado 102
 
    61 function_call: id LPAREN list_arguments . RPAREN
    63 list_arguments: list_arguments . COMMA expression
 
-    COMMA   shift, and go to state 106
-    RPAREN  shift, and go to state 107
+    COMMA   deslocar, e ir ao estado 106
+    RPAREN  deslocar, e ir ao estado 107
 
 
-State 103
+Estado 103
 
    40 variable: id LBRACK expression . RBRACK
 
-    RBRACK  shift, and go to state 108
+    RBRACK  deslocar, e ir ao estado 108
 
 
-State 104
+Estado 104
 
    32 selection_declaration: IF LPAREN expression RPAREN . statement
    33                      | IF LPAREN expression RPAREN . statement ELSE statement
 
-    IF        shift, and go to state 38
-    RETURN    shift, and go to state 39
-    WHILE     shift, and go to state 40
-    SEMI      shift, and go to state 41
-    LPAREN    shift, and go to state 42
-    LCAPSULE  shift, and go to state 31
-    NUM       shift, and go to state 22
-    ID        shift, and go to state 8
+    IF        deslocar, e ir ao estado 38
+    RETURN    deslocar, e ir ao estado 39
+    WHILE     deslocar, e ir ao estado 40
+    SEMI      deslocar, e ir ao estado 41
+    LPAREN    deslocar, e ir ao estado 42
+    LCAPSULE  deslocar, e ir ao estado 31
+    NUM       deslocar, e ir ao estado 22
+    ID        deslocar, e ir ao estado 8
 
-    compound_declaration    go to state 45
-    statement               go to state 109
-    expression_declaration  go to state 49
-    selection_declaration   go to state 50
-    iteration_declaration   go to state 51
-    return_declaration      go to state 52
-    expression              go to state 53
-    variable                go to state 54
-    simple_expression       go to state 55
-    plus_minus_expression   go to state 56
-    term                    go to state 57
-    factor                  go to state 58
-    function_call           go to state 59
-    id                      go to state 60
-    num                     go to state 61
+    compound_declaration    ir ao estado 45
+    statement               ir ao estado 109
+    expression_declaration  ir ao estado 49
+    selection_declaration   ir ao estado 50
+    iteration_declaration   ir ao estado 51
+    return_declaration      ir ao estado 52
+    expression              ir ao estado 53
+    variable                ir ao estado 54
+    simple_expression       ir ao estado 55
+    plus_minus_expression   ir ao estado 56
+    term                    ir ao estado 57
+    factor                  ir ao estado 58
+    function_call           ir ao estado 59
+    id                      ir ao estado 60
+    num                     ir ao estado 61
 
 
-State 105
+Estado 105
 
    34 iteration_declaration: WHILE LPAREN expression RPAREN . statement
 
-    IF        shift, and go to state 38
-    RETURN    shift, and go to state 39
-    WHILE     shift, and go to state 40
-    SEMI      shift, and go to state 41
-    LPAREN    shift, and go to state 42
-    LCAPSULE  shift, and go to state 31
-    NUM       shift, and go to state 22
-    ID        shift, and go to state 8
+    IF        deslocar, e ir ao estado 38
+    RETURN    deslocar, e ir ao estado 39
+    WHILE     deslocar, e ir ao estado 40
+    SEMI      deslocar, e ir ao estado 41
+    LPAREN    deslocar, e ir ao estado 42
+    LCAPSULE  deslocar, e ir ao estado 31
+    NUM       deslocar, e ir ao estado 22
+    ID        deslocar, e ir ao estado 8
 
-    compound_declaration    go to state 45
-    statement               go to state 110
-    expression_declaration  go to state 49
-    selection_declaration   go to state 50
-    iteration_declaration   go to state 51
-    return_declaration      go to state 52
-    expression              go to state 53
-    variable                go to state 54
-    simple_expression       go to state 55
-    plus_minus_expression   go to state 56
-    term                    go to state 57
-    factor                  go to state 58
-    function_call           go to state 59
-    id                      go to state 60
-    num                     go to state 61
+    compound_declaration    ir ao estado 45
+    statement               ir ao estado 110
+    expression_declaration  ir ao estado 49
+    selection_declaration   ir ao estado 50
+    iteration_declaration   ir ao estado 51
+    return_declaration      ir ao estado 52
+    expression              ir ao estado 53
+    variable                ir ao estado 54
+    simple_expression       ir ao estado 55
+    plus_minus_expression   ir ao estado 56
+    term                    ir ao estado 57
+    factor                  ir ao estado 58
+    function_call           ir ao estado 59
+    id                      ir ao estado 60
+    num                     ir ao estado 61
 
 
-State 106
+Estado 106
 
    63 list_arguments: list_arguments COMMA . expression
 
-    LPAREN  shift, and go to state 42
-    NUM     shift, and go to state 22
-    ID      shift, and go to state 8
+    LPAREN  deslocar, e ir ao estado 42
+    NUM     deslocar, e ir ao estado 22
+    ID      deslocar, e ir ao estado 8
 
-    expression             go to state 111
-    variable               go to state 54
-    simple_expression      go to state 55
-    plus_minus_expression  go to state 56
-    term                   go to state 57
-    factor                 go to state 58
-    function_call          go to state 59
-    id                     go to state 60
-    num                    go to state 61
+    expression             ir ao estado 111
+    variable               ir ao estado 54
+    simple_expression      ir ao estado 55
+    plus_minus_expression  ir ao estado 56
+    term                   ir ao estado 57
+    factor                 ir ao estado 58
+    function_call          ir ao estado 59
+    id                     ir ao estado 60
+    num                    ir ao estado 61
 
 
-State 107
+Estado 107
 
    61 function_call: id LPAREN list_arguments RPAREN .
 
-    $default  reduce using rule 61 (function_call)
+    $padrão  reduzir usando a regra 61 (function_call)
 
 
-State 108
+Estado 108
 
    40 variable: id LBRACK expression RBRACK .
 
-    $default  reduce using rule 40 (variable)
+    $padrão  reduzir usando a regra 40 (variable)
 
 
-State 109
+Estado 109
 
    32 selection_declaration: IF LPAREN expression RPAREN statement .
    33                      | IF LPAREN expression RPAREN statement . ELSE statement
 
-    ELSE  shift, and go to state 112
+    ELSE  deslocar, e ir ao estado 112
 
-    ELSE      [reduce using rule 32 (selection_declaration)]
-    $default  reduce using rule 32 (selection_declaration)
+    ELSE      [reduzir usando a regra 32 (selection_declaration)]
+    $padrão  reduzir usando a regra 32 (selection_declaration)
 
 
-State 110
+Estado 110
 
    34 iteration_declaration: WHILE LPAREN expression RPAREN statement .
 
-    $default  reduce using rule 34 (iteration_declaration)
+    $padrão  reduzir usando a regra 34 (iteration_declaration)
 
 
-State 111
+Estado 111
 
    63 list_arguments: list_arguments COMMA expression .
 
-    $default  reduce using rule 63 (list_arguments)
+    $padrão  reduzir usando a regra 63 (list_arguments)
 
 
-State 112
+Estado 112
 
    33 selection_declaration: IF LPAREN expression RPAREN statement ELSE . statement
 
-    IF        shift, and go to state 38
-    RETURN    shift, and go to state 39
-    WHILE     shift, and go to state 40
-    SEMI      shift, and go to state 41
-    LPAREN    shift, and go to state 42
-    LCAPSULE  shift, and go to state 31
-    NUM       shift, and go to state 22
-    ID        shift, and go to state 8
+    IF        deslocar, e ir ao estado 38
+    RETURN    deslocar, e ir ao estado 39
+    WHILE     deslocar, e ir ao estado 40
+    SEMI      deslocar, e ir ao estado 41
+    LPAREN    deslocar, e ir ao estado 42
+    LCAPSULE  deslocar, e ir ao estado 31
+    NUM       deslocar, e ir ao estado 22
+    ID        deslocar, e ir ao estado 8
 
-    compound_declaration    go to state 45
-    statement               go to state 113
-    expression_declaration  go to state 49
-    selection_declaration   go to state 50
-    iteration_declaration   go to state 51
-    return_declaration      go to state 52
-    expression              go to state 53
-    variable                go to state 54
-    simple_expression       go to state 55
-    plus_minus_expression   go to state 56
-    term                    go to state 57
-    factor                  go to state 58
-    function_call           go to state 59
-    id                      go to state 60
-    num                     go to state 61
+    compound_declaration    ir ao estado 45
+    statement               ir ao estado 113
+    expression_declaration  ir ao estado 49
+    selection_declaration   ir ao estado 50
+    iteration_declaration   ir ao estado 51
+    return_declaration      ir ao estado 52
+    expression              ir ao estado 53
+    variable                ir ao estado 54
+    simple_expression       ir ao estado 55
+    plus_minus_expression   ir ao estado 56
+    term                    ir ao estado 57
+    factor                  ir ao estado 58
+    function_call           ir ao estado 59
+    id                      ir ao estado 60
+    num                     ir ao estado 61
 
 
-State 113
+Estado 113
 
    33 selection_declaration: IF LPAREN expression RPAREN statement ELSE statement .
 
-    $default  reduce using rule 33 (selection_declaration)
+    $padrão  reduzir usando a regra 33 (selection_declaration)

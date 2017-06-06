@@ -45,7 +45,6 @@ typedef enum{
 FILE *file_target_code;
 
 
-
 typedef struct type_variable{
     int index;
     int index_array;
@@ -55,22 +54,24 @@ typedef struct type_variable{
     struct type_variable *next;
 }type_variable;
 
+typedef struct type_instruction{
+  int line;
+  int register_a;
+  int register_b;
+  int register_c;
+  int immediate;
+  int target_label;
+  galetype type;
+  struct type_instruction *next;
+}type_instruction;
+
+typedef struct{
+    type_instruction *start;
+}list_instructions;
+
 typedef struct{
     type_variable *start;
 }list_variables;
-
-typedef struct type_galeto{
-    int index;
-    int index_array;
-    char id[50];
-    char scope[50];
-    kind_variable kind;
-    struct type_galeto *next;
-}type_galeto;
-
-typedef struct{
-    type_galeto *start;
-}list_galetos;
 
 //reserves spaces in memory for variables of a given function
 void declaration_variables(list_variables *variables_list, TipoLista *table, char scope[]);
@@ -81,15 +82,15 @@ void insert_variable(list_variables *variables_list, int index, int index_array,
 //searches the position in memory of a variable given its name, scope and array index
 int search_variable(list_variables *variables_list, char name[], int array_position, char scope[]);
 
-void format_zero(galetype type, int immediate);
+void format_zero(list_instructions *instructions_list, galetype type, int immediate);
 
-void format_one(galetype type, int register_a, int immediate);
+void format_one(list_instructions *instructions_list, galetype type, int register_a, int immediate);
 
-void format_two(galetype type, int register_source, int register_target, int immediate);
+void format_two(list_instructions *instructions_list, galetype type, int register_source, int register_target, int immediate);
 
-void format_three(galetype type, int register_source_a, int register_source_b, int register_target);
+void format_three(list_instructions *instructions_list, galetype type, int register_source_a, int register_source_b, int register_target);
 
-void generate_code(list_quadruple *quad_list, TipoLista *table, list_variables *variables_list);
+void generate_code(list_instructions *instructions_list, list_quadruple *quad_list, TipoLista *table, list_variables *variables_list);
 
 void generate_code_launcher(list_quadruple *quad_list, TipoLista *table);
 
