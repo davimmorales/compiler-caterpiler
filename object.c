@@ -133,7 +133,7 @@ void declaration_variables(list_variables *variables_list, TipoLista *table, cha
 
 }
 //numbers relate to amount of registers in the operation
-void format_zero(list_instructions *instructions_list,  galetype type, int immediate){
+void format_zero(list_instructions *instructions_list,  galetype type, int immediate, AddrKind kind, char label_string[]){
   if(type==G_HLT||type==G_NOP)
     printf("%4d: \ttype: %d\n", line_counter, type);
   else
@@ -148,11 +148,15 @@ void format_zero(list_instructions *instructions_list,  galetype type, int immed
 	new_instruction->register_c = 0;
 	new_instruction->immediate = immediate;
 	new_instruction->type = type;
-	if(type==G_BOZ)
-		new_instruction->target_label = immediate;
+	if(type==G_BOZ||type==G_JMP){
+		if(kind==String){
+			strcpy(new_instruction->label_name, label_string);
+		}else{
+			new_instruction->target_label = immediate;
+		}
+	}
 	else
 		new_instruction->target_label = 0;
-
 
 
 	if (p==NULL) {
@@ -265,6 +269,7 @@ void format_three(list_instructions *instructions_list, galetype type, int regis
 
 void generate_code(list_instructions *instructions_list, list_quadruple *quad_list, TipoLista *table, list_variables *variables_list){
     quadruple *p = quad_list->start;
+		type_instruction *instruction;
     char current_scope[50];
     int flag_immediate_left = 0;
     int flag_immediate_right = 0;
@@ -502,13 +507,38 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
         case IffK:
 					register_temporary_left = search_temporary(p->address_1.value);
 					format_one(instructions_list, G_PBC, register_operator_left, 0);
-					format_zero(instructions_list, G_BOZ, p->address_3.value);
+					format_zero(instructions_list, G_BOZ, p->address_3.value, IntConst, "none");
           break;
         case GtoK:
+					if (p->address_3.kind==LabAddr) {
+						format_zero(instructions_list, G_JMP, p->address_3.value, IntConst, "none");
+					}else if(p->address_3.kind==String){
+						format_zero(instructions_list, G_JMP, p->address_3.value, String, p->address_3.name);
+					}else{
+						printf("EXCEPTION\n");
+					}
           break;
         case HltK:
           break;
         case LblK:
+						instruction = instructions_list->start;
+						while (instruction!=NULL) {
+							if (p->address_3.kind==LabAddr&&(
+									instruction->type==G_BOZ||instruction->type==G_JMP)) {
+										if(p->address_3.value==instruction->target_label){
+											instruction->immediate = line_counter-instruction->line;
+											// printf("Target: %d %d\n", p->address_3.value, instruction->immediate);
+										}
+							}else if (p->address_3.kind==String&&(
+									instruction->type==G_JMP)){
+										if(!strcmp(p->address_3.name, instruction->label_name)){
+											instruction->immediate = line_counter-instruction->line;
+											// printf("Target: %s %s\n", p->address_3.name, instruction->label_name);
+										}
+							}
+							instruction = instruction->next;
+						}
+
           break;
         case CstK:
           break;

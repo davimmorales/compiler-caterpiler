@@ -61,6 +61,7 @@ typedef struct type_instruction{
   int register_c;
   int immediate;
   int target_label;
+  char label_name[50];
   galetype type;
   struct type_instruction *next;
 }type_instruction;
@@ -82,7 +83,7 @@ void insert_variable(list_variables *variables_list, int index, int index_array,
 //searches the position in memory of a variable given its name, scope and array index
 int search_variable(list_variables *variables_list, char name[], int array_position, char scope[]);
 
-void format_zero(list_instructions *instructions_list, galetype type, int immediate);
+void format_zero(list_instructions *instructions_list, galetype type, int immediate, AddrKind kind, char label_string[]);
 
 void format_one(list_instructions *instructions_list, galetype type, int register_a, int immediate);
 
