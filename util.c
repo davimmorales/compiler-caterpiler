@@ -274,7 +274,7 @@ void printTree(TreeNode * tree){
                         printf( "Return\n");
                     break;
                 case VarK:
-                    printf( "Variable declaration: %s\n", tree->attr.name);
+                    printf( "Variable declaration: %s \n", tree->attr.name);
                     break;
                 case VecK:
                     printf( "Vector declaration: %s[%d]\n", tree->attr.name, tree->attr.value);
@@ -317,7 +317,7 @@ void printTree(TreeNode * tree){
                     printf( "Constant: %d\n", tree->attr.value);
                     break;
                 case IdK:
-                    printf( "Identifier: %s\n", tree->attr.name);
+                    printf( "Identifier: %s Scope: %s\n", tree->attr.name, tree->scope);
                     break;
                 case VecIndexK:
                     printf( "Vector index: %s[]\n", tree->attr.name);

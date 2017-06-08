@@ -87,15 +87,26 @@ void insert_variable(list_variables *variables_list, int index, int index_array,
    }
 }
 
+void print_variables(list_variables *variables_list) {
+	type_variable *p = variables_list->start;
+	while (p!=NULL) {
+		printf("index: %d \t array: %d \t id: %s \t scope: %s\n", p->index, p->index_array, p->id, p->scope);
+		p = p->next;
+	}
+}
+
 //searches the position in memory of a variable given its name, scope and array index
 int search_variable(list_variables *variables_list, char name[], int array_position, char scope[]){
   type_variable *p = variables_list->start;
   while (p!=NULL) {
     if(!strcmp(p->scope, scope)||!strcmp(p->scope,"global")){
       if(!strcmp(p->id, name)){
-        if(p->kind==variable_kind)
+				// printf("SEARCH VARIABLE\n");
+        if(p->kind==variable_kind){
+					// printf("VARIABLE INDEX: %d\n", p->index);
           return p->index;
-        else return p->index+array_position;
+				}
+        else{  return p->index+array_position; }
       }
     }
     p = p->next;
@@ -270,7 +281,7 @@ void format_three(list_instructions *instructions_list, galetype type, int regis
 void generate_code(list_instructions *instructions_list, list_quadruple *quad_list, TipoLista *table, list_variables *variables_list){
     quadruple *p = quad_list->start;
 		type_instruction *instruction;
-    char current_scope[50] = "main";
+    // char p->scope[50] = "main";
     int flag_immediate_left = 0;
     int flag_immediate_right = 0;
     int immediate_left = 0;
@@ -291,7 +302,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 						format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_left, 0);
 					}else if(p->address_1.kind==String){
 						int memory_position_left = 0;
-						memory_position_left = search_variable(variables_list, p->address_1.name, 0, current_scope);
+						memory_position_left = search_variable(variables_list, p->address_1.name, 0, p->scope);
 						format_one(instructions_list, G_LD, register_operator_left, memory_position_left);
           }else if(p->address_1.kind==IntConst){
             if(p->address_1.value<65000){
@@ -311,7 +322,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
             format_two(instructions_list, G_ADDI, register_temporary_right, register_operator_right, 0);
           }else if(p->address_2.kind==String){
             int memory_position_right = 0;
-            memory_position_right = search_variable(variables_list, p->address_2.name, 0, current_scope);
+            memory_position_right = search_variable(variables_list, p->address_2.name, 0, p->scope);
             format_one(instructions_list, G_LD, register_operator_right, memory_position_right);
           }else if(p->address_2.kind==IntConst){
             if(p->address_2.value<65000){
@@ -377,7 +388,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				            format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_left, 0);
 				          }else if(p->address_1.kind==String){
 				            int memory_position_left = 0;
-				            memory_position_left = search_variable(variables_list, p->address_1.name, 0, current_scope);
+				            memory_position_left = search_variable(variables_list, p->address_1.name, 0, p->scope);
 				            format_one(instructions_list, G_LD, register_operator_left, memory_position_left);
 				          }else if(p->address_1.kind==IntConst){
 				            if(p->address_1.value<65000){
@@ -395,7 +406,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				            format_two(instructions_list, G_ADDI, register_temporary_right, register_operator_right, 0);
 				          }else if(p->address_2.kind==String){
 				            int memory_position_right = 0;
-				            memory_position_right = search_variable(variables_list, p->address_2.name, 0, current_scope);
+				            memory_position_right = search_variable(variables_list, p->address_2.name, 0, p->scope);
 				            format_one(instructions_list, G_LD, register_operator_right, memory_position_right);
 				          }else if(p->address_2.kind==IntConst){
 				            if(p->address_2.value<65000){
@@ -496,7 +507,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				case AsvK:
 
 					register_temporary = search_temporary(p->address_1.value);
-					memory_position = search_variable(variables_list, p->address_3.name, 0, current_scope);
+					memory_position = search_variable(variables_list, p->address_3.name, 0, p->scope);
 
 					format_one(instructions_list, G_ST, register_temporary, memory_position);
 
@@ -510,34 +521,18 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 						// printf("OFFSET %d\n", memory_offset); THIS ONE IS WORKING
 						break;
 					case String:
-						memory_offset = search_variable(variables_list, p->address_2.name, 0, current_scope);
-						printf("OFFSET %d %s\n", memory_offset, p->address_2.name);
+						memory_offset = search_variable(variables_list, p->address_2.name, 0, p->scope);
+						// printf("STRING OFFSET %d %s\n", memory_offset, p->address_2.name);
 						break;
 					case Temp:
 						memory_offset = search_temporary(p->address_2.value);
-						// printf("OFFSET %d, %d\n", memory_offset, p->address_2.value); NOT SURE IF IT'S WORKING
+						// printf("TEMP OFFSET %d, %d\n", memory_offset, p->address_2.value);// NOT SURE IF IT'S WORKING
 						break;
 					default:
 						break;
 					}
 
-					// if (p->address_1.kind==Temp) {
-					// 	register_temporary_left = search_temporary(p->address_1.value);
-					// 	format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_left, 0);
-					// }else if(p->address_1.kind==String){
-					// 	int memory_position_left = 0;
-					// 	memory_position_left = search_variable(variables_list, p->address_1.name, 0, current_scope);
-					// 	format_one(instructions_list, G_LD, register_operator_left, memory_position_left);
-					// }else if(p->address_1.kind==IntConst){
-					// 	if(p->address_1.value<65000){
-					// 		flag_immediate_left = 1;
-					// 		immediate_left = p->address_1.value;
-					// 	}
-					// 	else{
-					// 		format_one(instructions_list, G_LDI, register_operator_left, p->address_1.value);
-					// 	}
-
-				memory_position = search_variable(variables_list, p->address_3.name, memory_offset, current_scope);
+				memory_position = search_variable(variables_list, p->address_3.name, memory_offset, p->scope);
 
 				format_one(instructions_list, G_ST, register_temporary, memory_position);
           break;
@@ -603,7 +598,8 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 
 
 void generate_code_launcher(list_quadruple *quad_list, TipoLista *table){
-  //stores all variables positions
+	int i;
+	//stores all variables positions
   list_variables *variables_list;
 	list_instructions *instructions_list;
 
@@ -615,14 +611,24 @@ void generate_code_launcher(list_quadruple *quad_list, TipoLista *table){
 
   file_target_code = fopen("target_code.gc", "w");
 
-//global variables' memory allocation
-  declaration_variables(variables_list, table, "global");
+//global and main variables' memory allocation
+	TipoID *table_item;
+	for(i = 0;i<211;i++){
+		if(&table[i]!=NULL){
+		table_item = table[i].start;
+		while (table_item!=NULL) {
+			if (!strcmp(table_item->tipoID, "func")) {
+				declaration_variables(variables_list, table, table_item->nomeID);
+				memory_index++;
+				}
+				table_item = table_item->prox;
+			}
+		}
+	}
+			declaration_variables(variables_list, table, "global");
+	// declaration_variables(variables_list, table, "main");
+
 
   generate_code(instructions_list, quad_list, table, variables_list);
   fclose( file_target_code );
 }
-
-// to do:
-// - attribute index to quadruples
-// - find functions declarations and specify them in symbols table
-// - allocate global/main variables in memory (static)

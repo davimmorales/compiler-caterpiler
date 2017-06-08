@@ -38,6 +38,7 @@ typedef struct{
 
 typedef struct quadruple{
   int index;
+  char scope[50];
   OpKind op;
   Address address_1, address_2, address_3;
   struct quadruple *next;
