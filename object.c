@@ -270,26 +270,29 @@ void format_three(list_instructions *instructions_list, galetype type, int regis
 void generate_code(list_instructions *instructions_list, list_quadruple *quad_list, TipoLista *table, list_variables *variables_list){
     quadruple *p = quad_list->start;
 		type_instruction *instruction;
-    char current_scope[50];
+    char current_scope[50] = "main";
     int flag_immediate_left = 0;
     int flag_immediate_right = 0;
     int immediate_left = 0;
     int immediate_right = 0;
     int register_temporary_left;
     int register_temporary_right;
+		int register_temporary;
+		int memory_position;
+		int memory_offset;
 
     while (p!=NULL) {
       switch (p->op) {
 				case AddK:
 				case SubK:
 //left operand
-          if (p->address_1.kind==Temp) {
-            register_temporary_left = search_temporary(p->address_1.value);
-            format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_left, 0);
-          }else if(p->address_1.kind==String){
-            int memory_position_left = 0;
-            memory_position_left = search_variable(variables_list, p->address_1.name, 0, current_scope);
-            format_one(instructions_list, G_LD, register_operator_left, memory_position_left);
+					if (p->address_1.kind==Temp) {
+						register_temporary_left = search_temporary(p->address_1.value);
+						format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_left, 0);
+					}else if(p->address_1.kind==String){
+						int memory_position_left = 0;
+						memory_position_left = search_variable(variables_list, p->address_1.name, 0, current_scope);
+						format_one(instructions_list, G_LD, register_operator_left, memory_position_left);
           }else if(p->address_1.kind==IntConst){
             if(p->address_1.value<65000){
               flag_immediate_left = 1;
@@ -299,7 +302,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
               format_one(instructions_list, G_LDI, register_operator_left, p->address_1.value);
             }
           }else{
-            printf("ERROR: intermediate variable kind unknown!\n");
+            printf("ERROR: intermediate variable kind unknown: %d!\n", p->address_1.kind);
           }
 
 //right operand
@@ -319,7 +322,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
               format_one(instructions_list, G_LDI, register_operator_right, p->address_2.value);
             }
           }else{
-            printf("ERROR: intermediate variable kind unknown!\n");
+            printf("ERROR: intermediate variable kind unknown: %d!\n", p->address_2.kind);
           }
 
 					switch (p->op) {
@@ -491,8 +494,52 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				          release_temporary(register_operator_right);
           break;
 				case AsvK:
+
+					register_temporary = search_temporary(p->address_1.value);
+					memory_position = search_variable(variables_list, p->address_3.name, 0, current_scope);
+
+					format_one(instructions_list, G_ST, register_temporary, memory_position);
+
 						break;
         case AsaK:
+
+				register_temporary = search_temporary(p->address_1.value);
+				switch (p->address_2.kind) {
+					case IntConst:
+						memory_offset = p->address_2.value;
+						// printf("OFFSET %d\n", memory_offset); THIS ONE IS WORKING
+						break;
+					case String:
+						memory_offset = search_variable(variables_list, p->address_2.name, 0, current_scope);
+						printf("OFFSET %d %s\n", memory_offset, p->address_2.name);
+						break;
+					case Temp:
+						memory_offset = search_temporary(p->address_2.value);
+						// printf("OFFSET %d, %d\n", memory_offset, p->address_2.value); NOT SURE IF IT'S WORKING
+						break;
+					default:
+						break;
+					}
+
+					// if (p->address_1.kind==Temp) {
+					// 	register_temporary_left = search_temporary(p->address_1.value);
+					// 	format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_left, 0);
+					// }else if(p->address_1.kind==String){
+					// 	int memory_position_left = 0;
+					// 	memory_position_left = search_variable(variables_list, p->address_1.name, 0, current_scope);
+					// 	format_one(instructions_list, G_LD, register_operator_left, memory_position_left);
+					// }else if(p->address_1.kind==IntConst){
+					// 	if(p->address_1.value<65000){
+					// 		flag_immediate_left = 1;
+					// 		immediate_left = p->address_1.value;
+					// 	}
+					// 	else{
+					// 		format_one(instructions_list, G_LDI, register_operator_left, p->address_1.value);
+					// 	}
+
+				memory_position = search_variable(variables_list, p->address_3.name, memory_offset, current_scope);
+
+				format_one(instructions_list, G_ST, register_temporary, memory_position);
           break;
         case InnK:
           break;
