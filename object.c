@@ -2,6 +2,8 @@
 
 #include "object.h"
 
+
+
 int register_zero = 0;
 int register_result = 1;
 int register_operator_loader = 2;
@@ -11,6 +13,7 @@ int register_context_offset = 5;
 int register_operator_offset = 6;
 int line_counter = 0;
 int memory_index = 0;
+
 
 /* macro to control processor register file overflow */
 #define MAXREGISTER 20
@@ -62,6 +65,48 @@ int search_temporary(int index_temporary){
 	}
 }
 
+//stack functions
+void empty(void){
+  top = 0;
+}
+
+bool is_empty(void){
+  return top == 0;
+}
+
+bool is_full(void){
+  return top == STACK_SIZE;
+}
+
+void push(int operand_a, int operand_b){
+  if (is_full())
+    exit_stack_overflow();
+  line_return[top++] = operand_a;
+	temporary_return[top++] = operand_b;
+}
+
+int pop_a(void){
+  if (is_empty())
+    exit_stack_underflow();
+  return line_return[--top];
+}
+
+int pop_b(void){
+  if (is_empty())
+    exit_stack_underflow();
+  return line_return[--top];
+}
+
+void exit_stack_overflow(void){
+  fprintf(stderr, "Expression is too complex.\n");
+  exit(EXIT_FAILURE);
+}
+
+void exit_stack_underflow(void){
+  fprintf(stderr, "Not enough operands in expression\n");
+  exit(EXIT_FAILURE);
+}
+
 
 //insertion function for variables
 void insert_variable(list_variables *variables_list, int index, int index_array, kind_variable kind, char id[], char scope[]){
@@ -90,7 +135,7 @@ void insert_variable(list_variables *variables_list, int index, int index_array,
 void print_variables(list_variables *variables_list) {
 	type_variable *p = variables_list->start;
 	while (p!=NULL) {
-		// printf("index: %d \t array: %d \t id: %s \t scope: %s\n", p->index, p->index_array, p->id, p->scope);
+		printf("index: %d \t array: %d \t id: %s \t scope: %s\n", p->index, p->index_array, p->id, p->scope);
 		p = p->next;
 	}
 }
@@ -310,6 +355,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 	int i;
 	int flag_immediate_left = 0;
 	int flag_immediate_right = 0;
+	int flag_temp;
 	int immediate_left = 0;
 	int immediate_right = 0;
 	int register_temporary_left;
@@ -564,9 +610,11 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 
 				format_one(instructions_list, G_ST, register_temporary, memory_position);
 
+				// release_temporary(register_temporary);
+
 				break;
 				case AsaK:
-
+				flag_temp = 0;
 				register_temporary = search_temporary(p->address_1.value);
 				switch (p->address_2.kind) {
 					case IntConst:
@@ -581,6 +629,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					break;
 					case Temp:
 					memory_offset = search_temporary(p->address_2.value);
+					flag_temp = 1;
 					// printf("TEMP OFFSET %d, %d\n", memory_offset, p->address_2.value);// NOT SURE IF IT'S WORKING
 					break;
 					default:
@@ -589,21 +638,53 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 
 				memory_position = search_variable(variables_list, p->address_3.name, memory_offset, current_scope);
 
-
-
 				format_one(instructions_list, G_ST, register_temporary, memory_position);
+
+				// release_temporary(register_temporary);
+				// if(flag_temp)
+				// 	release_temporary(memory_offset);
+
 				break;
 				case PrmK:
 				break;
 				case CalK:
 				// remember in and out
-				break;
+				push(line_counter+1, p->address_2.value);
+				format_zero(instructions_list, G_JMP, 0, String, p->address_3.name);
+
+					break;
 				case RetK:
+				//pop
+				if (p->address_3.kind==Temp) {
+					register_temporary = search_temporary(p->address_3.value);
+					format_two(instructions_list, G_ADDI, register_temporary, register_operator_left, 0);
+				}else if(p->address_3.kind==String){
+					int memory_position = 0;
+					memory_position = search_variable(variables_list, p->address_3.name, 0, current_scope);
+					format_one(instructions_list, G_LD, register_operator_left, memory_position);
+				}else if(p->address_3.kind==IntConst){
+					if(p->address_3.value<65000){
+						immediate_left = p->address_3.value;
+					}
+					else{
+						format_one(instructions_list, G_LDI, register_operator_left, p->address_3.value);
+					}
+				}else{
+					printf("ERROR: intermediate variable kind unknown: %d!\n", p->address_1.kind);
+				}
+
+				//call + return: retroactive effect
+				format_zero(instructions_list, G_JMP, 0, String, pop_a()-line_counter);//check this one
+				map_temporary(pop_b());
+				release_temporary(register_operator_left);
+
 				break;
 				case IffK:
 				register_temporary_left = search_temporary(p->address_1.value);
 				format_one(instructions_list, G_PBC, register_operator_left, 0);
 				format_zero(instructions_list, G_BOZ, p->address_3.value, IntConst, "none");
+
+				// release_temporary(register_temporary_left);
 				break;
 				case GtoK:
 				if (p->address_3.kind==LabAddr) {

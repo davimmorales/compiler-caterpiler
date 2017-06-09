@@ -5,6 +5,14 @@
 #define _OBJECT_H_
 
 #include "intermediate.h"
+#include <stdbool.h>
+
+#define STACK_SIZE 500
+
+// globals
+int line_return[STACK_SIZE];
+int temporary_return[STACK_SIZE];
+int top;
 
 
 typedef enum{
@@ -95,7 +103,14 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 
 void generate_code_launcher(list_quadruple *quad_list, TipoLista *table);
 
-
+//stack
+void empty(void);
+bool is_empty(void);
+bool is_full(void);
+void push(int operand_a, int operand_b);
+int pop(void);
+void exit_stack_overflow(void);
+void exit_stack_underflow(void);
 
 
 
