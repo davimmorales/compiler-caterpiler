@@ -633,7 +633,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
       if(c0->kind.stmt == VarK){
         strcpy(quad->address_1.name, c0->attr.name);
         quad->address_1.kind = String;
-        strcpy(quad->scope, c0->scope);
+        strcpy(quad->scope, tree->scope);
 
         // printf("%s\n", quad->address_1.name);
       }else if (c0->kind.exp == ConstK) {
@@ -653,7 +653,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
       if(c1->kind.stmt == VarK){
         strcpy(quad->address_2.name, c1->attr.name);
         quad->address_2.kind = String;
-        strcpy(quad->scope, c1->scope);
+        strcpy(quad->scope, tree->scope);
 
         // printf("%s\n", quad->address_2.name);
       }else if (c1->kind.exp == ConstK) {
@@ -713,7 +713,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
       if(c0->kind.stmt == VarK){
         strcpy(quad->address_1.name, c0->attr.name);
         quad->address_1.kind = String;
-        strcpy(quad->scope, c0->scope);
+        strcpy(quad->scope, tree->scope);
 
         // printf("%s\n", quad->address_1.name);
       }else if (c0->kind.exp == ConstK) {
@@ -733,7 +733,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
       if(c1->kind.stmt == VarK){
         strcpy(quad->address_2.name, c1->attr.name);
         quad->address_2.kind = String;
-        strcpy(quad->scope, c1->scope);
+        strcpy(quad->scope, tree->scope);
 
         // printf("%s\n", quad->address_2.name);
       }else if (c1->kind.exp == ConstK) {
@@ -794,7 +794,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
         if(c0->kind.stmt == VarK){
           strcpy(quad->address_1.name, c0->attr.name);
           quad->address_1.kind = String;
-          strcpy(quad->scope, c0->scope);
+          strcpy(quad->scope, tree->scope);
 
           // printf("%s\n", quad->address_1.name);
         }else if (c0->kind.exp == ConstK) {
@@ -814,7 +814,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
         if(c1->kind.stmt == VarK){
           strcpy(quad->address_2.name, c1->attr.name);
           quad->address_2.kind = String;
-          strcpy(quad->scope, c1->scope);
+          strcpy(quad->scope, tree->scope);
 
           // printf("%s\n", quad->address_2.name);
         }else if (c1->kind.exp == ConstK) {
@@ -873,7 +873,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
         if(c0->kind.stmt == VarK){
           strcpy(quad->address_1.name, c0->attr.name);
           quad->address_1.kind = String;
-          strcpy(quad->scope, c0->scope);
+          strcpy(quad->scope, tree->scope);
 
           // printf("%s\n", quad->address_1.name);
         }else if (c0->kind.exp == ConstK) {
@@ -893,7 +893,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
         if(c1->kind.stmt == VarK){
           strcpy(quad->address_2.name, c1->attr.name);
           quad->address_2.kind = String;
-          strcpy(quad->scope, c1->scope);
+          strcpy(quad->scope, tree->scope);
 
           // printf("%s\n", quad->address_2.name);
         }else if (c1->kind.exp == ConstK) {
@@ -952,7 +952,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
         if(c0->kind.stmt == VarK){
           strcpy(quad->address_1.name, c0->attr.name);
           quad->address_1.kind = String;
-          strcpy(quad->scope, c0->scope);
+          strcpy(quad->scope, tree->scope);
 
           // printf("%s\n", quad->address_1.name);
         }else if (c0->kind.exp == ConstK) {
@@ -972,7 +972,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
         if(c1->kind.stmt == VarK){
           strcpy(quad->address_2.name, c1->attr.name);
           quad->address_2.kind = String;
-          strcpy(quad->scope, c1->scope);
+          strcpy(quad->scope, tree->scope);
 
           // printf("%s\n", quad->address_2.name);
         }else if (c1->kind.exp == ConstK) {
@@ -1031,7 +1031,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
         if(c0->kind.stmt == VarK){
           strcpy(quad->address_1.name, c0->attr.name);
           quad->address_1.kind = String;
-          strcpy(quad->scope, c0->scope);
+          strcpy(quad->scope, tree->scope);
 
           // printf("%s\n", quad->address_1.name);
         }else if (c0->kind.exp == ConstK) {
@@ -1051,7 +1051,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
         if(c1->kind.stmt == VarK){
           strcpy(quad->address_2.name, c1->attr.name);
           quad->address_2.kind = String;
-          strcpy(quad->scope, c1->scope);
+          strcpy(quad->scope, tree->scope);
 
           // printf("%s\n", quad->address_2.name);
         }else if (c1->kind.exp == ConstK) {
@@ -1128,7 +1128,7 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
         if(c0->kind.stmt == VarK){
           strcpy(quad->address_1.name, c0->attr.name);
           quad->address_1.kind = String;
-          strcpy(quad->scope, c0->scope);
+          strcpy(quad->scope, tree->scope);
 
           // printf("%s\n", quad->address_1.name);
         }else if (c0->kind.exp == ConstK) {
@@ -1148,7 +1148,7 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
         if(c1->kind.stmt == VarK){
           strcpy(quad->address_2.name, c1->attr.name);
           quad->address_2.kind = String;
-          strcpy(quad->scope, c1->scope);
+          strcpy(quad->scope, tree->scope);
 
           // printf("%s\n", quad->address_2.name);
         }else if (c1->kind.exp == ConstK) {
@@ -1209,7 +1209,7 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
         if(c0->kind.stmt == VarK){
           strcpy(quad->address_1.name, c0->attr.name);
           quad->address_1.kind = String;
-          strcpy(quad->scope, c0->scope);
+          strcpy(quad->scope, tree->scope);
 
           // printf("%s\n", quad->address_1.name);
         }else if (c0->kind.exp == ConstK) {
@@ -1229,7 +1229,7 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
         if(c1->kind.stmt == VarK){
           strcpy(quad->address_2.name, c1->attr.name);
           quad->address_2.kind = String;
-          strcpy(quad->scope, c1->scope);
+          strcpy(quad->scope, tree->scope);
 
           // printf("%s\n", quad->address_2.name);
         }else if (c1->kind.exp == ConstK) {
@@ -1288,7 +1288,7 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
         if(c0->kind.stmt == VarK){
           strcpy(quad->address_1.name, c0->attr.name);
           quad->address_1.kind = String;
-          strcpy(quad->scope, c0->scope);
+          strcpy(quad->scope, tree->scope);
 
           // printf("%s\n", quad->address_1.name);
         }else if (c0->kind.exp == ConstK) {
@@ -1308,7 +1308,7 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
         if(c1->kind.stmt == VarK){
           strcpy(quad->address_2.name, c1->attr.name);
           quad->address_2.kind = String;
-          strcpy(quad->scope, c1->scope);
+          strcpy(quad->scope, tree->scope);
 
           // printf("%s\n", quad->address_2.name);
         }else if (c1->kind.exp == ConstK) {
@@ -1367,7 +1367,7 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
         if(c0->kind.stmt == VarK){
           strcpy(quad->address_1.name, c0->attr.name);
           quad->address_1.kind = String;
-          strcpy(quad->scope, c0->scope);
+          strcpy(quad->scope, tree->scope);
           // printf("%s\n", quad->address_1.name);
         }else if (c0->kind.exp == ConstK) {
           quad->address_1.value = c0->attr.value;
@@ -1386,7 +1386,7 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
         if(c1->kind.stmt == VarK){
           strcpy(quad->address_2.name, c1->attr.name);
           quad->address_2.kind = String;
-          strcpy(quad->scope, c1->scope);
+          strcpy(quad->scope, tree->scope);
 
           // printf("%s\n", quad->address_2.name);
         }else if (c1->kind.exp == ConstK) {
@@ -1819,7 +1819,7 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
     }else if (c0->kind.exp==VarK) {
       quad0->address_2.kind = String;
       strcpy(quad0->address_2.name, c0->attr.name);
-      strcpy(quad0->scope, c0->scope);
+      strcpy(quad0->scope, tree->scope);
 
     }else{
       generate_intermediate_code(quad_list, c0);
@@ -1902,7 +1902,7 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
                     quad0->address_2.kind = Empty;
                     quad0->address_3.kind = String;
                     strcpy(quad0->address_3.name, c0->attr.name);
-                    strcpy(quad0->scope, c0->scope);
+                    strcpy(quad0->scope, tree->scope);
 
                     break;
                 }

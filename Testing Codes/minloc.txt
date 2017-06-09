@@ -33,9 +33,9 @@ int input(void){
 
 }
 
- void output(int i){
-     int x;
- }
+void output(int i){
+    int x;
+}
 
 void main(void){
    int i;
