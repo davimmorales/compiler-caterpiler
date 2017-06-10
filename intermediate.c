@@ -158,462 +158,11 @@ void insert_quadruples(list_quadruple *quad_list){
 void print_quadruple_list(list_quadruple *quad_list){
   quadruple *p = quad_list->start;
   while (p!=NULL) {
-    printf("[%d] ", p->index);
-    switch (p->op) {
-      case AddK:
-        switch (p->address_3.kind) {
-          case String: printf("%s ", p->address_3.name);
-            break;
-            case IntConst: printf("%d ", p->address_3.value);
-            break;
-            case Temp: printf("t%d ", p->address_3.value);
-            default: break;
-          }
-
-          printf("= galetito");
-
-        switch (p->address_1.kind) {
-          case String: printf("%s ", p->address_1.name);
-            break;
-          case IntConst: printf("%d ", p->address_1.value);
-            break;
-          case Temp: printf("t%d ", p->address_1.value);
-          default: break;
-        }
-
-        if (p->address_2.kind==Empty) {
-          printf("\n");
-          break;
-        }
-        printf("+ ");
-        switch (p->address_2.kind) {
-          case String: printf("%s ", p->address_2.name);
-            break;
-          case IntConst: printf("%d ", p->address_2.value);
-            break;
-          case Temp: printf("t%d ", p->address_2.value);
-          default: break;
-        }
-        printf("\n");
-
-        break;
-      case SubK:
-      switch (p->address_3.kind) {
-        case String: printf("%s ", p->address_3.name);
-          break;
-          case IntConst: printf("%d ", p->address_3.value);
-          break;
-          case Temp: printf("t%d ", p->address_3.value);
-          default: break;
-        }
-
-        printf("= ");
-
-      switch (p->address_1.kind) {
-        case String: printf("%s ", p->address_1.name);
-          break;
-        case IntConst: printf("%d ", p->address_1.value);
-          break;
-        case Temp: printf("t%d ", p->address_1.value);
-        default: break;
-      }
-
-      if (p->address_2.kind==Empty) {
-        printf("\n");
-        break;
-      }
-      printf("- ");
-      switch (p->address_2.kind) {
-        case String: printf("%s ", p->address_2.name);
-          break;
-        case IntConst: printf("%d ", p->address_2.value);
-          break;
-        case Temp: printf("t%d ", p->address_2.value);
-        default: break;
-      }
-      printf("\n");
-
-        break;
-      case TimK:
-      switch (p->address_3.kind) {
-        case String: printf("%s ", p->address_3.name);
-          break;
-          case IntConst: printf("%d ", p->address_3.value);
-          break;
-          case Temp: printf("t%d ", p->address_3.value);
-          default: break;
-        }
-
-        printf("= ");
-
-      switch (p->address_1.kind) {
-        case String: printf("%s ", p->address_1.name);
-          break;
-        case IntConst: printf("%d ", p->address_1.value);
-          break;
-        case Temp: printf("t%d ", p->address_1.value);
-        default: break;
-      }
-
-      if (p->address_2.kind==Empty) {
-        printf("\n");
-        break;
-      }
-      printf("* ");
-      switch (p->address_2.kind) {
-        case String: printf("%s ", p->address_2.name);
-          break;
-        case IntConst: printf("%d ", p->address_2.value);
-          break;
-        case Temp: printf("t%d ", p->address_2.value);
-        default: break;
-      }
-      printf("\n");
-
-        break;
-      case OvrK:
-      switch (p->address_3.kind) {
-        case String: printf("%s ", p->address_3.name);
-          break;
-          case IntConst: printf("%d ", p->address_3.value);
-          break;
-          case Temp: printf("t%d ", p->address_3.value);
-          default: break;
-        }
-
-        printf("= ");
-
-      switch (p->address_1.kind) {
-        case String: printf("%s ", p->address_1.name);
-          break;
-        case IntConst: printf("%d ", p->address_1.value);
-          break;
-        case Temp: printf("t%d ", p->address_1.value);
-        default: break;
-      }
-
-      if (p->address_2.kind==Empty) {
-        printf("\n");
-        break;
-      }
-      printf("/ ");
-      switch (p->address_2.kind) {
-        case String: printf("%s ", p->address_2.name);
-          break;
-        case IntConst: printf("%d ", p->address_2.value);
-          break;
-        case Temp: printf("t%d ", p->address_2.value);
-        default: break;
-      }
-      printf("\n");
-        break;
-      case EqlK:
-      switch (p->address_3.kind) {
-        case String: printf("%s ", p->address_3.name);
-          break;
-          case IntConst: printf("%d ", p->address_3.value);
-          break;
-          case Temp: printf("t%d ", p->address_3.value);
-          default: break;
-        }
-
-        printf("= ");
-
-      switch (p->address_1.kind) {
-        case String: printf("%s ", p->address_1.name);
-          break;
-        case IntConst: printf("%d ", p->address_1.value);
-          break;
-        case Temp: printf("t%d ", p->address_1.value);
-        default: break;
-      }
-
-      printf("== ");
-      switch (p->address_2.kind) {
-        case String: printf("%s ", p->address_2.name);
-          break;
-        case IntConst: printf("%d ", p->address_2.value);
-          break;
-        case Temp: printf("t%d ", p->address_2.value);
-        default: break;
-      }
-      printf("\n");
-
-        break;
-      case NeqK:
-      switch (p->address_3.kind) {
-        case String: printf("%s ", p->address_3.name);
-          break;
-          case IntConst: printf("%d ", p->address_3.value);
-          break;
-          case Temp: printf("t%d ", p->address_3.value);
-          default: break;
-        }
-
-        printf("= ");
-
-      switch (p->address_1.kind) {
-        case String: printf("%s ", p->address_1.name);
-          break;
-        case IntConst: printf("%d ", p->address_1.value);
-          break;
-        case Temp: printf("t%d ", p->address_1.value);
-        default: break;
-      }
-
-      if (p->address_2.kind==Empty) {
-        printf("\n");
-        break;
-      }
-      printf("!= ");
-      switch (p->address_2.kind) {
-        case String: printf("%s ", p->address_2.name);
-          break;
-        case IntConst: printf("%d ", p->address_2.value);
-          break;
-        case Temp: printf("t%d ", p->address_2.value);
-        default: break;
-      }
-      printf("\n");
-
-        break;
-      case GtrK:
-      switch (p->address_3.kind) {
-        case String: printf("%s ", p->address_3.name);
-          break;
-          case IntConst: printf("%d ", p->address_3.value);
-          break;
-          case Temp: printf("t%d ", p->address_3.value);
-          default: break;
-        }
-
-        printf("= ");
-
-      switch (p->address_1.kind) {
-        case String: printf("%s ", p->address_1.name);
-          break;
-        case IntConst: printf("%d ", p->address_1.value);
-          break;
-        case Temp: printf("t%d ", p->address_1.value);
-        default: break;
-      }
-
-      if (p->address_2.kind==Empty) {
-        printf("\n");
-        break;
-      }
-      printf("> ");
-      switch (p->address_2.kind) {
-        case String: printf("%s ", p->address_2.name);
-          break;
-        case IntConst: printf("%d ", p->address_2.value);
-          break;
-        case Temp: printf("t%d ", p->address_2.value);
-        default: break;
-      }
-      printf("\n");
-
-        break;
-      case GeqK:
-      switch (p->address_3.kind) {
-        case String: printf("%s ", p->address_3.name);
-          break;
-          case IntConst: printf("%d ", p->address_3.value);
-          break;
-          case Temp: printf("t%d ", p->address_3.value);
-          default: break;
-        }
-
-        printf("= ");
-
-      switch (p->address_1.kind) {
-        case String: printf("%s ", p->address_1.name);
-          break;
-        case IntConst: printf("%d ", p->address_1.value);
-          break;
-        case Temp: printf("t%d ", p->address_1.value);
-        default: break;
-      }
-
-      if (p->address_2.kind==Empty) {
-        printf("\n");
-        break;
-      }
-      printf(">= ");
-      switch (p->address_2.kind) {
-        case String: printf("%s ", p->address_2.name);
-          break;
-        case IntConst: printf("%d ", p->address_2.value);
-          break;
-        case Temp: printf("t%d ", p->address_2.value);
-        default: break;
-      }
-      printf("\n");
-
-        break;
-      case LsrK:
-      switch (p->address_3.kind) {
-        case String: printf("%s ", p->address_3.name);
-          break;
-          case IntConst: printf("%d ", p->address_3.value);
-          break;
-          case Temp: printf("t%d ", p->address_3.value);
-          default: break;
-        }
-
-        printf("= ");
-
-      switch (p->address_1.kind) {
-        case String: printf("%s ", p->address_1.name);
-          break;
-        case IntConst: printf("%d ", p->address_1.value);
-          break;
-        case Temp: printf("t%d ", p->address_1.value);
-        default: break;
-      }
-
-      if (p->address_2.kind==Empty) {
-        printf("\n");
-        break;
-      }
-      printf("< ");
-      switch (p->address_2.kind) {
-        case String: printf("%s ", p->address_2.name);
-          break;
-        case IntConst: printf("%d ", p->address_2.value);
-          break;
-        case Temp: printf("t%d ", p->address_2.value);
-        default: break;
-      }
-      printf("\n");
-
-        break;
-      case LeqK:
-      switch (p->address_3.kind) {
-        case String: printf("%s ", p->address_3.name);
-          break;
-          case IntConst: printf("%d ", p->address_3.value);
-          break;
-          case Temp: printf("t%d ", p->address_3.value);
-          default: break;
-        }
-
-        printf("= ");
-
-      switch (p->address_1.kind) {
-        case String: printf("%s ", p->address_1.name);
-          break;
-        case IntConst: printf("%d ", p->address_1.value);
-          break;
-        case Temp: printf("t%d ", p->address_1.value);
-        default: break;
-      }
-
-      if (p->address_2.kind==Empty) {
-        printf("\n");
-        break;
-      }
-      printf("<= ");
-      switch (p->address_2.kind) {
-        case String: printf("%s ", p->address_2.name);
-          break;
-        case IntConst: printf("%d ", p->address_2.value);
-          break;
-        case Temp: printf("t%d ", p->address_2.value);
-        default: break;
-      }
-      printf("\n");
-
-        break;
-      case AsvK:
-        printf("%s = ", p->address_3.name);
-        if (p->address_1.kind==String) {
-          printf("%s\n", p->address_1.name);
-        } else if (p->address_1.kind == IntConst) {
-          printf("%d\n", p->address_1.value);
-        }else if(p->address_1.kind==Temp){
-          printf("t%d\n", p->address_1.value);
-        }else printf("%d wrong\n", p->address_1.kind);
-        break;
-      case AsaK:
-      if (p->address_2.kind==String) {
-        printf("%s[%s] =\n", p->address_3.name, p->address_2.name);
-      } else if (p->address_2.kind == IntConst) {
-        printf("%s[%d] =\n", p->address_3.name, p->address_2.value);
-      }else if(p->address_2.kind==Temp){
-        printf("%s[t%d] =\n", p->address_3.name, p->address_2.value);
-      }
-
-      if (p->address_1.kind==String) {
-        printf("%s\n", p->address_1.name);
-      } else if (p->address_1.kind == IntConst) {
-        printf("%d\n", p->address_1.value);
-      }else if(p->address_1.kind==Temp){
-        printf("t%d\n", p->address_1.value);
-      }
-
-
-
-      if (p->address_1.kind==String) {
-        printf("%s\n", p->address_1.name);
-      } else if (p->address_1.kind == IntConst) {
-        printf("%d\n", p->address_1.value);
-      }else if(p->address_1.kind==Temp){
-        printf("t%d\n", p->address_1.value);
-      }else printf("%d wrong\n", p->address_1.kind);
-        break;
-      case InnK:
-        break;
-      case OutK:
-        break;
-      case PrmK:
-        // printf("galetos organicos\n");
-        if (p->address_3.kind==String) {
-          printf("param %s\n", p->address_3.name);
-        }else if (p->address_3.kind==Temp) {
-          printf("param t%d\n", p->address_3.value);
-        }else {
-          printf("oops\n");
-        }
-        break;
-      case CalK:
-      printf("Call %s, %d\n", p->address_3.name, p->address_1.value);
-        break;
-      case RetK:
-        switch (p->address_3.kind) {
-          case Empty:
-            printf("Return\n");
-            break;
-          case Temp:
-            printf("Return t%d\n", p->address_3.value);
-            break;
-          case String:
-            printf("Return %s\n", p->address_3.name);
-            break;
-          case IntConst:
-            printf("Return %d\n", p->address_3.value);
-          default: break;
-        }
-
-        break;
-      case IffK:
-        printf("If_false t%d goto L%d\n", p->address_1.value, p->address_3.value);
-        break;
-      case GtoK:
-        printf("goto L%d\n", p->address_3.value);
-        break;
-      case HltK:
-        break;
-      case LblK:
-        if (p->address_3.kind==String) {
-          printf("%s: ", p->address_3.name);
-        }else
-        printf("L%d: ", p->address_3.value);
-        break;
-      default:
-        break;
-    }
-    // printf("%d\n", p->op);
+    printf("index: %d \toperation: %d \tscope: %s\n \t1: Kind: %d \tName:%s \tValue: %d\n \t2: Kind: %d \tName:%s \tValue: %d\n \t3: Kind: %d \tName:%s \tValue: %d\n",
+    p->index, p->op, p->scope,
+    p->address_1.kind, p->address_1.name, p->address_1.value,
+    p->address_2.kind, p->address_2.name, p->address_2.value,
+    p->address_3.kind, p->address_3.name, p->address_3.value);
     p = p->next;
   }
 }
@@ -1610,6 +1159,8 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
 
       printf("%s", c0->attr.name);
       quad0->op = AsvK;
+      quad0->address_1.kind = Temp;
+      quad0->address_1.value = temporary;
       quad0->address_2.kind = Empty;
       quad0->address_3.kind = String;
       strcpy(quad0->address_3.name, c0->attr.name);
@@ -1660,8 +1211,7 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
       // }
       // else {
       //   generate_intermediate_code(quad_list, c1);
-        quad0->address_1.kind = Temp;
-        quad0->address_1.value = temporary;
+
         printf(" t%d\n", quad0->address_1.value);
       // }
         // quad0->next = NULL;
@@ -1860,11 +1410,14 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
       quad0->op = CalK;
 
       if (!c0) {
-        insert_quadruple(quad_list, quad0);
         store_quadruple(quad0->op, quad0->address_1.kind, quad0->address_2.kind, quad0->address_3.kind,
                         quad0->address_1.value, quad0->address_2.value, quad0->address_3.value,
                         quad0->address_1.name, quad0->address_2.name, quad0->address_3.name);
         temporary++;
+        quad0->address_2.kind = Temp;
+        quad0->address_2.value = temporary;
+        insert_quadruple(quad_list, quad0);
+
         printf("t%d = call %s, 0\n", temporary, tree->attr.name);
         break;
       }
@@ -1988,9 +1541,9 @@ void generate_icode_launcher(list_quadruple *quad_list, TreeNode *tree, TipoList
 
 
     add_indexes_to_table(vetor, quad_list);
-    // printf("\n\n\n\n\n\n\n\n");
+    printf("\n\n\n\n\n\n\n\n");
     //
-    // print_quadruple_list(quad_list);
+    print_quadruple_list(quad_list);
 
     // file_read_quadruples = fopen("file_quadruples.txt", "r");
     // quad_list->start = NULL;

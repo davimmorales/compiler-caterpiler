@@ -14,17 +14,17 @@
  * constructed syntax tree
  */
 typedef enum {
-  // arithmetic
+  // arithmetic [0~3]
   AddK, SubK, TimK, OvrK,
-  // relational
+  // relational [4~9]
   EqlK, NeqK, GtrK, GeqK, LsrK, LeqK,
-  // data transfer
+  // data transfer [10~14]
   AsvK, AsaK, CstK, VstK, AstK,
-  // i|o
+  // i|o [15,16]
   InnK, OutK,
-  // function/procedure
+  // function/procedure [17~19]
   PrmK, CalK, RetK,
-  // flow
+  // flow [20~23]
   IffK, GtoK, HltK, LblK
  } OpKind;
 
