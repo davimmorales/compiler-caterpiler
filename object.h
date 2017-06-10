@@ -1,8 +1,8 @@
 
 
 
-#ifndef _OBJECT_H_
-#define _OBJECT_H_
+#ifndef _object_H_
+#define _object_H_
 
 #include "intermediate.h"
 #include <stdbool.h>
@@ -16,34 +16,39 @@ int top;
 
 
 typedef enum{
-    /* Adição  000000 &*/ G_ADD, // R[DR] <- R[SA] + R[SB]
-  /* Adição Imediato  000001 &*/ G_ADDI, // R[DR] <- R[SA] + IM
-  /* Subtração  000010 &*/ G_SUB, // R[DR] <- R[SA] + \overline{R[SB]} + 1
-  /* Subtração Imediato  000011 &*/ G_SUBI, // R[DR] <- R[SA] + \overline{IM} + 1
-  /* Multiplicação  000100 &*/ G_MUL, // R[DR] <- R[SA] * R[SB]
-  /* Divisão  000101 &*/ G_DIV, // R[DR] <- R[SA] / R[SB]
-  /* Incrementa  000110 &*/ G_INC, // R[DR] <- R[SA] + 1
-  /* Decrementa  000111 &*/ G_DEC, // R[DR] <- R[SA] - 1
-  /* And  001000 &*/ G_AND, // R[DR] <- R[SA] \wedge R[SB]
-  /* Or  001001 &*/ G_OR, // R[DR] <- R[SA] \vee R[SB]
-  /* Resto  001010 &*/ G_MOD, // R[DR] <- R[SA] \% R[SB]
-  /* Xor  001100 &*/ G_XOR, // R[DR] <- R[SA] \bigoplus R[SB]
-  /* Not  001101 &*/ G_NOT, // R[DR] <- \overline{R[SA]}
-  /* Desloca Esquerda  010000 &*/ G_SHL, // R[DR] <- sl (shamt)R[SA]
-  /* Desloca Direita  010001 &*/ G_SHR, // R[DR] <- sr (shamt)R[SA]
-  /* Pré-branch  011111 &*/ G_PBC, // se R[SA] = 0, FZ = 1;  se R[SA] < 0, FN = 1;
-  /* Branch em Zero  010011 &*/ G_BOZ, // se FZ = 1, então PC <- PC + 1 + IM e FZ = 0, então PC <- PC + 1
-  /* Branch em Negativo  010100 &*/ G_BON, // se FN = 1, então PC <- PC + IM e FN = 0, então PC <- PC + 1
-  /* Jump  010101 &*/ G_JMP, // PC <- IM
-  /* Set on Less Than  010111 &*/ G_SLT, // se R[SA] < R[SB], então R[DR] <- 1
-  /* Load  011000 &*/ G_LD, // R[DR] <- M[IM]
-  /* Store  011001 &*/ G_ST, // M[IM] <- R[SA]
-  /* Load Imediato  011010 &*/ G_LDI, // R[DR] <- IM
-  /* Nop  011011 &*/ G_NOP, // Sem Operação
-  /* Entrada  011101 &*/ G_IN, // R[DR] <- alavancas
-  /* HLT  011100 &*/ G_HLT, // Parar Operação
-  /* Saída  011110 &*/ G_OUT // Displays <- R[SA]
+    /*0 Adição  000000 &*/ G_ADD, // R[DR] <- R[SA] + R[SB]
+  /*1 Adição Imediato  000001 &*/ G_ADDI, // R[DR] <- R[SA] + IM
+  /*2 Subtração  000010 &*/ G_SUB, // R[DR] <- R[SA] + \overline{R[SB]} + 1
+  /*3 Subtração Imediato  000011 &*/ G_SUBI, // R[DR] <- R[SA] + \overline{IM} + 1
+  /*4 Multiplicação  000100 &*/ G_MUL, // R[DR] <- R[SA] * R[SB]
+  /*5 Divisão  000101 &*/ G_DIV, // R[DR] <- R[SA] / R[SB]
+  /*6 Incrementa  000110 &*/ G_INC, // R[DR] <- R[SA] + 1
+  /*7 Decrementa  000111 &*/ G_DEC, // R[DR] <- R[SA] - 1
+  /*8 And  001000 &*/ G_AND, // R[DR] <- R[SA] \wedge R[SB]
+  /*9 Or  001001 &*/ G_OR, // R[DR] <- R[SA] \vee R[SB]
+  /*10 Resto  001010 &*/ G_MOD, // R[DR] <- R[SA] \% R[SB]
+  /*11 Xor  001100 &*/ G_XOR, // R[DR] <- R[SA] \bigoplus R[SB]
+  /*12 Not  001101 &*/ G_NOT, // R[DR] <- \overline{R[SA]}
+  /*13 Desloca Esquerda  010000 &*/ G_SHL, // R[DR] <- sl (shamt)R[SA]
+  /*14 Desloca Direita  010001 &*/ G_SHR, // R[DR] <- sr (shamt)R[SA]
+  /*15 Pré-branch  011111 &*/ G_PBC, // se R[SA] = 0, FZ = 1;  se R[SA] < 0, FN = 1;
+  /*16 Branch em Zero  010011 &*/ G_BOZ, // se FZ = 1, então PC <- PC + 1 + IM e FZ = 0, então PC <- PC + 1
+  /*17 Branch em Negativo  010100 &*/ G_BON, // se FN = 1, então PC <- PC + IM e FN = 0, então PC <- PC + 1
+  /*18 Jump  010101 &*/ G_JMP, // PC <- IM
+  /*19 Set on Less Than  010111 &*/ G_SLT, // se R[SA] < R[SB], então R[DR] <- 1
+  /*20 Load  011000 &*/ G_LD, // R[DR] <- M[IM]
+  /*21 Store  011001 &*/ G_ST, // M[IM] <- R[SA]
+  /*22 Load Imediato  011010 &*/ G_LDI, // R[DR] <- IM
+  /*23 Nop  011011 &*/ G_NOP, // Sem Operação
+  /*24 Entrada  011101 &*/ G_IN, // R[DR] <- alavancas
+  /*25 HLT  011100 &*/ G_HLT, // Parar Operação
+  /*26 Saída  011110 &*/ G_OUT // Displays <- R[SA]
 }galetype;
+
+typedef enum{
+  label_kind,
+  call_kind
+}kind_jump;
 
 typedef enum{
   array_kind,
@@ -69,6 +74,7 @@ typedef struct type_instruction{
   int register_c;
   int immediate;
   int target_label;
+  kind_jump jump;
   char label_name[50];
   galetype type;
   struct type_instruction *next;
@@ -91,7 +97,7 @@ void insert_variable(list_variables *variables_list, int index, int index_array,
 //searches the position in memory of a variable given its name, scope and array index
 int search_variable(list_variables *variables_list, char name[], int array_position, char scope[]);
 
-void format_zero(list_instructions *instructions_list, galetype type, int immediate, AddrKind kind, char label_string[]);
+void format_zero(list_instructions *instructions_list, galetype type, int immediate, AddrKind kind, char label_string[], kind_jump jump);
 
 void format_one(list_instructions *instructions_list, galetype type, int register_a, int immediate);
 
@@ -102,15 +108,6 @@ void format_three(list_instructions *instructions_list, galetype type, int regis
 void generate_code(list_instructions *instructions_list, list_quadruple *quad_list, TipoLista *table, list_variables *variables_list);
 
 void generate_code_launcher(list_quadruple *quad_list, TipoLista *table);
-
-//stack
-void empty(void);
-bool is_empty(void);
-bool is_full(void);
-void push(int operand_a, int operand_b);
-int pop(void);
-void exit_stack_overflow(void);
-void exit_stack_underflow(void);
 
 
 

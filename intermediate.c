@@ -1923,7 +1923,7 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
               quad1->address_1.kind = IntConst;
               quad1->address_1.value = count;
               quad1->address_2.kind = Temp;
-              quad1->address_2.kind = temporary;
+              quad1->address_2.value = temporary;
               quad1->address_3.kind = String;
               strcpy(quad1->address_3.name, tree->attr.name);
               quad1->op = CalK;

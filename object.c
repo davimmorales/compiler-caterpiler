@@ -65,47 +65,7 @@ int search_temporary(int index_temporary){
 	}
 }
 
-//stack functions
-void empty(void){
-  top = 0;
-}
 
-bool is_empty(void){
-  return top == 0;
-}
-
-bool is_full(void){
-  return top == STACK_SIZE;
-}
-
-void push(int operand_a, int operand_b){
-  if (is_full())
-    exit_stack_overflow();
-  line_return[top++] = operand_a;
-	temporary_return[top++] = operand_b;
-}
-
-int pop_a(void){
-  if (is_empty())
-    exit_stack_underflow();
-  return line_return[--top];
-}
-
-int pop_b(void){
-  if (is_empty())
-    exit_stack_underflow();
-  return line_return[--top];
-}
-
-void exit_stack_overflow(void){
-  fprintf(stderr, "Expression is too complex.\n");
-  exit(EXIT_FAILURE);
-}
-
-void exit_stack_underflow(void){
-  fprintf(stderr, "Not enough operands in expression\n");
-  exit(EXIT_FAILURE);
-}
 
 
 //insertion function for variables
@@ -136,6 +96,15 @@ void print_variables(list_variables *variables_list) {
 	type_variable *p = variables_list->start;
 	while (p!=NULL) {
 		printf("index: %d \t array: %d \t id: %s \t scope: %s\n", p->index, p->index_array, p->id, p->scope);
+		p = p->next;
+	}
+}
+
+void print_instructions(list_instructions *instructions_list){
+	type_instruction *p = instructions_list->start;
+	while (p!=NULL) {
+		printf("%4d: \ttype: %d \tsource_a: %d \tsource_b: %d \ttarget: %d \timmediate: %d\n",
+		p->line, p->type, p->register_a, p->register_b, p->register_c,p->immediate);
 		p = p->next;
 	}
 }
@@ -211,11 +180,11 @@ void declaration_variables(list_variables *variables_list, TipoLista *table, cha
 
 
 //numbers relate to amount of registers in the operation
-void format_zero(list_instructions *instructions_list,  galetype type, int immediate, AddrKind kind, char label_string[]){
-	if(type==G_HLT||type==G_NOP)
-	printf("%4d: \ttype: %d\n", line_counter, type);
-	else
-	printf("%4d: \ttype: %d \timmediate: %d\n", line_counter, type, immediate);
+void format_zero(list_instructions *instructions_list,  galetype type, int immediate, AddrKind kind, char label_string[], kind_jump jump){
+	// if(type==G_HLT||type==G_NOP)
+	// printf("%4d: \ttype: %d\n", line_counter, type);
+	// else
+	// printf("%4d: \ttype: %d \timmediate: %d\n", line_counter, type, immediate);
 
 	type_instruction *p =instructions_list->start;
 	type_instruction *new_instruction = malloc(sizeof(type_instruction));
@@ -229,11 +198,12 @@ void format_zero(list_instructions *instructions_list,  galetype type, int immed
 	if(type==G_BOZ||type==G_JMP){
 		if(kind==String){
 			strcpy(new_instruction->label_name, label_string);
+			new_instruction->jump = jump;
 		}else{
 			new_instruction->target_label = immediate;
+			new_instruction->jump = jump;
 		}
-	}
-	else
+	} else
 	new_instruction->target_label = 0;
 
 
@@ -252,7 +222,7 @@ void format_zero(list_instructions *instructions_list,  galetype type, int immed
 }
 
 void format_one(list_instructions *instructions_list, galetype type, int register_a, int immediate){
-	printf("%4d: \ttype: %d \tregister: %d \timmediate: %d\n", line_counter, type, register_a, immediate);
+	// printf("%4d: \ttype: %d \tregister: %d \timmediate: %d\n", line_counter, type, register_a, immediate);
 
 	type_instruction *p =instructions_list->start;
 	type_instruction *new_instruction = malloc(sizeof(type_instruction));
@@ -282,8 +252,8 @@ void format_one(list_instructions *instructions_list, galetype type, int registe
 }
 
 void format_two(list_instructions *instructions_list, galetype type, int register_source, int register_target, int immediate){
-	printf("%4d: \ttype: %d \tsource: %d \ttarget: %d \timmediate: %d\n",
-	line_counter, type, register_source,register_target, immediate);
+	// printf("%4d: \ttype: %d \tsource: %d \ttarget: %d \timmediate: %d\n",
+	// line_counter, type, register_source,register_target, immediate);
 
 	type_instruction *p =instructions_list->start;
 	type_instruction *new_instruction = malloc(sizeof(type_instruction));
@@ -315,8 +285,8 @@ void format_two(list_instructions *instructions_list, galetype type, int registe
 
 
 void format_three(list_instructions *instructions_list, galetype type, int register_source_a, int register_source_b, int register_target){
-	printf("%4d: \ttype: %d \tsource_a: %d \tsource_b: %d \ttarget: %d\n",
-	line_counter, type, register_source_a, register_source_b, register_target);
+	// printf("%4d: \ttype: %d \tsource_a: %d \tsource_b: %d \ttarget: %d\n",
+	// line_counter, type, register_source_a, register_source_b, register_target);
 
 	type_instruction *p =instructions_list->start;
 	type_instruction *new_instruction = malloc(sizeof(type_instruction));
@@ -649,48 +619,77 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				break;
 				case CalK:
 				// remember in and out
-				push(line_counter+1, p->address_2.value);
-				format_zero(instructions_list, G_JMP, 0, String, p->address_3.name);
+				format_zero(instructions_list, G_JMP, 0, String, p->address_3.name, label_kind);
+
+				instruction = instructions_list->start;
+				while (instruction!=NULL) {
+					if (p->address_3.kind==String&&(
+							instruction->type==G_JMP)){
+								if(!strcmp(p->address_3.name, instruction->label_name)&&instruction->jump==call_kind){
+									instruction->immediate = line_counter-instruction->line+1;
+
+									instruction->target_label = p->address_2.value;
+									printf("TARGET LABEL: %d\n", instruction->target_label);
+
+									// printf("Target: %s %s\n", p->address_3.name, instruction->label_name);
+								}
+							}
+							instruction = instruction->next;
+						}
 
 					break;
 				case RetK:
-				//pop
+
 				if (p->address_3.kind==Temp) {
 					register_temporary = search_temporary(p->address_3.value);
-					format_two(instructions_list, G_ADDI, register_temporary, register_operator_left, 0);
+					format_two(instructions_list, G_ADDI, register_temporary, register_result, 0);
 				}else if(p->address_3.kind==String){
 					int memory_position = 0;
 					memory_position = search_variable(variables_list, p->address_3.name, 0, current_scope);
-					format_one(instructions_list, G_LD, register_operator_left, memory_position);
+					format_one(instructions_list, G_LD, register_result, memory_position);
 				}else if(p->address_3.kind==IntConst){
 					if(p->address_3.value<65000){
 						immediate_left = p->address_3.value;
 					}
 					else{
-						format_one(instructions_list, G_LDI, register_operator_left, p->address_3.value);
+						format_one(instructions_list, G_LDI, register_result, p->address_3.value);
 					}
 				}else{
 					printf("ERROR: intermediate variable kind unknown: %d!\n", p->address_1.kind);
 				}
 
-				//call + return: retroactive effect
-				format_zero(instructions_list, G_JMP, 0, String, pop_a()-line_counter);//check this one
-				map_temporary(pop_b());
-				release_temporary(register_operator_left);
+
+				instruction = instructions_list->start;
+				int flag_gotit=0;
+				while (instruction!=NULL) {
+					if (instruction->type==G_JMP){
+								if(!strcmp(current_scope, instruction->label_name)&&instruction->jump==call_kind){
+									map_temporary(instruction->target_label);
+									flag_gotit = 1;
+									break;
+								}
+							}
+							instruction = instruction->next;
+						}
+
+				if(!flag_gotit)
+					format_zero(instructions_list, G_JMP, 0, String, current_scope, call_kind);
 
 				break;
 				case IffK:
 				register_temporary_left = search_temporary(p->address_1.value);
-				format_one(instructions_list, G_PBC, register_operator_left, 0);
-				format_zero(instructions_list, G_BOZ, p->address_3.value, IntConst, "none");
+				// format_one(instructions_list, G_PBC, register_operator_left, 0);
+				format_one(instructions_list, G_PBC, register_temporary_left, 0);
+
+				format_zero(instructions_list, G_BOZ, p->address_3.value, IntConst, "none", label_kind);
 
 				// release_temporary(register_temporary_left);
 				break;
 				case GtoK:
 				if (p->address_3.kind==LabAddr) {
-					format_zero(instructions_list, G_JMP, p->address_3.value, IntConst, "none");
+					format_zero(instructions_list, G_JMP, p->address_3.value, IntConst, "none", label_kind);
 				}else if(p->address_3.kind==String){
-					format_zero(instructions_list, G_JMP, p->address_3.value, String, p->address_3.name);
+					format_zero(instructions_list, G_JMP, p->address_3.value, String, p->address_3.name, label_kind);
 				}else{
 					printf("EXCEPTION\n");
 				}
@@ -702,13 +701,13 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				while (instruction!=NULL) {
 					if (p->address_3.kind==LabAddr&&(
 						instruction->type==G_BOZ||instruction->type==G_JMP)) {
-							if(p->address_3.value==instruction->target_label){
+							if(p->address_3.value==instruction->target_label&&instruction->jump==label_kind){
 								instruction->immediate = line_counter-instruction->line;
 								// printf("Target: %d %d\n", p->address_3.value, instruction->immediate);
 							}
 						}else if (p->address_3.kind==String&&(
 							instruction->type==G_JMP)){
-								if(!strcmp(p->address_3.name, instruction->label_name)){
+								if(!strcmp(p->address_3.name, instruction->label_name)&&instruction->jump==label_kind){
 									instruction->immediate = line_counter-instruction->line;
 									// printf("Target: %s %s\n", p->address_3.name, instruction->label_name);
 								}
@@ -769,4 +768,5 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				fclose( file_target_code );
 
 				print_variables(variables_list);
+				print_instructions(instructions_list);
 			}
