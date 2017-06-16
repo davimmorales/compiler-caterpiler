@@ -30,7 +30,7 @@ static int temporaries[MAXREGISTER];
 * terminating execution of the program
 * if there is no available temporary
 */
-void map_temporary(int register_temporary){
+void map_temporary(list_instructions *instructions_list, int register_temporary, int register_source){
 	int i, temp = -1;
 	for(i = 0; i < MAXREGISTER; ++i){
 		if(temporaries[i] == 0){
@@ -39,10 +39,11 @@ void map_temporary(int register_temporary){
 			break;
 		}
 	}
-	if(temp < 0){
+	if(temp < OFFSET){
 		printf("ERROR: register file overflow: no temporaries available at requested instruction\n");
 		exit(0);
 	}
+	format_two(instructions_list, G_ADDI, register_source, temp, 0);
 }
 
 /* Function releaseTemp releases
@@ -103,7 +104,7 @@ void print_variables(list_variables *variables_list) {
 void print_instructions(list_instructions *instructions_list){
 	type_instruction *p = instructions_list->start;
 	while (p!=NULL) {
-		printf("%4d: \ttype: %d \tsource_a: %d \tsource_b: %d \ttarget: %d \timmediate: %d\n",
+		printf("%4d: \ttype: %d \tsource_a: %d \tsource_b: %d\n \ttarget: %d \timmediate: %d\n",
 		p->line, p->type, p->register_a, p->register_b, p->register_c,p->immediate);
 		p = p->next;
 	}
@@ -432,9 +433,9 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					}
 				}
 
-				map_temporary(p->address_3.value);
-				release_temporary(register_operator_left);
-				release_temporary(register_operator_right);
+				map_temporary(instructions_list, p->address_3.value, register_result);
+				release_temporary(register_temporary_left);
+				release_temporary(register_temporary_right);
 
 				break;
 				case TimK:
@@ -567,9 +568,9 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					break;
 				}
 
-				map_temporary(p->address_3.value);
-				release_temporary(register_operator_left);
-				release_temporary(register_operator_right);
+				map_temporary(instructions_list, p->address_3.value, register_result);
+				release_temporary(register_temporary_left);
+				release_temporary(register_temporary_right);
 				break;
 				case AsvK:
 
@@ -580,7 +581,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 
 				format_one(instructions_list, G_ST, register_temporary, memory_position);
 
-				// release_temporary(register_temporary);
+				release_temporary(register_temporary);
 
 				break;
 				case AsaK:
@@ -664,7 +665,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				while (instruction!=NULL) {
 					if (instruction->type==G_JMP){
 								if(!strcmp(current_scope, instruction->label_name)&&instruction->jump==call_kind){
-									map_temporary(instruction->target_label);
+									// map_temporary(instructions_list, instruction->target_label, );
 									flag_gotit = 1;
 									break;
 								}
@@ -683,7 +684,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 
 				format_zero(instructions_list, G_BOZ, p->address_3.value, IntConst, "none", label_kind);
 
-				// release_temporary(register_temporary_left);
+				release_temporary(register_temporary_left);
 				break;
 				case GtoK:
 				if (p->address_3.kind==LabAddr) {
@@ -717,9 +718,25 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 
 						break;
 						case CstK:
-						break;
+						if(p->address_1.value<65000){
+							immediate_left = p->address_1.value;
+							flag_immediate_left = 1;
+						}else{
+							format_one(instructions_list, G_LDI, register_operator_left, p->address_1.value);
+						}
+
+						if (flag_immediate_left) {
+							format_one(instructions_list, G_LDI, register_result, immediate_left);
+							flag_immediate_left = 0;
+						}
+						map_temporary(instructions_list, p->address_3.value, register_result);
+
+							break;
 						case VstK:
-						break;
+							memory_position = search_variable(variables_list, p->address_1.name, 0, current_scope);
+							format_one(instructions_list, G_LD, register_operator_left, memory_position);
+							map_temporary(instructions_list, p->address_3.value, register_operator_left);
+							break;
 						case AstK:
 						break;
 						default:
