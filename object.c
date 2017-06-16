@@ -738,6 +738,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 							map_temporary(instructions_list, p->address_3.value, register_operator_left);
 							break;
 						case AstK:
+						
 						break;
 						default:
 						break;

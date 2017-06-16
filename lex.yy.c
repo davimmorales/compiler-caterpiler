@@ -2190,7 +2190,7 @@ void insere(TipoLista *lista, char scope[], char nameID[], char typeID[], char t
     strcpy(novoNo->tipoData, typeData);
     strcpy(novoNo->nomeID, nameID);
     strcpy(novoNo->tipoID, typeID);
-    if(!strcmp(typeID,"vet")&&!strcmp(scope,"global"))
+    if(!strcmp(typeID,"vet"))//&&!strcmp(scope,"global"))
         novoNo->array_size = size;
     /*printf("%s\n", novoNo->escopo);*/
     TipoID *p = lista[index].start;
@@ -2244,7 +2244,7 @@ void printWTable(TipoLista *lista, int index) {
             printf(",");
           i++;
         }
-        if(!strcmp(p->tipoID,"vet")&&!strcmp(p->escopo,"global"))
+        if(!strcmp(p->tipoID,"vet"))//&&!strcmp(p->escopo,"global"))
           printf("\t %d", p->array_size);
 
         printf("\n");
