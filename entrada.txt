@@ -1,7 +1,8 @@
 
 void main(void){
    int arr[5];
-   int i;	   
-   i = arr[2];
+   int i;
+   i = 2;
+   i = arr[i];
    return;
 }

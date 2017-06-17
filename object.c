@@ -738,8 +738,10 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 							map_temporary(instructions_list, p->address_3.value, register_operator_left);
 							break;
 						case AstK:
-						
-						break;
+							memory_position = search_variable(variables_list, p->address_1.name, p->address_2.value, current_scope);
+							format_one(instructions_list, G_LD, register_operator_left, memory_position);
+							map_temporary(instructions_list, p->address_3.value, register_operator_left);
+							break;
 						default:
 						break;
 					}
