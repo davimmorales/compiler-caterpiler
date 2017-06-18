@@ -750,7 +750,16 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 									format_two(instructions_list, G_ADDI, register_operator_left, register_operator_right, memory_position);
 									format_two(instructions_list, G_LDR, register_operator_right, register_result, 0);
 									break;
+								case Temp:
+									memory_position = search_variable(variables_list, p->address_1.name, 0, current_scope);
+									register_temporary_left = search_temporary(p->address_2.value);
+									format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_left, 0);
+									format_two(instructions_list, G_ADDI, register_operator_left, register_operator_right, memory_position);
+									format_two(instructions_list, G_LDR, register_operator_right, register_result, 0);
+									release_temporary(register_temporary_left);
+									break;
 								default:
+									printf("ASTK Type Problem: %d\n", p->address_2.kind);
 									break;
 							}
 

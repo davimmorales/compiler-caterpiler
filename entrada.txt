@@ -3,6 +3,6 @@ void main(void){
    int arr[5];
    int i;
    i = 2;
-   i = arr[i];
+   i = arr[i+1];
    return;
 }
