@@ -724,7 +724,7 @@ i = 0;
   /*while(getToken() != ENDFILE);*/
   syntaxTree = parse();
 
-  printTree(syntaxTree);
+  // printTree(syntaxTree);
   generate_icode_launcher(&quad_list, syntaxTree, &vetor);
 
   generate_code_launcher(&quad_list, &vetor);

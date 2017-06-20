@@ -93,6 +93,14 @@ void insert_variable(list_variables *variables_list, int index, int index_array,
 	}
 }
 
+void print_parameters(list_parameters *parameters_list) {
+	type_parameter *p = parameters_list->start;
+	while (p!=NULL) {
+		printf("kind: %d \t value: %d \t name: %s\n", p->kind, p->value, p->name);
+		p = p->next;
+	}
+}
+
 void print_variables(list_variables *variables_list) {
 	type_variable *p = variables_list->start;
 	while (p!=NULL) {
@@ -316,11 +324,12 @@ void format_three(list_instructions *instructions_list, galetype type, int regis
 	line_counter++;
 }
 
-void generate_code(list_instructions *instructions_list, list_quadruple *quad_list, TipoLista *table, list_variables *variables_list){
+void generate_code(list_instructions *instructions_list, list_quadruple *quad_list, TipoLista *table, list_variables *variables_list, list_parameters *parameters_list){
 	quadruple *p = quad_list->start;
 	TipoID *table_item;
 	type_instruction *instruction;
 	type_variable *v = variables_list->start;
+	type_parameter *par;
 
 	char current_scope[50];
 	int i;
@@ -618,7 +627,33 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 
 				break;
 				case PrmK:
-				break;
+					par = parameters_list->start;
+					type_parameter *new_parameter = malloc(sizeof(type_parameter));
+					new_parameter->kind = p->address_3.kind;
+					switch (p->address_3.kind) {
+						case IntConst:
+						case Temp:
+							new_parameter->value = p->address_3.value;
+							break;
+						case String:
+							strcpy(new_parameter->name, p->address_3.name);
+							break;
+						default:
+							printf("Unknown parameter kind!\n");
+							break;
+					}
+					if(par==NULL){
+						parameters_list->start = new_parameter;
+						parameters_list->start->next = NULL;
+					}
+					else{
+						while (par->next!=NULL) {
+							par = par->next;
+						}
+						par->next = new_parameter;
+						par->next->next = NULL;
+					}
+					break;
 				case CalK:
 				// remember in and out
 				format_zero(instructions_list, G_JMP, 0, String, p->address_3.name, label_kind);
@@ -629,10 +664,8 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 							instruction->type==G_JMP)){
 								if(!strcmp(p->address_3.name, instruction->label_name)&&instruction->jump==call_kind){
 									instruction->immediate = line_counter-instruction->line+1;
-
 									instruction->target_label = p->address_2.value;
 									printf("TARGET LABEL: %d\n", instruction->target_label);
-
 									// printf("Target: %s %s\n", p->address_3.name, instruction->label_name);
 								}
 							}
@@ -781,12 +814,16 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				//stores all variables positions
 				list_variables *variables_list;
 				list_instructions *instructions_list;
+				list_parameters *parameters_list;
 
 				variables_list = (list_variables*) malloc(sizeof(list_variables));
 				instructions_list = (list_instructions*) malloc(sizeof(list_instructions));
+				parameters_list = (list_parameters*) malloc(sizeof(list_parameters));
+
 
 				variables_list->start = NULL;
 				instructions_list->start = NULL;
+				parameters_list->start = NULL;
 
 				file_target_code = fopen("target_code.gc", "w");
 
@@ -808,9 +845,10 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				// declaration_variables(variables_list, table, "main");
 
 				printf("\n");
-				generate_code(instructions_list, quad_list, table, variables_list);
+				generate_code(instructions_list, quad_list, table, variables_list, parameters_list);
 				fclose( file_target_code );
 
-				print_variables(variables_list);
-				print_instructions(instructions_list);
+				// print_variables(variables_list);
+				// print_instructions(instructions_list);
+				// print_parameters(parameters_list);
 			}

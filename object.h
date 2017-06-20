@@ -83,6 +83,17 @@ typedef struct type_instruction{
   struct type_instruction *next;
 }type_instruction;
 
+typedef struct type_parameter{
+  AddrKind kind;
+  int value;
+  char name[50];
+  struct type_parameter *next;
+}type_parameter;
+
+typedef struct{
+  type_parameter *start;
+}list_parameters;
+
 typedef struct{
     type_instruction *start;
 }list_instructions;
@@ -108,7 +119,7 @@ void format_two(list_instructions *instructions_list, galetype type, int registe
 
 void format_three(list_instructions *instructions_list, galetype type, int register_source_a, int register_source_b, int register_target);
 
-void generate_code(list_instructions *instructions_list, list_quadruple *quad_list, TipoLista *table, list_variables *variables_list);
+void generate_code(list_instructions *instructions_list, list_quadruple *quad_list, TipoLista *table, list_variables *variables_list, list_parameters *parameters_list);
 
 void generate_code_launcher(list_quadruple *quad_list, TipoLista *table);
 
