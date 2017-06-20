@@ -66,6 +66,51 @@ int search_temporary(int index_temporary){
 	}
 }
 
+void consume_parameters(TipoLista *table, list_instructions *instructions_list, list_parameters *parameters_list,list_variables *variables_list, char function[]){
+	type_variable *variable = variables_list->start;
+	type_instruction *instruction = instructions_list->start;
+	type_parameter *parameter = parameters_list->start;
+	TipoID *table_item;
+	int parameter_index = 1;
+	int i;
+
+	for(i = 0;i<211;i++){
+		if(&table[i]!=NULL){
+			table_item = table[i].start;
+			while (table_item!=NULL) {
+				if (!strcmp(table_item->escopo, function)) {
+					if(table_item->indice_parametro==parameter_index){
+						switch (parameter->kind) {
+							case String:
+								break;
+							case IntConst:
+								break;
+							case Temp:
+								break;
+							default:
+								printf("Unexpected kind:%d ,consume_parameters\n", parameter->kind);
+								break;
+						}
+					}
+					if (!strcmp(table_item->tipoID, "var")) {
+
+
+					}
+					else if(!strcmp(table_item->tipoID, "vet")){
+						array_memory_index = memory_index;
+						for (size_t j = 0; j <= table_item->array_size; j++) {
+							insert_variable(variables_list, array_memory_index, j, array_kind, table_item->nomeID, scope);
+							memory_index++;
+						}
+					}
+				}
+				table_item = table_item->prox;
+			}
+		}
+	}
+
+
+}
 
 
 
@@ -96,7 +141,7 @@ void insert_variable(list_variables *variables_list, int index, int index_array,
 void print_parameters(list_parameters *parameters_list) {
 	type_parameter *p = parameters_list->start;
 	while (p!=NULL) {
-		printf("kind: %d \t value: %d \t name: %s\n", p->kind, p->value, p->name);
+		printf("kind: %d \t value: %d \t name: %s scope: %s\n", p->kind, p->value, p->name, p->scope);
 		p = p->next;
 	}
 }
@@ -630,6 +675,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					par = parameters_list->start;
 					type_parameter *new_parameter = malloc(sizeof(type_parameter));
 					new_parameter->kind = p->address_3.kind;
+					strcpy(new_parameter->scope, current_scope);
 					switch (p->address_3.kind) {
 						case IntConst:
 						case Temp:
@@ -655,6 +701,9 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					}
 					break;
 				case CalK:
+				//consume parameters
+				consume_parameters(table, instructions_list, parameters_list, variables_list, p->address_3.name);
+				printf("CALL: %s\n", p->address_3.name);
 				// remember in and out
 				format_zero(instructions_list, G_JMP, 0, String, p->address_3.name, label_kind);
 
@@ -850,5 +899,5 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 
 				// print_variables(variables_list);
 				// print_instructions(instructions_list);
-				// print_parameters(parameters_list);
+				print_parameters(parameters_list);
 			}

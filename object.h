@@ -87,6 +87,7 @@ typedef struct type_parameter{
   AddrKind kind;
   int value;
   char name[50];
+  char scope[50];
   struct type_parameter *next;
 }type_parameter;
 
@@ -123,7 +124,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 
 void generate_code_launcher(list_quadruple *quad_list, TipoLista *table);
 
-
+void consume_parameters(TipoLista *table, list_instructions *instructions_list, list_parameters *parameters_list,list_variables *variables_list, char function[]);
 
 
 
