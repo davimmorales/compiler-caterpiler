@@ -25,7 +25,9 @@ typedef enum {
   // function/procedure [17~19]
   PrmK, CalK, RetK,
   // flow [20~23]
-  IffK, GtoK, HltK, LblK
+  IffK, GtoK, HltK, LblK,
+  //control
+  PrmArrK, PrmVarK
  } OpKind;
 
 typedef enum {Empty, IntConst, String, Temp, LabAddr} AddrKind;
@@ -61,6 +63,8 @@ void generate_icode_launcher(list_quadruple *quad_list, TreeNode *tree, TipoList
 static void generate_statement(list_quadruple *quad_list, TreeNode *tree);
 
 void generate_intermediate_code(list_quadruple *quad_list, TreeNode *tree);
+
+void add_parameters_to_table(TipoLista *table, list_quadruple *quad_list);
 
 void print_quadruple_list(list_quadruple *quad_list);
 

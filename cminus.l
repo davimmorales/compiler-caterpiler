@@ -222,6 +222,7 @@ void insere(TipoLista *lista, char scope[], char nameID[], char typeID[], char t
 
     novoNo->intermediate_start = 0;
     novoNo->intermediate_finish = 0;
+    novoNo->indice_parametro = 0;
 
     // Inicialização dos demais campos do nó com os parâmetros de entrada
     if(!strcmp(typeID,"func")) {
@@ -289,7 +290,9 @@ void printWTable(TipoLista *lista, int index) {
           i++;
         }
         if(!strcmp(p->tipoID,"vet"))//&&!strcmp(p->escopo,"global"))
-          printf("\t %d", p->array_size);
+          printf("\t array size: %d", p->array_size);
+
+          printf("\t \t parameter: %d\n", p->indice_parametro);
 
         printf("\n");
       }
@@ -721,7 +724,7 @@ i = 0;
   /*while(getToken() != ENDFILE);*/
   syntaxTree = parse();
 
-  /*printTree(syntaxTree);*/
+  printTree(syntaxTree);
   generate_icode_launcher(&quad_list, syntaxTree, &vetor);
 
   generate_code_launcher(&quad_list, &vetor);

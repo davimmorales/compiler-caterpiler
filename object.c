@@ -585,35 +585,36 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 
 				break;
 				case AsaK:
-				flag_temp = 0;
 				register_temporary = search_temporary(p->address_1.value);
 				switch (p->address_2.kind) {
 					case IntConst:
 					memory_offset = p->address_2.value;
-					// printf("OFFSET %d\n", memory_offset); THIS ONE IS WORKING
+					memory_position = search_variable(variables_list, p->address_3.name, memory_offset, current_scope);
+					format_one(instructions_list, G_ST, register_temporary, memory_position);
 					break;
 					case String:
-					memory_offset = search_variable(variables_list, p->address_2.name, 0, current_scope);
 
+					memory_position = search_variable(variables_list, p->address_2.name, 0, current_scope);
+					memory_offset = search_variable(variables_list, p->address_3.name, 0, current_scope);
+					format_one(instructions_list, G_LD, register_operator_left, memory_position);
+					format_two(instructions_list, G_ADDI, register_operator_left, register_operator_right, memory_offset);
+					format_two(instructions_list, G_STR, register_operator_right, register_temporary, 0);
 
-					// printf("STRING OFFSET %d %s\n", memory_offset, p->address_2.name);
 					break;
 					case Temp:
-					memory_offset = search_temporary(p->address_2.value);
-					flag_temp = 1;
-					// printf("TEMP OFFSET %d, %d\n", memory_offset, p->address_2.value);// NOT SURE IF IT'S WORKING
+
+					memory_offset = search_variable(variables_list, p->address_3.name, 0, current_scope);
+					register_temporary_left = search_temporary(p->address_2.value);
+					format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_right, memory_offset);
+					format_two(instructions_list, G_STR, register_operator_right, register_temporary, 0);
+					release_temporary(register_temporary_left);
+
 					break;
 					default:
 					break;
 				}
 
-				memory_position = search_variable(variables_list, p->address_3.name, memory_offset, current_scope);
-
-				format_one(instructions_list, G_ST, register_temporary, memory_position);
-
-				// release_temporary(register_temporary);
-				// if(flag_temp)
-				// 	release_temporary(memory_offset);
+				release_temporary(register_temporary);
 
 				break;
 				case PrmK:

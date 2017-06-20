@@ -12,6 +12,34 @@ FILE *file_read_quadruples;
 int counter = 0;
 int flag_later = 0;
 int indx = 0;
+int index_parameters = 0;
+
+void add_parameters_to_table(TipoLista *table, list_quadruple *quad_list) {
+
+  int hash;
+  quadruple *p = quad_list->start;
+  TipoID *q;
+  while (p!=NULL) {
+    switch (p->op) {
+      case PrmVarK:
+      case PrmArrK:
+        hash = string2int(p->address_1.name)%211;
+        q = table[hash].start;
+        while (q!=NULL) {
+          if (!strcmp(p->address_1.name, q->nomeID)&&!strcmp(p->address_2.name, q->escopo)) {
+            q->indice_parametro = p->address_3.value;
+            break;
+          }
+          q = q->prox;
+        }
+        printf("%s %s %d\n", p->address_1.name, p->address_2.name, p->address_3.value);
+        break;
+      default:
+        break;
+    }
+    p = p->next;
+  }
+}
 
 void add_indexes_to_table(TipoLista *table, list_quadruple *quad_list){
 
@@ -30,7 +58,7 @@ void add_indexes_to_table(TipoLista *table, list_quadruple *quad_list){
           hash = string2int(p->address_3.name)%211;
           q = table[hash].start;
           while (q!=NULL) {
-            if (!strcmp(q->tipoID,"func")) {
+            if (!strcmp(q->tipoID,"func")&&!strcmp(q->nomeID,p->address_3.name)) {
               if(previous_function!=NULL)
                 previous_function->intermediate_finish = p->index-1;
               q->intermediate_start = p->index;
@@ -1275,17 +1303,35 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
                       quad0->address_1.name, quad0->address_2.name, quad0->address_3.name);
 
       // add quad0
+      if (c0) {
+        index_parameters = 1;
+        generate_intermediate_code(quad_list, c0);
+      }
       if (c1) {
         generate_intermediate_code(quad_list, c1);
       }
       break;
     case FuncVecK:
-      // printf("FuncVecK\n");
-      // printf("Array: %s\n", c0->attr.name);
+      strcpy(quad0->address_1.name, tree->attr.name);
+      quad0->address_1.kind = String;
+      strcpy(quad0->address_2.name, tree->scope);
+      quad0->address_2.kind = String;
+      quad0->address_3.value = index_parameters;
+      quad0->address_3.kind = IntConst;
+      quad0->op = PrmArrK;
+      insert_quadruple(quad_list, quad0);
+      index_parameters++;
       break;
     case FuncVarK:
-      // printf("FuncVarK\n");
-      // printf("Variable: %s\n", c0->attr.name);
+      strcpy(quad0->address_1.name, tree->attr.name);
+      quad0->address_1.kind = String;
+      strcpy(quad0->address_2.name, tree->scope);
+      quad0->address_2.kind = String;
+      quad0->address_3.value = index_parameters;
+      quad0->address_3.kind = IntConst;
+      quad0->op = PrmVarK;
+      insert_quadruple(quad_list, quad0);
+      index_parameters++;
       break;
     default:
     printf("Oops: uncomment something!\n");
@@ -1541,6 +1587,7 @@ void generate_icode_launcher(list_quadruple *quad_list, TreeNode *tree, TipoList
 
 
     add_indexes_to_table(vetor, quad_list);
+    add_parameters_to_table(vetor, quad_list);
     printf("\n\n\n\n\n\n\n\n");
     //
     print_quadruple_list(quad_list);
