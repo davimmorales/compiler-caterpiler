@@ -66,13 +66,17 @@ int search_temporary(int index_temporary){
 	}
 }
 
-void consume_parameters(TipoLista *table, list_instructions *instructions_list, list_parameters *parameters_list,list_variables *variables_list, char function[]){
+void consume_parameters(TipoLista *table, list_instructions *instructions_list, list_parameters *parameters_list,list_variables *variables_list, char function[], char caller[]){
 	type_variable *variable = variables_list->start;
 	type_instruction *instruction = instructions_list->start;
 	type_parameter *parameter = parameters_list->start;
 	TipoID *table_item;
+	TipoID *table_aux;
 	int parameter_index = 1;
 	int i;
+	int j;
+	int memory_position;
+	int register_temporary;
 
 	for(i = 0;i<211;i++){
 		if(&table[i]!=NULL){
@@ -80,39 +84,38 @@ void consume_parameters(TipoLista *table, list_instructions *instructions_list, 
 			while (table_item!=NULL) {
 				if (!strcmp(table_item->escopo, function)) {
 					if(table_item->indice_parametro==parameter_index){
+						memory_position = search_variable(variables_list, table_item->nomeID, 0, function);
 						switch (parameter->kind) {
 							case String:
+								for (j = 0; j < 211; j++) {
+									if(&table[j]!=NULL){
+										table_aux = table[j].start;
+										while (table_aux!=NULL) {
+											if(!strcmp(table_aux->escopo, caller))
+										}
+								}
 								break;
 							case IntConst:
+								format_one(instructions_list, G_LDI, register_result, parameter->value);
+								format_one(instructions_list, G_ST, register_result, memory_position);
 								break;
 							case Temp:
+								register_temporary = search_temporary(parameter->value);
+								format_one(instructions_list, G_ST, register_temporary, memory_position);
+								release_temporary(register_temporary);
 								break;
 							default:
 								printf("Unexpected kind:%d ,consume_parameters\n", parameter->kind);
 								break;
 						}
-					}
-					if (!strcmp(table_item->tipoID, "var")) {
-
-
-					}
-					else if(!strcmp(table_item->tipoID, "vet")){
-						array_memory_index = memory_index;
-						for (size_t j = 0; j <= table_item->array_size; j++) {
-							insert_variable(variables_list, array_memory_index, j, array_kind, table_item->nomeID, scope);
-							memory_index++;
-						}
+						parameter_index++;
 					}
 				}
 				table_item = table_item->prox;
 			}
 		}
 	}
-
-
 }
-
-
 
 //insertion function for variables
 void insert_variable(list_variables *variables_list, int index, int index_array, kind_variable kind, char id[], char scope[]){
@@ -702,8 +705,8 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					break;
 				case CalK:
 				//consume parameters
-				consume_parameters(table, instructions_list, parameters_list, variables_list, p->address_3.name);
-				printf("CALL: %s\n", p->address_3.name);
+				consume_parameters(table, instructions_list, parameters_list, variables_list, p->address_3.name, current_scope);
+				printf("CALL: %s in %s\n", p->address_3.name, current_scope);
 				// remember in and out
 				format_zero(instructions_list, G_JMP, 0, String, p->address_3.name, label_kind);
 
