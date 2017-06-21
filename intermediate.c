@@ -1469,11 +1469,11 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
       }
 
       do{
+
               if (c0->child[0]) {
                 int aux;
-                // TreeNode *g0 = c0->child[0];
 
-                generate_intermediate_code(quad_list, c0);
+                generate_children_code(quad_list, c0);
 
                 quad0 = malloc(sizeof(quadruple));
                 quad0->address_1.kind = Empty;
@@ -1502,7 +1502,6 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
                     quad0->address_3.kind = String;
                     strcpy(quad0->address_3.name, c0->attr.name);
                     strcpy(quad0->scope, tree->scope);
-
                     break;
                 }
               }
@@ -1561,6 +1560,23 @@ void generate_intermediate_code(list_quadruple *quad_list, TreeNode *tree){
         break;
     }
     generate_intermediate_code(quad_list, tree->sibling);
+  }
+}
+
+void generate_children_code(list_quadruple *quad_list, TreeNode *tree){
+  if(tree!=NULL){
+    switch (tree->nodekind) {
+      case StmtK:
+        // printf("statement\n");
+        generate_statement(quad_list, tree);
+        break;
+      case ExpK:
+        // printf("expression\n");
+        generate_expression(quad_list, tree);
+        break;
+      default:
+        break;
+    }
   }
 }
 

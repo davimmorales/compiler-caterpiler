@@ -66,56 +66,139 @@ int search_temporary(int index_temporary){
 	}
 }
 
-void consume_parameters(TipoLista *table, list_instructions *instructions_list, list_parameters *parameters_list,list_variables *variables_list, char function[], char caller[]){
-	type_variable *variable = variables_list->start;
-	type_instruction *instruction = instructions_list->start;
-	type_parameter *parameter = parameters_list->start;
-	TipoID *table_item;
-	TipoID *table_aux;
-	int parameter_index = 1;
-	int i;
-	int j;
-	int memory_position;
-	int register_temporary;
+void consume_parameters(TipoLista *table, list_instructions *instructions_list, list_parameters *parameters_list,list_variables *variables_list, char function[]){
+		type_variable *variable = variables_list->start;
+		type_instruction *instruction = instructions_list->start;
+		type_parameter *parameter = parameters_list->start;
+		TipoID *table_item;
 
-	for(i = 0;i<211;i++){
-		if(&table[i]!=NULL){
-			table_item = table[i].start;
-			while (table_item!=NULL) {
-				if (!strcmp(table_item->escopo, function)) {
-					if(table_item->indice_parametro==parameter_index){
-						memory_position = search_variable(variables_list, table_item->nomeID, 0, function);
-						switch (parameter->kind) {
-							case String:
-								for (j = 0; j < 211; j++) {
-									if(&table[j]!=NULL){
-										table_aux = table[j].start;
-										while (table_aux!=NULL) {
-											if(!strcmp(table_aux->escopo, caller))
-										}
+		int memory_from;
+		int memory_to;
+		int temp_from;
+		int parameter_index = 1;
+		int i;
+		int array_index;
+
+		while(parameter!=NULL){
+			//loading parameter to register result
+			switch (parameter->kind){
+				case String:
+					//search for parameter in memory
+					memory_from = search_variable(variables_list, parameter->name, 0, parameter->scope);
+					//load from memory to register result
+					format_one(instructions_list, G_LD, register_result, memory_from);
+					break;
+				case IntConst:
+				  //load parameter as immediate to register result
+					format_one(instructions_list, G_LDI, register_result, parameter->value);
+					break;
+				case Temp:
+					//search for register that stores parameter
+					temp_from = search_temporary(parameter->value);
+					//load parameter from temporary to register result
+					format_two(instructions_list, G_ADDI, temp_from, register_result, 0);
+					break;
+			}
+			//storing parameter in memory
+			for ( i = 0; i < 211; i++) {
+				if(&table[i]!=NULL){
+					table_item = table[i].start;
+					while (table_item!=NULL) {
+						if (!strcmp(table_item->escopo, function)) {
+							if (table_item->indice_parametro==parameter_index) {
+								if (!strcmp(table_item->tipoID,"var")) {
+									//search for position in memory to store parameter
+									memory_to = search_variable(variables_list, table_item->nomeID, 0, table_item->escopo);
+									//store value from register result into memory
+									format_one(instructions_list, G_ST, register_result, memory_to);
+								}else{
+									//goes through 'from' array and stores values into 'to' array
+									for (array_index = 0; array_index <= table_item->array_size; array_index++) {
+										//search for parameter in memory
+										memory_from = search_variable(variables_list, parameter->name, array_index, parameter->scope);
+										//load from memory to register result
+										format_one(instructions_list, G_LD, register_result, memory_from);
+										//search for position in memory to store parameter
+										memory_to = search_variable(variables_list, table_item->nomeID, array_index, table_item->escopo);
+										//store value from register result into memory
+										format_one(instructions_list, G_ST, register_result, memory_to);
+									}
 								}
-								break;
-							case IntConst:
-								format_one(instructions_list, G_LDI, register_result, parameter->value);
-								format_one(instructions_list, G_ST, register_result, memory_position);
-								break;
-							case Temp:
-								register_temporary = search_temporary(parameter->value);
-								format_one(instructions_list, G_ST, register_temporary, memory_position);
-								release_temporary(register_temporary);
-								break;
-							default:
-								printf("Unexpected kind:%d ,consume_parameters\n", parameter->kind);
-								break;
+							}
 						}
-						parameter_index++;
+						table_item = table_item->prox;
 					}
 				}
-				table_item = table_item->prox;
 			}
+
+			parameter_index++;
+			parameter = parameter->next;
 		}
-	}
+		parameters_list->start = NULL;
+		release_temporary(temp_from);
 }
+
+
+// void consume_parameters(TipoLista *table, list_instructions *instructions_list, list_parameters *parameters_list,list_variables *variables_list, char function[], char caller[]){
+// 	type_variable *variable = variables_list->start;
+// 	type_instruction *instruction = instructions_list->start;
+// 	type_parameter *parameter = parameters_list->start;
+// 	TipoID *table_item;
+// 	TipoID *table_aux;
+// 	int parameter_index = 1;
+// 	int i;
+// 	int j;
+// 	int memory_position;
+// 	int memory_position_from;
+// 	int register_temporary;
+//
+// 	for(i = 0;i<211;i++){
+// 		if(&table[i]!=NULL){
+// 			table_item = table[i].start;
+// 			while (table_item!=NULL) {
+// 				if (!strcmp(table_item->escopo, function)) {
+// 					if(table_item->indice_parametro==parameter_index){
+// 						memory_position = search_variable(variables_list, table_item->nomeID, 0, function);
+// 						switch (parameter->kind) {
+//
+// 							case String:
+// 							printf("STRINGS: %s %s\n", table_aux->nomeID, parameter->name);
+//
+// 								for (j = 0; j < 211; j++) {
+// 									if(&table[j]!=NULL){
+// 										table_aux = table[j].start;
+// 										while (table_aux!=NULL) {
+// 											if(!strcmp(table_aux->escopo, caller)){
+//
+// 												if (!strcmp(table_aux->nomeID, parameter->name)) {
+// 													memory_position_from = search_variable(variables_list, table_aux->nomeID, 0, caller);
+// 												}
+// 											}table_aux = table_aux->prox;
+// 										}
+// 									}
+// 								}
+// 								break;
+// 							case IntConst:
+// 								format_one(instructions_list, G_LDI, register_result, parameter->value);
+// 								format_one(instructions_list, G_ST, register_result, memory_position);
+// 								break;
+// 							case Temp:
+// 								register_temporary = search_temporary(parameter->value);
+// 								format_one(instructions_list, G_ST, register_temporary, memory_position);
+// 								release_temporary(register_temporary);
+// 								break;
+// 							default:
+// 								printf("Unexpected kind:%d ,consume_parameters\n", parameter->kind);
+// 								break;
+// 						}
+// 						parameter_index++;
+// 					}
+// 				}
+// 				table_item = table_item->prox;
+// 			}
+// 		}
+// 	}
+// }
 
 //insertion function for variables
 void insert_variable(list_variables *variables_list, int index, int index_array, kind_variable kind, char id[], char scope[]){
@@ -705,7 +788,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					break;
 				case CalK:
 				//consume parameters
-				consume_parameters(table, instructions_list, parameters_list, variables_list, p->address_3.name, current_scope);
+				consume_parameters(table, instructions_list, parameters_list, variables_list, p->address_3.name);
 				printf("CALL: %s in %s\n", p->address_3.name, current_scope);
 				// remember in and out
 				format_zero(instructions_list, G_JMP, 0, String, p->address_3.name, label_kind);
@@ -900,7 +983,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				generate_code(instructions_list, quad_list, table, variables_list, parameters_list);
 				fclose( file_target_code );
 
-				// print_variables(variables_list);
-				// print_instructions(instructions_list);
-				print_parameters(parameters_list);
+				print_variables(variables_list);
+				print_instructions(instructions_list);
+				// print_parameters(parameters_list);
 			}
