@@ -32,7 +32,7 @@ void add_parameters_to_table(TipoLista *table, list_quadruple *quad_list) {
           }
           q = q->prox;
         }
-        printf("%s %s %d\n", p->address_1.name, p->address_2.name, p->address_3.value);
+        // printf("%s %s %d\n", p->address_1.name, p->address_2.name, p->address_3.value);
         break;
       default:
         break;
@@ -1310,6 +1310,12 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
       if (c1) {
         generate_intermediate_code(quad_list, c1);
       }
+      // quad1->address_1.kind = Empty;
+      // quad1->address_2.kind = Empty;
+      // quad1->address_3.kind = String;
+      // strcpy(quad1->address_3.name, tree->attr.name);
+      // quad1->op = EofK;
+      // insert_quadruple(quad_list, quad0);
       break;
     case FuncVecK:
       strcpy(quad0->address_1.name, tree->attr.name);

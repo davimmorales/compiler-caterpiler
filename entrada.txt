@@ -1,14 +1,11 @@
 /* Um programa para ordenar por selecao */
 int vet[10];
-
-
-void sort(int a[], int low, int high){
-   int i;   int k;
-}
-
 void main(void){
    int i;
    i = 0;
-   sort(vet, vet[i], 10);
+   if(i==0){
+   	i = i - 1;
+   }else
+	i = i * 1;
    }
 }

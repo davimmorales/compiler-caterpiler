@@ -138,68 +138,6 @@ void consume_parameters(TipoLista *table, list_instructions *instructions_list, 
 		release_temporary(temp_from);
 }
 
-
-// void consume_parameters(TipoLista *table, list_instructions *instructions_list, list_parameters *parameters_list,list_variables *variables_list, char function[], char caller[]){
-// 	type_variable *variable = variables_list->start;
-// 	type_instruction *instruction = instructions_list->start;
-// 	type_parameter *parameter = parameters_list->start;
-// 	TipoID *table_item;
-// 	TipoID *table_aux;
-// 	int parameter_index = 1;
-// 	int i;
-// 	int j;
-// 	int memory_position;
-// 	int memory_position_from;
-// 	int register_temporary;
-//
-// 	for(i = 0;i<211;i++){
-// 		if(&table[i]!=NULL){
-// 			table_item = table[i].start;
-// 			while (table_item!=NULL) {
-// 				if (!strcmp(table_item->escopo, function)) {
-// 					if(table_item->indice_parametro==parameter_index){
-// 						memory_position = search_variable(variables_list, table_item->nomeID, 0, function);
-// 						switch (parameter->kind) {
-//
-// 							case String:
-// 							printf("STRINGS: %s %s\n", table_aux->nomeID, parameter->name);
-//
-// 								for (j = 0; j < 211; j++) {
-// 									if(&table[j]!=NULL){
-// 										table_aux = table[j].start;
-// 										while (table_aux!=NULL) {
-// 											if(!strcmp(table_aux->escopo, caller)){
-//
-// 												if (!strcmp(table_aux->nomeID, parameter->name)) {
-// 													memory_position_from = search_variable(variables_list, table_aux->nomeID, 0, caller);
-// 												}
-// 											}table_aux = table_aux->prox;
-// 										}
-// 									}
-// 								}
-// 								break;
-// 							case IntConst:
-// 								format_one(instructions_list, G_LDI, register_result, parameter->value);
-// 								format_one(instructions_list, G_ST, register_result, memory_position);
-// 								break;
-// 							case Temp:
-// 								register_temporary = search_temporary(parameter->value);
-// 								format_one(instructions_list, G_ST, register_temporary, memory_position);
-// 								release_temporary(register_temporary);
-// 								break;
-// 							default:
-// 								printf("Unexpected kind:%d ,consume_parameters\n", parameter->kind);
-// 								break;
-// 						}
-// 						parameter_index++;
-// 					}
-// 				}
-// 				table_item = table_item->prox;
-// 			}
-// 		}
-// 	}
-// }
-
 //insertion function for variables
 void insert_variable(list_variables *variables_list, int index, int index_array, kind_variable kind, char id[], char scope[]){
 	type_variable *p = variables_list->start;
@@ -466,7 +404,8 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 	int i;
 	int flag_immediate_left = 0;
 	int flag_immediate_right = 0;
-	int flag_temp;
+	int flag_temp_left = 0;
+	int flag_temp_right = 0;
 	int immediate_left = 0;
 	int immediate_right = 0;
 	int register_temporary_left;
@@ -502,6 +441,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				if (p->address_1.kind==Temp) {
 					register_temporary_left = search_temporary(p->address_1.value);
 					format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_left, 0);
+					flag_temp_left = 1;
 				}else if(p->address_1.kind==String){
 					int memory_position_left = 0;
 					memory_position_left = search_variable(variables_list, p->address_1.name, 0, current_scope);
@@ -523,6 +463,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				if (p->address_2.kind==Temp) {
 					register_temporary_right = search_temporary(p->address_2.value);
 					format_two(instructions_list, G_ADDI, register_temporary_right, register_operator_right, 0);
+					flag_temp_right = 1;
 				}else if(p->address_2.kind==String){
 					int memory_position_right = 0;
 					memory_position_right = search_variable(variables_list, p->address_2.name, 0, current_scope);
@@ -573,9 +514,16 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					}
 				}
 
+				if (flag_temp_left) {
+					release_temporary(register_temporary_left);
+					flag_temp_left = 0;
+				}
+				if (flag_temp_right) {
+					release_temporary(register_temporary_right);
+					flag_temp_right;
+				}
 				map_temporary(instructions_list, p->address_3.value, register_result);
-				release_temporary(register_temporary_left);
-				release_temporary(register_temporary_right);
+
 
 				break;
 				case TimK:
@@ -590,6 +538,8 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				if (p->address_1.kind==Temp) {
 					register_temporary_left = search_temporary(p->address_1.value);
 					format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_left, 0);
+					flag_temp_left = 1;
+
 				}else if(p->address_1.kind==String){
 					int memory_position_left = 0;
 					memory_position_left = search_variable(variables_list, p->address_1.name, 0, current_scope);
@@ -610,6 +560,8 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				if (p->address_2.kind==Temp) {
 					register_temporary_right = search_temporary(p->address_2.value);
 					format_two(instructions_list, G_ADDI, register_temporary_right, register_operator_right, 0);
+					flag_temp_right = 1;
+
 				}else if(p->address_2.kind==String){
 					int memory_position_right = 0;
 					memory_position_right = search_variable(variables_list, p->address_2.name, 0, current_scope);
@@ -708,17 +660,20 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					break;
 				}
 
+				if (flag_temp_left) {
+					release_temporary(register_temporary_left);
+					flag_temp_left = 0;
+				}
+				if (flag_temp_right) {
+					release_temporary(register_temporary_right);
+					flag_temp_right;
+				}
 				map_temporary(instructions_list, p->address_3.value, register_result);
-				release_temporary(register_temporary_left);
-				release_temporary(register_temporary_right);
 				break;
 				case AsvK:
 
 				register_temporary = search_temporary(p->address_1.value);
 				memory_position = search_variable(variables_list, p->address_3.name, 0, current_scope);
-
-
-
 				format_one(instructions_list, G_ST, register_temporary, memory_position);
 
 				release_temporary(register_temporary);
@@ -789,61 +744,60 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				case CalK:
 				//consume parameters
 				consume_parameters(table, instructions_list, parameters_list, variables_list, p->address_3.name);
-				printf("CALL: %s in %s\n", p->address_3.name, current_scope);
 				// remember in and out
-				format_zero(instructions_list, G_JMP, 0, String, p->address_3.name, label_kind);
-
-				instruction = instructions_list->start;
-				while (instruction!=NULL) {
-					if (p->address_3.kind==String&&(
-							instruction->type==G_JMP)){
-								if(!strcmp(p->address_3.name, instruction->label_name)&&instruction->jump==call_kind){
-									instruction->immediate = line_counter-instruction->line+1;
-									instruction->target_label = p->address_2.value;
-									printf("TARGET LABEL: %d\n", instruction->target_label);
-									// printf("Target: %s %s\n", p->address_3.name, instruction->label_name);
-								}
-							}
-							instruction = instruction->next;
-						}
+				// format_zero(instructions_list, G_JMP, 0, String, p->address_3.name, label_kind);
+				//
+				// instruction = instructions_list->start;
+				// while (instruction!=NULL) {
+				// 	if (p->address_3.kind==String&&(
+				// 			instruction->type==G_JMP)){
+				// 				if(!strcmp(p->address_3.name, instruction->label_name)&&instruction->jump==call_kind){
+				// 					instruction->immediate = line_counter-instruction->line+1;
+				// 					instruction->target_label = p->address_2.value;
+				// 					printf("TARGET LABEL: %d\n", instruction->target_label);
+				// 					// printf("Target: %s %s\n", p->address_3.name, instruction->label_name);
+				// 				}
+				// 			}
+				// 			instruction = instruction->next;
+				// 		}
 
 					break;
 				case RetK:
 
-				if (p->address_3.kind==Temp) {
-					register_temporary = search_temporary(p->address_3.value);
-					format_two(instructions_list, G_ADDI, register_temporary, register_result, 0);
-				}else if(p->address_3.kind==String){
-					int memory_position = 0;
-					memory_position = search_variable(variables_list, p->address_3.name, 0, current_scope);
-					format_one(instructions_list, G_LD, register_result, memory_position);
-				}else if(p->address_3.kind==IntConst){
-					if(p->address_3.value<65000){
-						immediate_left = p->address_3.value;
-					}
-					else{
-						format_one(instructions_list, G_LDI, register_result, p->address_3.value);
-					}
-				}else{
-					printf("ERROR: intermediate variable kind unknown: %d!\n", p->address_1.kind);
-				}
-
-
-				instruction = instructions_list->start;
-				int flag_gotit=0;
-				while (instruction!=NULL) {
-					if (instruction->type==G_JMP){
-								if(!strcmp(current_scope, instruction->label_name)&&instruction->jump==call_kind){
-									// map_temporary(instructions_list, instruction->target_label, );
-									flag_gotit = 1;
-									break;
-								}
-							}
-							instruction = instruction->next;
-						}
-
-				if(!flag_gotit)
-					format_zero(instructions_list, G_JMP, 0, String, current_scope, call_kind);
+				// if (p->address_3.kind==Temp) {
+				// 	register_temporary = search_temporary(p->address_3.value);
+				// 	format_two(instructions_list, G_ADDI, register_temporary, register_result, 0);
+				// }else if(p->address_3.kind==String){
+				// 	int memory_position = 0;
+				// 	memory_position = search_variable(variables_list, p->address_3.name, 0, current_scope);
+				// 	format_one(instructions_list, G_LD, register_result, memory_position);
+				// }else if(p->address_3.kind==IntConst){
+				// 	if(p->address_3.value<65000){
+				// 		immediate_left = p->address_3.value;
+				// 	}
+				// 	else{
+				// 		format_one(instructions_list, G_LDI, register_result, p->address_3.value);
+				// 	}
+				// }else{
+				// 	printf("ERROR: intermediate variable kind unknown: %d!\n", p->address_1.kind);
+				// }
+				//
+				//
+				// instruction = instructions_list->start;
+				// int flag_gotit=0;
+				// while (instruction!=NULL) {
+				// 	if (instruction->type==G_JMP){
+				// 				if(!strcmp(current_scope, instruction->label_name)&&instruction->jump==call_kind){
+				// 					// map_temporary(instructions_list, instruction->target_label, );
+				// 					flag_gotit = 1;
+				// 					break;
+				// 				}
+				// 			}
+				// 			instruction = instruction->next;
+				// 		}
+				//
+				// if(!flag_gotit)
+				// 	format_zero(instructions_list, G_JMP, 0, String, current_scope, call_kind);
 
 				break;
 				case IffK:

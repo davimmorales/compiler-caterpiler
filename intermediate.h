@@ -27,7 +27,7 @@ typedef enum {
   // flow [20~23]
   IffK, GtoK, HltK, LblK,
   //control
-  PrmArrK, PrmVarK
+  PrmArrK, PrmVarK, EofK
  } OpKind;
 
 typedef enum {Empty, IntConst, String, Temp, LabAddr} AddrKind;
