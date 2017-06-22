@@ -763,7 +763,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 
 					break;
 				case RetK:
-
+				//
 				// if (p->address_3.kind==Temp) {
 				// 	register_temporary = search_temporary(p->address_3.value);
 				// 	format_two(instructions_list, G_ADDI, register_temporary, register_result, 0);
@@ -822,22 +822,36 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				break;
 				case LblK:
 				instruction = instructions_list->start;
-				while (instruction!=NULL) {
-					if (p->address_3.kind==LabAddr&&(
-						instruction->type==G_BOZ||instruction->type==G_JMP)) {
+				//select function label or simple label
+				switch (p->address_3.kind) {
+					case LabAddr:
+						while (instruction!=NULL) {
 							if(p->address_3.value==instruction->target_label&&instruction->jump==label_kind){
-								instruction->immediate = line_counter-instruction->line;
-								// printf("Target: %d %d\n", p->address_3.value, instruction->immediate);
-							}
-						}else if (p->address_3.kind==String&&(
-							instruction->type==G_JMP)){
-								if(!strcmp(p->address_3.name, instruction->label_name)&&instruction->jump==label_kind){
+								if (instruction->type==G_BOZ) {
 									instruction->immediate = line_counter-instruction->line;
-									// printf("Target: %s %s\n", p->address_3.name, instruction->label_name);
+								}else if (instruction->type==G_JMP) {
+									instruction->immediate = line_counter;
 								}
 							}
 							instruction = instruction->next;
 						}
+						break;
+					case String:
+						while (instruction!=NULL) {
+							if (instruction->type==G_JMP) {
+								if(!strcmp(p->address_3.name, instruction->label_name)){
+									if (instruction->jump==label_kind) {
+										instruction->immediate = line_counter;
+									}
+								}
+							}
+							instruction = instruction->next;
+						}
+						break;
+					default:
+						printf("ERROR: unknown type: %d\n", p->address_3.kind);
+						break;
+				}
 
 						break;
 						case CstK:
