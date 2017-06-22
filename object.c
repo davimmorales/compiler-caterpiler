@@ -66,6 +66,51 @@ int search_temporary(int index_temporary){
 	}
 }
 
+void treat_jumps_n_branches(list_instructions *instructions_list, list_labels *labels_list){
+	type_label *label = labels_list->start;
+	type_instruction *instruction;
+
+	while (label!=NULL) {
+		switch (label->type) {
+			case LabAddr:
+				instruction = instructions_list->start;
+				while (instruction!=NULL) {
+					printf("Target Label: %d\n", instruction->target_label);
+					if (label->index==instruction->target_label) {
+						// printf("LL: %d, LI: %d LK: %d\n", label->line, label->index, label->type);
+						if (instruction->jump==label_kind) {
+							if (instruction->type==G_BOZ) {
+								instruction->immediate = label->line-instruction->line;
+							}else if(instruction->type==G_JMP){
+								instruction->immediate = label->line;
+							}
+						}
+					}
+					instruction = instruction->next;
+				}
+				break;
+				case String:
+					instruction = instructions_list->start;
+					while (instruction!=NULL) {
+						if (instruction->type==G_JMP) {
+							if(!strcmp(instruction->label_name, label->name)){
+								if(instruction->jump==label_kind){
+									instruction->immediate = label->line;
+								}
+							}
+						}
+						instruction = instruction->next;
+					}
+					break;
+			default:
+				printf("ERROR: unknown type label: %d\n", label->type);
+			break;
+		}
+		label = label->next;
+	}
+}
+
+
 void consume_parameters(TipoLista *table, list_instructions *instructions_list, list_parameters *parameters_list,list_variables *variables_list, char function[]){
 		type_variable *variable = variables_list->start;
 		type_instruction *instruction = instructions_list->start;
@@ -162,6 +207,33 @@ void insert_variable(list_variables *variables_list, int index, int index_array,
 	}
 }
 
+void insert_label(list_labels *labels_list, AddrKind type, char name[], int index, int line){
+				type_label *l = labels_list->start;
+				type_label *new_label = malloc(sizeof(type_label));
+
+				if (type==LabAddr) {
+					new_label->index = index;
+					strcpy(new_label->name, "none");
+				}else{
+					new_label->index = 0;
+					strcpy(new_label->name, name);
+				}
+				new_label->type = type;
+				new_label->line = line;
+
+				if(l==NULL){
+					labels_list->start = new_label;
+					labels_list->start->next = NULL;
+				}
+				else{
+					while(l->next!=NULL){
+						l = l->next;
+					}
+					l->next = new_label;
+					l->next->next = NULL;
+				}
+			}
+
 void print_parameters(list_parameters *parameters_list) {
 	type_parameter *p = parameters_list->start;
 	while (p!=NULL) {
@@ -183,6 +255,14 @@ void print_instructions(list_instructions *instructions_list){
 	while (p!=NULL) {
 		printf("%4d: \ttype: %d \tsource_a: %d \tsource_b: %d\n \ttarget: %d \timmediate: %d\n",
 		p->line, p->type, p->register_a, p->register_b, p->register_c,p->immediate);
+		p = p->next;
+	}
+}
+
+void print_labels(list_labels *labels_list) {
+	type_label *p = labels_list->start;
+	while (p!=NULL) {
+		printf("NAME:%s INDEX:%d LINE:%d TYPE:%d \n", p->name, p->index, p->line, p->type);
 		p = p->next;
 	}
 }
@@ -277,8 +357,9 @@ void format_zero(list_instructions *instructions_list,  galetype type, int immed
 		if(kind==String){
 			strcpy(new_instruction->label_name, label_string);
 			new_instruction->jump = jump;
-		}else{
+		}else if(kind==LabAddr){
 			new_instruction->target_label = immediate;
+			printf("TARGET LABEL: %d\n", new_instruction->target_label);
 			new_instruction->jump = jump;
 		}
 	} else
@@ -393,12 +474,13 @@ void format_three(list_instructions *instructions_list, galetype type, int regis
 	line_counter++;
 }
 
-void generate_code(list_instructions *instructions_list, list_quadruple *quad_list, TipoLista *table, list_variables *variables_list, list_parameters *parameters_list){
+void generate_code(list_instructions *instructions_list, list_quadruple *quad_list, TipoLista *table, list_variables *variables_list, list_parameters *parameters_list, list_labels *labels_list){
 	quadruple *p = quad_list->start;
 	TipoID *table_item;
 	type_instruction *instruction;
 	type_variable *v = variables_list->start;
 	type_parameter *par;
+
 
 	char current_scope[50];
 	int i;
@@ -745,7 +827,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				//consume parameters
 				consume_parameters(table, instructions_list, parameters_list, variables_list, p->address_3.name);
 				// remember in and out
-				// format_zero(instructions_list, G_JMP, 0, String, p->address_3.name, label_kind);
+				format_zero(instructions_list, G_JMP, 0, String, p->address_3.name, label_kind);
 				//
 				// instruction = instructions_list->start;
 				// while (instruction!=NULL) {
@@ -805,13 +887,13 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				// format_one(instructions_list, G_PBC, register_operator_left, 0);
 				format_one(instructions_list, G_PBC, register_temporary_left, 0);
 
-				format_zero(instructions_list, G_BOZ, p->address_3.value, IntConst, "none", label_kind);
+				format_zero(instructions_list, G_BOZ, p->address_3.value, LabAddr, "none", label_kind);
 
 				release_temporary(register_temporary_left);
 				break;
 				case GtoK:
 				if (p->address_3.kind==LabAddr) {
-					format_zero(instructions_list, G_JMP, p->address_3.value, IntConst, "none", label_kind);
+					format_zero(instructions_list, G_JMP, p->address_3.value, LabAddr, "none", label_kind);
 				}else if(p->address_3.kind==String){
 					format_zero(instructions_list, G_JMP, p->address_3.value, String, p->address_3.name, label_kind);
 				}else{
@@ -821,37 +903,8 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				case HltK:
 				break;
 				case LblK:
-				instruction = instructions_list->start;
-				//select function label or simple label
-				switch (p->address_3.kind) {
-					case LabAddr:
-						while (instruction!=NULL) {
-							if(p->address_3.value==instruction->target_label&&instruction->jump==label_kind){
-								if (instruction->type==G_BOZ) {
-									instruction->immediate = line_counter-instruction->line;
-								}else if (instruction->type==G_JMP) {
-									instruction->immediate = line_counter;
-								}
-							}
-							instruction = instruction->next;
-						}
-						break;
-					case String:
-						while (instruction!=NULL) {
-							if (instruction->type==G_JMP) {
-								if(!strcmp(p->address_3.name, instruction->label_name)){
-									if (instruction->jump==label_kind) {
-										instruction->immediate = line_counter;
-									}
-								}
-							}
-							instruction = instruction->next;
-						}
-						break;
-					default:
-						printf("ERROR: unknown type: %d\n", p->address_3.kind);
-						break;
-				}
+
+					insert_label(labels_list, p->address_3.kind, p->address_3.name, p->address_3.value, line_counter);
 
 						break;
 						case CstK:
@@ -918,15 +971,18 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				list_variables *variables_list;
 				list_instructions *instructions_list;
 				list_parameters *parameters_list;
+			  list_labels *labels_list;
 
 				variables_list = (list_variables*) malloc(sizeof(list_variables));
 				instructions_list = (list_instructions*) malloc(sizeof(list_instructions));
 				parameters_list = (list_parameters*) malloc(sizeof(list_parameters));
-
+				labels_list = (list_labels*) malloc(sizeof(list_labels));
 
 				variables_list->start = NULL;
 				instructions_list->start = NULL;
 				parameters_list->start = NULL;
+				labels_list->start = NULL;
+
 
 				file_target_code = fopen("target_code.gc", "w");
 
@@ -948,10 +1004,13 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				// declaration_variables(variables_list, table, "main");
 
 				printf("\n");
-				generate_code(instructions_list, quad_list, table, variables_list, parameters_list);
+				generate_code(instructions_list, quad_list, table, variables_list, parameters_list, labels_list);
+				treat_jumps_n_branches(instructions_list, labels_list);
+
 				fclose( file_target_code );
 
 				print_variables(variables_list);
 				print_instructions(instructions_list);
+				print_labels(labels_list);
 				// print_parameters(parameters_list);
 			}

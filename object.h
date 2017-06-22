@@ -91,6 +91,14 @@ typedef struct type_parameter{
   struct type_parameter *next;
 }type_parameter;
 
+typedef struct type_label{
+  AddrKind type;
+  char name[50];
+  int index;
+  int line;
+  struct type_label *next;
+}type_label;
+
 typedef struct{
   type_parameter *start;
 }list_parameters;
@@ -103,11 +111,18 @@ typedef struct{
     type_variable *start;
 }list_variables;
 
+typedef struct{
+    type_label *start;
+}list_labels;
+
 //reserves spaces in memory for variables of a given function
 void declaration_variables(list_variables *variables_list, TipoLista *table, char scope[]);
 
 //numbers relate to amount of registers in the operation
 void insert_variable(list_variables *variables_list, int index, int index_array, kind_variable kind, char id[], char scope[]);
+
+void insert_label(list_labels *labels_list, AddrKind type, char name[], int index, int line);
+
 
 //searches the position in memory of a variable given its name, scope and array index
 int search_variable(list_variables *variables_list, char name[], int array_position, char scope[]);
@@ -120,13 +135,13 @@ void format_two(list_instructions *instructions_list, galetype type, int registe
 
 void format_three(list_instructions *instructions_list, galetype type, int register_source_a, int register_source_b, int register_target);
 
-void generate_code(list_instructions *instructions_list, list_quadruple *quad_list, TipoLista *table, list_variables *variables_list, list_parameters *parameters_list);
+void generate_code(list_instructions *instructions_list, list_quadruple *quad_list, TipoLista *table, list_variables *variables_list, list_parameters *parameters_list, list_labels *labels_list);
 
 void generate_code_launcher(list_quadruple *quad_list, TipoLista *table);
 
 void consume_parameters(TipoLista *table, list_instructions *instructions_list, list_parameters *parameters_list,list_variables *variables_list, char function[]);
 
-
+void treat_jumps_n_branches(list_instructions *instructions_list, list_labels *labels_list);
 
 
 
