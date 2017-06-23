@@ -11,6 +11,7 @@ int register_operator_left = 3;
 int register_operator_right = 4;
 int register_context_offset = 5;
 int register_operator_offset = 6;
+int register_return = 30;
 int line_counter = 0;
 int memory_index = 0;
 
@@ -43,7 +44,7 @@ void map_temporary(list_instructions *instructions_list, int register_temporary,
 		printf("ERROR: register file overflow: no temporaries available at requested instruction\n");
 		exit(0);
 	}
-	format_two(instructions_list, G_ADDI, register_source, temp, 0);
+	format_two(instructions_list, G_ADDI, register_source, temp, 0, "none");
 }
 
 /* Function releaseTemp releases
@@ -75,14 +76,15 @@ void treat_jumps_n_branches(list_instructions *instructions_list, list_labels *l
 			case LabAddr:
 				instruction = instructions_list->start;
 				while (instruction!=NULL) {
-					printf("Target Label: %d\n", instruction->target_label);
 					if (label->index==instruction->target_label) {
-						// printf("LL: %d, LI: %d LK: %d\n", label->line, label->index, label->type);
 						if (instruction->jump==label_kind) {
+							if (!strcmp(instruction->label_name, "none")) {
 							if (instruction->type==G_BOZ) {
 								instruction->immediate = label->line-instruction->line;
 							}else if(instruction->type==G_JMP){
 								instruction->immediate = label->line;
+								printf("LL: %d, LI: %d LK: %d LN: %s\n", label->line, label->index, label->type, instruction->label_name);
+							}
 							}
 						}
 					}
@@ -141,7 +143,7 @@ void consume_parameters(TipoLista *table, list_instructions *instructions_list, 
 					//search for register that stores parameter
 					temp_from = search_temporary(parameter->value);
 					//load parameter from temporary to register result
-					format_two(instructions_list, G_ADDI, temp_from, register_result, 0);
+					format_two(instructions_list, G_ADDI, temp_from, register_result, 0, "none");
 					break;
 			}
 			//storing parameter in memory
@@ -354,14 +356,13 @@ void format_zero(list_instructions *instructions_list,  galetype type, int immed
 	new_instruction->immediate = immediate;
 	new_instruction->type = type;
 	if(type==G_BOZ||type==G_JMP){
-		if(kind==String){
+		// if(kind==String){
 			strcpy(new_instruction->label_name, label_string);
-			new_instruction->jump = jump;
-		}else if(kind==LabAddr){
+			// new_instruction->jump = jump;
+		// }else if(kind==LabAddr){
 			new_instruction->target_label = immediate;
-			printf("TARGET LABEL: %d\n", new_instruction->target_label);
 			new_instruction->jump = jump;
-		}
+		// }
 	} else
 	new_instruction->target_label = 0;
 
@@ -410,7 +411,7 @@ void format_one(list_instructions *instructions_list, galetype type, int registe
 	line_counter++;
 }
 
-void format_two(list_instructions *instructions_list, galetype type, int register_source, int register_target, int immediate){
+void format_two(list_instructions *instructions_list, galetype type, int register_source, int register_target, int immediate, char label_string[]){
 	// printf("%4d: \ttype: %d \tsource: %d \ttarget: %d \timmediate: %d\n",
 	// line_counter, type, register_source,register_target, immediate);
 
@@ -422,6 +423,7 @@ void format_two(list_instructions *instructions_list, galetype type, int registe
 	new_instruction->register_b = 0;
 	new_instruction->register_c = register_target;
 	new_instruction->immediate = immediate;
+	strcpy(new_instruction->label_name, label_string);
 	new_instruction->type = type;
 	new_instruction->target_label = 0;
 
@@ -522,7 +524,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				//left operand
 				if (p->address_1.kind==Temp) {
 					register_temporary_left = search_temporary(p->address_1.value);
-					format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_left, 0);
+					format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_left, 0, "none");
 					flag_temp_left = 1;
 				}else if(p->address_1.kind==String){
 					int memory_position_left = 0;
@@ -544,7 +546,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				//right operand
 				if (p->address_2.kind==Temp) {
 					register_temporary_right = search_temporary(p->address_2.value);
-					format_two(instructions_list, G_ADDI, register_temporary_right, register_operator_right, 0);
+					format_two(instructions_list, G_ADDI, register_temporary_right, register_operator_right, 0, "none");
 					flag_temp_right = 1;
 				}else if(p->address_2.kind==String){
 					int memory_position_right = 0;
@@ -571,10 +573,10 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 						flag_immediate_left = 0;
 						flag_immediate_right = 0;
 					}else if (flag_immediate_left) {
-						format_two(instructions_list, G_ADDI, register_operator_right, register_result, immediate_left);
+						format_two(instructions_list, G_ADDI, register_operator_right, register_result, immediate_left, "none");
 						flag_immediate_left = 0;
 					}else if (flag_immediate_right) {
-						format_two(instructions_list, G_ADDI, register_operator_left, register_result, immediate_right);
+						format_two(instructions_list, G_ADDI, register_operator_left, register_result, immediate_right, "none");
 						flag_immediate_right = 0;
 					}else{
 						format_three(instructions_list, G_ADD, register_operator_left, register_operator_right, register_result);
@@ -586,10 +588,10 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 						flag_immediate_left = 0;
 						flag_immediate_right = 0;
 					}else if (flag_immediate_left) {
-						format_two(instructions_list, G_SUBI, register_operator_right, register_result, immediate_left);
+						format_two(instructions_list, G_SUBI, register_operator_right, register_result, immediate_left, "none");
 						flag_immediate_left = 0;
 					}else if (flag_immediate_right) {
-						format_two(instructions_list, G_SUBI, register_operator_left, register_result, immediate_right);
+						format_two(instructions_list, G_SUBI, register_operator_left, register_result, immediate_right, "none");
 						flag_immediate_right = 0;
 					}else{
 						format_three(instructions_list, G_SUB, register_operator_left, register_operator_right, register_result);
@@ -619,7 +621,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				//left operand
 				if (p->address_1.kind==Temp) {
 					register_temporary_left = search_temporary(p->address_1.value);
-					format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_left, 0);
+					format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_left, 0, "none");
 					flag_temp_left = 1;
 
 				}else if(p->address_1.kind==String){
@@ -641,7 +643,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				//right operand
 				if (p->address_2.kind==Temp) {
 					register_temporary_right = search_temporary(p->address_2.value);
-					format_two(instructions_list, G_ADDI, register_temporary_right, register_operator_right, 0);
+					format_two(instructions_list, G_ADDI, register_temporary_right, register_operator_right, 0, "none");
 					flag_temp_right = 1;
 
 				}else if(p->address_2.kind==String){
@@ -688,7 +690,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 						format_three(instructions_list, G_SLT, register_operator_left, register_operator_right, register_result);
 						format_three(instructions_list, G_SLT, register_operator_right, register_operator_left, register_operator_left);
 						format_three(instructions_list, G_OR, register_result, register_operator_left, register_result);
-						format_two(instructions_list, G_NOT, register_result, register_result, 0);
+						format_two(instructions_list, G_NOT, register_result, register_result, 0, "none");
 					}
 					break;
 					case NeqK:
@@ -718,7 +720,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 						flag_immediate_right = 0;
 					}else{
 						format_three(instructions_list, G_SLT, register_operator_left, register_operator_right, register_result);
-						format_two(instructions_list, G_NOT, register_result, register_result, 0);
+						format_two(instructions_list, G_NOT, register_result, register_result, 0, "none");
 					}
 					break;
 					case LsrK:
@@ -737,7 +739,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 						flag_immediate_right = 0;
 					}else{
 						format_three(instructions_list, G_SLT, register_operator_right, register_operator_left, register_operator_left);
-						format_two(instructions_list, G_NOT, register_result, register_result, 0);
+						format_two(instructions_list, G_NOT, register_result, register_result, 0, "none");
 					}
 					break;
 				}
@@ -774,16 +776,16 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					memory_position = search_variable(variables_list, p->address_2.name, 0, current_scope);
 					memory_offset = search_variable(variables_list, p->address_3.name, 0, current_scope);
 					format_one(instructions_list, G_LD, register_operator_left, memory_position);
-					format_two(instructions_list, G_ADDI, register_operator_left, register_operator_right, memory_offset);
-					format_two(instructions_list, G_STR, register_operator_right, register_temporary, 0);
+					format_two(instructions_list, G_ADDI, register_operator_left, register_operator_right, memory_offset, "none");
+					format_two(instructions_list, G_STR, register_operator_right, register_temporary, 0, "none");
 
 					break;
 					case Temp:
 
 					memory_offset = search_variable(variables_list, p->address_3.name, 0, current_scope);
 					register_temporary_left = search_temporary(p->address_2.value);
-					format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_right, memory_offset);
-					format_two(instructions_list, G_STR, register_operator_right, register_temporary, 0);
+					format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_right, memory_offset, "none");
+					format_two(instructions_list, G_STR, register_operator_right, register_temporary, 0, "none");
 					release_temporary(register_temporary_left);
 
 					break;
@@ -828,58 +830,55 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				consume_parameters(table, instructions_list, parameters_list, variables_list, p->address_3.name);
 				// remember in and out
 				format_zero(instructions_list, G_JMP, 0, String, p->address_3.name, label_kind);
-				//
+
+				//map temporary from return
+				if (p->address_2.kind==Temp) {
+					map_temporary(instructions_list, p->address_2.value, register_return);
+				}
+
 				// instruction = instructions_list->start;
 				// while (instruction!=NULL) {
-				// 	if (p->address_3.kind==String&&(
-				// 			instruction->type==G_JMP)){
-				// 				if(!strcmp(p->address_3.name, instruction->label_name)&&instruction->jump==call_kind){
-				// 					instruction->immediate = line_counter-instruction->line+1;
-				// 					instruction->target_label = p->address_2.value;
-				// 					printf("TARGET LABEL: %d\n", instruction->target_label);
+				// 	if (instruction->type==G_JMP){
+				// 				if(!strcmp(p->address_3.name, instruction->label_name)){
+				// 					if (instruction->jump==call_kind) {
+				// 					instruction->immediate = line_counter+1;
+				// 					// instruction->target_label = p->address_2.value;
 				// 					// printf("Target: %s %s\n", p->address_3.name, instruction->label_name);
+				// 					// printf("TARGET LABEL: %d\n", instruction->target_label);
+				// 				}
 				// 				}
 				// 			}
 				// 			instruction = instruction->next;
 				// 		}
 
 					break;
+
+				case EofK:
+					break;
 				case RetK:
-				//
-				// if (p->address_3.kind==Temp) {
-				// 	register_temporary = search_temporary(p->address_3.value);
-				// 	format_two(instructions_list, G_ADDI, register_temporary, register_result, 0);
-				// }else if(p->address_3.kind==String){
-				// 	int memory_position = 0;
-				// 	memory_position = search_variable(variables_list, p->address_3.name, 0, current_scope);
-				// 	format_one(instructions_list, G_LD, register_result, memory_position);
-				// }else if(p->address_3.kind==IntConst){
-				// 	if(p->address_3.value<65000){
-				// 		immediate_left = p->address_3.value;
-				// 	}
-				// 	else{
-				// 		format_one(instructions_list, G_LDI, register_result, p->address_3.value);
-				// 	}
-				// }else{
-				// 	printf("ERROR: intermediate variable kind unknown: %d!\n", p->address_1.kind);
-				// }
-				//
-				//
-				// instruction = instructions_list->start;
-				// int flag_gotit=0;
-				// while (instruction!=NULL) {
-				// 	if (instruction->type==G_JMP){
-				// 				if(!strcmp(current_scope, instruction->label_name)&&instruction->jump==call_kind){
-				// 					// map_temporary(instructions_list, instruction->target_label, );
-				// 					flag_gotit = 1;
-				// 					break;
-				// 				}
-				// 			}
-				// 			instruction = instruction->next;
-				// 		}
-				//
-				// if(!flag_gotit)
-				// 	format_zero(instructions_list, G_JMP, 0, String, current_scope, call_kind);
+
+				if(p->address_3.kind!=Empty){
+					if (p->address_3.kind==Temp) {
+						register_temporary = search_temporary(p->address_3.value);
+						format_two(instructions_list, G_ADDI, register_temporary, register_result, 0, "none");
+					}else if(p->address_3.kind==String){
+						int memory_position = 0;
+						memory_position = search_variable(variables_list, p->address_3.name, 0, current_scope);
+						format_one(instructions_list, G_LD, register_result, memory_position);
+					}else if(p->address_3.kind==IntConst){
+						if(p->address_3.value<65000){
+							immediate_left = p->address_3.value;
+						}
+						else{
+							format_one(instructions_list, G_LDI, register_result, p->address_3.value);
+						}
+					}else{
+						printf("ERROR: intermediate variable kind unknown: %d!\n", p->address_1.kind);
+					}
+					format_two(instructions_list, G_ADDI, register_result, register_return, 0, current_scope);
+				}
+
+					format_zero(instructions_list, G_JMP, 0, String, current_scope, call_kind);
 
 				break;
 				case IffK:
@@ -937,15 +936,15 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 								  memory_position = search_variable(variables_list, p->address_1.name, 0, current_scope);
 									memory_offset = search_variable(variables_list, p->address_2.name, 0, current_scope);
 									format_one(instructions_list, G_LD, register_operator_left, memory_offset);
-									format_two(instructions_list, G_ADDI, register_operator_left, register_operator_right, memory_position);
-									format_two(instructions_list, G_LDR, register_operator_right, register_result, 0);
+									format_two(instructions_list, G_ADDI, register_operator_left, register_operator_right, memory_position, "none");
+									format_two(instructions_list, G_LDR, register_operator_right, register_result, 0, "none");
 									break;
 								case Temp:
 									memory_position = search_variable(variables_list, p->address_1.name, 0, current_scope);
 									register_temporary_left = search_temporary(p->address_2.value);
-									format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_left, 0);
-									format_two(instructions_list, G_ADDI, register_operator_left, register_operator_right, memory_position);
-									format_two(instructions_list, G_LDR, register_operator_right, register_result, 0);
+									format_two(instructions_list, G_ADDI, register_temporary_left, register_operator_left, 0, "none");
+									format_two(instructions_list, G_ADDI, register_operator_left, register_operator_right, memory_position, "none");
+									format_two(instructions_list, G_LDR, register_operator_right, register_result, 0, "none");
 									release_temporary(register_temporary_left);
 									break;
 								default:
@@ -1000,6 +999,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 						}
 					}
 				}
+
 				declaration_variables(variables_list, table, "global");
 				// declaration_variables(variables_list, table, "main");
 

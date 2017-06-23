@@ -1310,12 +1310,12 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
       if (c1) {
         generate_intermediate_code(quad_list, c1);
       }
-      // quad1->address_1.kind = Empty;
-      // quad1->address_2.kind = Empty;
-      // quad1->address_3.kind = String;
-      // strcpy(quad1->address_3.name, tree->attr.name);
-      // quad1->op = EofK;
-      // insert_quadruple(quad_list, quad0);
+      quad1->address_1.kind = Empty;
+      quad1->address_2.kind = Empty;
+      quad1->address_3.kind = String;
+      strcpy(quad1->address_3.name, tree->attr.name);
+      quad1->op = EofK;
+      insert_quadruple(quad_list, quad1);
       break;
     case FuncVecK:
       strcpy(quad0->address_1.name, tree->attr.name);
@@ -1465,12 +1465,10 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
         store_quadruple(quad0->op, quad0->address_1.kind, quad0->address_2.kind, quad0->address_3.kind,
                         quad0->address_1.value, quad0->address_2.value, quad0->address_3.value,
                         quad0->address_1.name, quad0->address_2.name, quad0->address_3.name);
-        temporary++;
-        quad0->address_2.kind = Temp;
-        quad0->address_2.value = temporary;
+        quad0->address_2.kind = Empty;
         insert_quadruple(quad_list, quad0);
 
-        printf("t%d = call %s, 0\n", temporary, tree->attr.name);
+        printf("call %s, 0\n", temporary, tree->attr.name);
         break;
       }
 

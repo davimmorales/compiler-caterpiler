@@ -131,7 +131,7 @@ void format_zero(list_instructions *instructions_list, galetype type, int immedi
 
 void format_one(list_instructions *instructions_list, galetype type, int register_a, int immediate);
 
-void format_two(list_instructions *instructions_list, galetype type, int register_source, int register_target, int immediate);
+void format_two(list_instructions *instructions_list, galetype type, int register_source, int register_target, int immediate, char label_string[]);
 
 void format_three(list_instructions *instructions_list, galetype type, int register_source_a, int register_source_b, int register_target);
 
