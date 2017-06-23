@@ -67,8 +67,9 @@ int search_temporary(int index_temporary){
 	}
 }
 
-void treat_jumps_n_branches(list_instructions *instructions_list, list_labels *labels_list){
+void treat_jumps_n_branches(list_instructions *instructions_list, list_labels *labels_list, list_labels *calls_list){
 	type_label *label = labels_list->start;
+	type_label *call = calls_list->start;
 	type_instruction *instruction;
 
 	while (label!=NULL) {
@@ -109,6 +110,21 @@ void treat_jumps_n_branches(list_instructions *instructions_list, list_labels *l
 			break;
 		}
 		label = label->next;
+	}
+
+	while (call!=NULL) {
+		instruction = instructions_list->start;
+		while (instruction!=NULL) {
+			if (instruction->type==G_JMP){
+						if(!strcmp(call->name, instruction->label_name)){
+							if (instruction->jump==call_kind) {
+							instruction->immediate = call->line;
+						}
+						}
+					}
+					instruction = instruction->next;
+				}
+		call = call->next;
 	}
 }
 
@@ -341,10 +357,6 @@ void declaration_variables(list_variables *variables_list, TipoLista *table, cha
 
 //numbers relate to amount of registers in the operation
 void format_zero(list_instructions *instructions_list,  galetype type, int immediate, AddrKind kind, char label_string[], kind_jump jump){
-	// if(type==G_HLT||type==G_NOP)
-	// printf("%4d: \ttype: %d\n", line_counter, type);
-	// else
-	// printf("%4d: \ttype: %d \timmediate: %d\n", line_counter, type, immediate);
 
 	type_instruction *p =instructions_list->start;
 	type_instruction *new_instruction = malloc(sizeof(type_instruction));
@@ -476,7 +488,7 @@ void format_three(list_instructions *instructions_list, galetype type, int regis
 	line_counter++;
 }
 
-void generate_code(list_instructions *instructions_list, list_quadruple *quad_list, TipoLista *table, list_variables *variables_list, list_parameters *parameters_list, list_labels *labels_list){
+void generate_code(list_instructions *instructions_list, list_quadruple *quad_list, TipoLista *table, list_variables *variables_list, list_parameters *parameters_list, list_labels *labels_list, list_labels *calls_list){
 	quadruple *p = quad_list->start;
 	TipoID *table_item;
 	type_instruction *instruction;
@@ -497,6 +509,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 	int register_temporary;
 	int memory_position;
 	int memory_offset;
+	int counter;
 
 	while (p!=NULL) {
 
@@ -826,30 +839,21 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					}
 					break;
 				case CalK:
-				//consume parameters
-				consume_parameters(table, instructions_list, parameters_list, variables_list, p->address_3.name);
-				// remember in and out
-				format_zero(instructions_list, G_JMP, 0, String, p->address_3.name, label_kind);
+						//consume parameters
+						consume_parameters(table, instructions_list, parameters_list, variables_list, p->address_3.name);
+						// remember in and out
+						format_zero(instructions_list, G_JMP, 0, String, p->address_3.name, label_kind);
 
-				//map temporary from return
-				if (p->address_2.kind==Temp) {
-					map_temporary(instructions_list, p->address_2.value, register_return);
-				}
 
-				// instruction = instructions_list->start;
-				// while (instruction!=NULL) {
-				// 	if (instruction->type==G_JMP){
-				// 				if(!strcmp(p->address_3.name, instruction->label_name)){
-				// 					if (instruction->jump==call_kind) {
-				// 					instruction->immediate = line_counter+1;
-				// 					// instruction->target_label = p->address_2.value;
-				// 					// printf("Target: %s %s\n", p->address_3.name, instruction->label_name);
-				// 					// printf("TARGET LABEL: %d\n", instruction->target_label);
-				// 				}
-				// 				}
-				// 			}
-				// 			instruction = instruction->next;
-				// 		}
+						//counter is intended to work with various calls for a same function
+						counter = 0;
+						insert_label(calls_list, String, p->address_3.name, counter, line_counter);
+
+						//map temporary from return
+						if (p->address_2.kind==Temp) {
+							map_temporary(instructions_list, p->address_2.value, register_return);
+						}
+
 
 					break;
 
@@ -971,17 +975,19 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				list_instructions *instructions_list;
 				list_parameters *parameters_list;
 			  list_labels *labels_list;
+				list_labels *calls_list;
 
 				variables_list = (list_variables*) malloc(sizeof(list_variables));
 				instructions_list = (list_instructions*) malloc(sizeof(list_instructions));
 				parameters_list = (list_parameters*) malloc(sizeof(list_parameters));
 				labels_list = (list_labels*) malloc(sizeof(list_labels));
+				calls_list = (list_labels*) malloc(sizeof(list_labels));
 
 				variables_list->start = NULL;
 				instructions_list->start = NULL;
 				parameters_list->start = NULL;
 				labels_list->start = NULL;
-
+				calls_list->start = NULL;
 
 				file_target_code = fopen("target_code.gc", "w");
 
@@ -1004,8 +1010,8 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				// declaration_variables(variables_list, table, "main");
 
 				printf("\n");
-				generate_code(instructions_list, quad_list, table, variables_list, parameters_list, labels_list);
-				treat_jumps_n_branches(instructions_list, labels_list);
+				generate_code(instructions_list, quad_list, table, variables_list, parameters_list, labels_list, calls_list);
+				treat_jumps_n_branches(instructions_list, labels_list, calls_list);
 
 				fclose( file_target_code );
 

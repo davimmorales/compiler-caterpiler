@@ -135,13 +135,13 @@ void format_two(list_instructions *instructions_list, galetype type, int registe
 
 void format_three(list_instructions *instructions_list, galetype type, int register_source_a, int register_source_b, int register_target);
 
-void generate_code(list_instructions *instructions_list, list_quadruple *quad_list, TipoLista *table, list_variables *variables_list, list_parameters *parameters_list, list_labels *labels_list);
+void generate_code(list_instructions *instructions_list, list_quadruple *quad_list, TipoLista *table, list_variables *variables_list, list_parameters *parameters_list, list_labels *labels_list, list_labels *calls_list);
 
 void generate_code_launcher(list_quadruple *quad_list, TipoLista *table);
 
 void consume_parameters(TipoLista *table, list_instructions *instructions_list, list_parameters *parameters_list,list_variables *variables_list, char function[]);
 
-void treat_jumps_n_branches(list_instructions *instructions_list, list_labels *labels_list);
+void treat_jumps_n_branches(list_instructions *instructions_list, list_labels *labels_list, list_labels *calls_list);
 
 
 
