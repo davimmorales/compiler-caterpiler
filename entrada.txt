@@ -11,8 +11,8 @@ void main(void){
    int i;
    i = 0;
 
-   output(i);
-   input();
+   /*output(i);*/
+   i = input();
    i = sort(vet, i, 4);
    while(i<10){
       i = i + 1;

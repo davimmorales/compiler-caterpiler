@@ -129,7 +129,7 @@ void treat_jumps_n_branches(list_instructions *instructions_list, list_labels *l
 }
 
 
-void consume_parameters(TipoLista *table, list_instructions *instructions_list, list_parameters *parameters_list,list_variables *variables_list, char function[]){
+void consume_parameters(TipoLista *table, list_instructions *instructions_list, list_parameters *parameters_list, list_variables *variables_list, char function[]){
 		type_variable *variable = variables_list->start;
 		type_instruction *instruction = instructions_list->start;
 		type_parameter *parameter = parameters_list->start;
@@ -839,17 +839,47 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					}
 					break;
 				case InnK:
-					printf("IN HERE!\n");
+					format_one(instructions_list, G_IN, register_result, 0);
+					map_temporary(instructions_list, p->address_2.value, register_result);
 					break;
 				case OutK:
-					printf("OUT HERE!\n");
+				//find parameter
+				par = parameters_list->start;
+				// while (par!=NULL) {
+					//load parameter to register result
+					switch (par->kind){
+						case String:
+							//search for parameter in memory
+							memory_position = search_variable(variables_list, par->name, 0, par->scope);
+							//load from memory to register result
+							format_one(instructions_list, G_LD, register_result, memory_position);
+							break;
+						case IntConst:
+							//load parameter as immediate to register result
+							format_one(instructions_list, G_LDI, register_result, par->value);
+							break;
+						case Temp:
+							//search for register that stores parameter
+							register_temporary = search_temporary(par->value);
+							//load parameter from temporary to register result
+							format_two(instructions_list, G_ADDI, register_temporary, register_result, 0, "none");
+							break;
+						}
+
+					// par = par->next;
+				// }
+
+					parameters_list->start = NULL;
+
+					format_one(instructions_list, G_POUT, register_result, 0);
+					format_one(instructions_list, G_OUT, register_result, 0);
+
 				  break;
 				case CalK:
 						//consume parameters
 						consume_parameters(table, instructions_list, parameters_list, variables_list, p->address_3.name);
-						// remember in and out
-						format_zero(instructions_list, G_JMP, 0, String, p->address_3.name, label_kind);
 
+						format_zero(instructions_list, G_JMP, 0, String, p->address_3.name, label_kind);
 
 						//counter is intended to work with various calls for a same function
 						counter = 0;
@@ -858,12 +888,14 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 						//map temporary from return
 						if (p->address_2.kind==Temp) {
 							map_temporary(instructions_list, p->address_2.value, register_return);
+							// printf("%s mapped\n", p->address_3.name);
 						}
 
 
 					break;
 
 				case EofK:
+					format_zero(instructions_list, G_JMP, 0, String, current_scope, call_kind);
 					break;
 				case RetK:
 

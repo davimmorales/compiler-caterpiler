@@ -1328,6 +1328,9 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree, TipoLi
       if (c1) {
         generate_intermediate_code(quad_list, c1, table);
       }
+      if(!strcmp(tree->attr.name, "main")){
+        break;
+      }
       quad1->address_1.kind = Empty;
       quad1->address_2.kind = Empty;
       quad1->address_3.kind = String;
