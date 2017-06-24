@@ -14,7 +14,6 @@
   #include "object.h"
 
 
-
 char tokenString[MAXTOKENLEN+1];
 
 
@@ -738,5 +737,6 @@ i = 0;
     if(&vetor[i]!=NULL)
     printWTable(vetor, i);
   }
+
   return 0;
 }

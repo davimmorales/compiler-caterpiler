@@ -1027,7 +1027,6 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				labels_list->start = NULL;
 				calls_list->start = NULL;
 
-				file_target_code = fopen("target_code.gc", "w");
 
 				//global and main variables' memory allocation
 				TipoID *table_item;
@@ -1051,10 +1050,11 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				generate_code(instructions_list, quad_list, table, variables_list, parameters_list, labels_list, calls_list);
 				treat_jumps_n_branches(instructions_list, labels_list, calls_list);
 
-				fclose( file_target_code );
 
 				print_variables(variables_list);
 				print_instructions(instructions_list);
 				print_labels(labels_list);
+				print_target_code(instructions_list);
+
 				// print_parameters(parameters_list);
 			}
