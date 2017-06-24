@@ -14,6 +14,24 @@ int flag_later = 0;
 int indx = 0;
 int index_parameters = 0;
 
+int check_if_int(TipoLista *table, char name[]){
+  TipoID *item;
+  int hash;
+  hash = string2int(name)%211;
+  item = table[hash].start;
+  while (item!=NULL) {
+    if(!strcmp(item->nomeID, name)){
+      if (!strcmp(item->tipoID, "func")) {
+        if (!strcmp(item->tipoData, "int")) {
+          return 1;
+        }
+      }
+    }
+    item = item->prox;
+  }
+  return 0;
+}
+
 void add_parameters_to_table(TipoLista *table, list_quadruple *quad_list) {
 
   int hash;
@@ -195,7 +213,7 @@ void print_quadruple_list(list_quadruple *quad_list){
   }
 }
 
-static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
+static void generate_relop(list_quadruple *quad_list, TreeNode *tree, TipoLista *table) {
   TreeNode *c0, *c1, *c2;
   c0 = tree->child[0];
   c1 = tree->child[1];
@@ -218,7 +236,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
         quad->address_1.kind = IntConst;
         // printf("%d\n", quad->address_1.value);
       }else{
-        generate_intermediate_code(quad_list, c0);
+        generate_intermediate_code(quad_list, c0, table);
         // printf("%d\n", temporary);
         quad->address_1.value = temporary;
         quad->address_1.kind = Temp;
@@ -238,7 +256,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
         quad->address_2.kind = IntConst;
         // printf("%d\n", quad->address_2.value);
       }else{
-        generate_intermediate_code(quad_list, c1);
+        generate_intermediate_code(quad_list, c1, table);
         // printf("%d\n", temporary);
         quad->address_2.value = temporary;
         quad->address_2.kind = Temp;
@@ -298,7 +316,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
         quad->address_1.kind = IntConst;
         // printf("%d\n", quad->address_1.value);
       }else{
-        generate_intermediate_code(quad_list, c0);
+        generate_intermediate_code(quad_list, c0, table);
         // printf("%d\n", temporary);
         quad->address_1.value = temporary;
         quad->address_1.kind = Temp;
@@ -318,7 +336,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
         quad->address_2.kind = IntConst;
         // printf("%d\n", quad->address_2.value);
       }else{
-        generate_intermediate_code(quad_list, c1);
+        generate_intermediate_code(quad_list, c1, table);
         // printf("%d\n", temporary);
         quad->address_2.value = temporary;
         quad->address_2.kind = Temp;
@@ -379,7 +397,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
           quad->address_1.kind = IntConst;
           // printf("%d\n", quad->address_1.value);
         }else{
-          generate_intermediate_code(quad_list, c0);
+          generate_intermediate_code(quad_list, c0, table);
           // printf("%d\n", temporary);
           quad->address_1.value = temporary;
           quad->address_1.kind = Temp;
@@ -399,7 +417,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
           quad->address_2.kind = IntConst;
           // printf("%d\n", quad->address_2.value);
         }else{
-          generate_intermediate_code(quad_list, c1);
+          generate_intermediate_code(quad_list, c1, table);
           // printf("%d\n", temporary);
           quad->address_2.value = temporary;
           quad->address_2.kind = Temp;
@@ -458,7 +476,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
           quad->address_1.kind = IntConst;
           // printf("%d\n", quad->address_1.value);
         }else{
-          generate_intermediate_code(quad_list, c0);
+          generate_intermediate_code(quad_list, c0, table);
           // printf("%d\n", temporary);
           quad->address_1.value = temporary;
           quad->address_1.kind = Temp;
@@ -478,7 +496,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
           quad->address_2.kind = IntConst;
           // printf("%d\n", quad->address_2.value);
         }else{
-          generate_intermediate_code(quad_list, c1);
+          generate_intermediate_code(quad_list, c1, table);
           // printf("%d\n", temporary);
           quad->address_2.value = temporary;
           quad->address_2.kind = Temp;
@@ -537,7 +555,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
           quad->address_1.kind = IntConst;
           // printf("%d\n", quad->address_1.value);
         }else{
-          generate_intermediate_code(quad_list, c0);
+          generate_intermediate_code(quad_list, c0, table);
           // printf("%d\n", temporary);
           quad->address_1.value = temporary;
           quad->address_1.kind = Temp;
@@ -557,7 +575,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
           quad->address_2.kind = IntConst;
           // printf("%d\n", quad->address_2.value);
         }else{
-          generate_intermediate_code(quad_list, c1);
+          generate_intermediate_code(quad_list, c1, table);
           // printf("%d\n", temporary);
           quad->address_2.value = temporary;
           quad->address_2.kind = Temp;
@@ -616,7 +634,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
           quad->address_1.kind = IntConst;
           // printf("%d\n", quad->address_1.value);
         }else{
-          generate_intermediate_code(quad_list, c0);
+          generate_intermediate_code(quad_list, c0, table);
           // printf("%d\n", temporary);
           quad->address_1.value = temporary;
           quad->address_1.kind = Temp;
@@ -636,7 +654,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
           quad->address_2.kind = IntConst;
           // printf("%d\n", quad->address_2.value);
         }else{
-          generate_intermediate_code(quad_list, c1);
+          generate_intermediate_code(quad_list, c1, table);
           // printf("%d\n", temporary);
           quad->address_2.value = temporary;
           quad->address_2.kind = Temp;
@@ -687,7 +705,7 @@ static void generate_relop(list_quadruple *quad_list, TreeNode *tree) {
   }
 }
 
-static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
+static void generate_arithop(list_quadruple *quad_list, TreeNode *tree, TipoLista *table){
   TreeNode *c0, *c1, *c2;
   c0 = tree->child[0];
   c1 = tree->child[1];
@@ -713,7 +731,7 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
           quad->address_1.kind = IntConst;
           // printf("%d\n", quad->address_1.value);
         }else{
-          generate_intermediate_code(quad_list, c0);
+          generate_intermediate_code(quad_list, c0, table);
           // printf("%d\n", temporary);
           quad->address_1.value = temporary;
           quad->address_1.kind = Temp;
@@ -733,7 +751,7 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
           quad->address_2.kind = IntConst;
           // printf("%d\n", quad->address_2.value);
         }else{
-          generate_intermediate_code(quad_list, c1);
+          generate_intermediate_code(quad_list, c1, table);
           // printf("%d\n", temporary);
           quad->address_2.value = temporary;
           quad->address_2.kind = Temp;
@@ -794,7 +812,7 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
           quad->address_1.kind = IntConst;
           // printf("%d\n", quad->address_1.value);
         }else{
-          generate_intermediate_code(quad_list, c0);
+          generate_intermediate_code(quad_list, c0, table);
           // printf("t%d\n", temporary);
           quad->address_1.value = temporary;
           quad->address_1.kind = Temp;
@@ -814,7 +832,7 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
           quad->address_2.kind = IntConst;
           // printf("%d\n", quad->address_2.value);
         }else{
-          generate_intermediate_code(quad_list, c1);
+          generate_intermediate_code(quad_list, c1, table);
           // printf("t%d\n", temporary);
           quad->address_2.value = temporary;
           quad->address_2.kind = Temp;
@@ -873,7 +891,7 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
           quad->address_1.kind = IntConst;
           // printf("%d\n", quad->address_1.value);
         }else{
-          generate_intermediate_code(quad_list, c0);
+          generate_intermediate_code(quad_list, c0, table);
           // printf("t%d\n", temporary);
           quad->address_1.value = temporary;
           quad->address_1.kind = Temp;
@@ -893,7 +911,7 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
           quad->address_2.kind = IntConst;
           // printf("%d\n", quad->address_2.value);
         }else{
-          generate_intermediate_code(quad_list, c1);
+          generate_intermediate_code(quad_list, c1, table);
           // printf("t%d\n", temporary);
           quad->address_2.value = temporary;
           quad->address_2.kind = Temp;
@@ -951,7 +969,7 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
           quad->address_1.kind = IntConst;
           // printf("%d\n", quad->address_1.value);
         }else{
-          generate_intermediate_code(quad_list, c0);
+          generate_intermediate_code(quad_list, c0, table);
           // printf("t%d\n", temporary);
           quad->address_1.value = temporary;
           quad->address_1.kind = Temp;
@@ -971,7 +989,7 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
           quad->address_2.kind = IntConst;
           // printf("%d\n", quad->address_2.value);
         }else{
-          generate_intermediate_code(quad_list, c1);
+          generate_intermediate_code(quad_list, c1, table);
           // printf("t%d\n", temporary);
           quad->address_2.value = temporary;
           quad->address_2.kind = Temp;
@@ -1023,7 +1041,7 @@ static void generate_arithop(list_quadruple *quad_list, TreeNode *tree){
 }
 
 
-static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
+static void generate_statement(list_quadruple *quad_list, TreeNode *tree, TipoLista *table) {
   TreeNode *c0, *c1, *c2;
   c0 = tree->child[0];
   c1 = tree->child[1];
@@ -1057,7 +1075,7 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
     case IfK:
       // if
       if(c0){
-        generate_intermediate_code(quad_list, c0);
+        generate_intermediate_code(quad_list, c0, table);
         aux = temporary;
         aux2 = label;
         label++;
@@ -1077,7 +1095,7 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
       }
       // then
       if(c1)
-        generate_intermediate_code(quad_list, c1);
+        generate_intermediate_code(quad_list, c1, table);
       if (c2) {
         aux3 = label;
         label++;
@@ -1107,7 +1125,7 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
       // add quad2
       // else
       if(c2){
-        generate_intermediate_code(quad_list, c2);
+        generate_intermediate_code(quad_list, c2, table);
         quad3->address_1.kind = Empty;
         quad3->address_2.kind = Empty;
         quad3->address_3.kind = LabAddr;
@@ -1139,7 +1157,7 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
                         quad0->address_1.name, quad0->address_2.name, quad0->address_3.name);
 
         // add quad0
-        generate_intermediate_code(quad_list, c0);
+        generate_intermediate_code(quad_list, c0, table);
         aux = temporary;
         printf("If_false t%d goto L%d\n", aux, aux3);
         quad1->address_1.kind = Temp;
@@ -1156,7 +1174,7 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
         // add quad1
       }
         if(c1)
-          generate_intermediate_code(quad_list, c1);
+          generate_intermediate_code(quad_list, c1, table);
         printf("goto L%d\n", aux2);
         quad2->address_1.kind = Empty;
         quad2->address_2.kind = Empty;
@@ -1183,7 +1201,7 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
       break;
     case AssignK://PROBLEMS
       // printf("AssignK\n");
-      generate_intermediate_code(quad_list, c1);
+      generate_intermediate_code(quad_list, c1, table);
 
       printf("%s", c0->attr.name);
       quad0->op = AsvK;
@@ -1206,7 +1224,7 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
           strcpy(quad0->scope, g0->scope);
 
         }else{
-          generate_intermediate_code(quad_list, c0);
+          generate_intermediate_code(quad_list, c0, table);
           aux = temporary;
           quad0->address_2.kind = Temp;
           quad0->address_2.value = aux;
@@ -1258,7 +1276,7 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
       }else{
         TreeNode *g1 = c0->child[0];
         if(g1){
-          generate_intermediate_code(quad_list, c0);
+          generate_intermediate_code(quad_list, c0, table);
           aux = temporary;
           printf("Return t%d\n", aux);
           quad0->address_3.kind = Temp;
@@ -1305,10 +1323,10 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
       // add quad0
       if (c0) {
         index_parameters = 1;
-        generate_intermediate_code(quad_list, c0);
+        generate_intermediate_code(quad_list, c0, table);
       }
       if (c1) {
-        generate_intermediate_code(quad_list, c1);
+        generate_intermediate_code(quad_list, c1, table);
       }
       quad1->address_1.kind = Empty;
       quad1->address_2.kind = Empty;
@@ -1345,7 +1363,7 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree) {
   }
 }
 
-static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
+static void generate_expression(list_quadruple *quad_list, TreeNode *tree, TipoLista *table) {
   TreeNode *c0, *c1;
   c0 = tree->child[0];
   c1 = tree->child[1];
@@ -1377,13 +1395,13 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
 
   switch (tree->kind.exp) {
     case TypeK:
-      generate_intermediate_code(quad_list, c0);
+      generate_intermediate_code(quad_list, c0, table);
       break;
     case RelOpK:
-      generate_relop(quad_list, tree);//print nothing
+      generate_relop(quad_list, tree, table);//print nothing
       break;
     case ArithOpK:
-      generate_arithop(quad_list, tree);
+      generate_arithop(quad_list, tree, table);
       break;
     case ConstK:
       quad0->address_1.value = tree->attr.value;
@@ -1424,7 +1442,7 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
       strcpy(quad0->scope, tree->scope);
 
     }else{
-      generate_intermediate_code(quad_list, c0);
+      generate_intermediate_code(quad_list, c0, table);
       aux = temporary;
       quad0->address_2.kind = Temp;
       quad0->address_2.value = aux;
@@ -1466,13 +1484,21 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
       }
 
       if (!c0) {
-        store_quadruple(quad0->op, quad0->address_1.kind, quad0->address_2.kind, quad0->address_3.kind,
-                        quad0->address_1.value, quad0->address_2.value, quad0->address_3.value,
-                        quad0->address_1.name, quad0->address_2.name, quad0->address_3.name);
-        quad0->address_2.kind = Empty;
+        quad0->address_1.kind = Empty;
+        if (check_if_int(table, quad0->address_3.name)) {
+          temporary++;
+          quad0->address_2.kind = Temp;
+          quad0->address_2.value = temporary;
+        }else{
+          quad0->address_2.kind = Empty;
+        }
+
         insert_quadruple(quad_list, quad0);
 
-        printf("call %s, 0\n", temporary, tree->attr.name);
+        printf("t%d = call %s, 0\n", temporary, tree->attr.name);
+        // store_quadruple(quad0->op, quad0->address_1.kind, quad0->address_2.kind, quad0->address_3.kind,
+                        // quad0->address_1.value, quad0->address_2.value, quad0->address_3.value,
+                        // quad0->address_1.name, quad0->address_2.name, quad0->address_3.name);
         break;
       }
 
@@ -1481,7 +1507,7 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
               if (c0->child[0]) {
                 int aux;
 
-                generate_children_code(quad_list, c0);
+                generate_children_code(quad_list, c0, table);
 
                 quad0 = malloc(sizeof(quadruple));
                 quad0->address_1.kind = Empty;
@@ -1524,15 +1550,21 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
               // add quad0
             }while (c0);
 
+            quad1->address_3.kind = String;
+            strcpy(quad1->address_3.name, tree->attr.name);
+            if (check_if_int(table, quad1->address_3.name)) {
               temporary++;
-
-              quad1->address_1.kind = IntConst;
-              quad1->address_1.value = count;
               quad1->address_2.kind = Temp;
               quad1->address_2.value = temporary;
-              quad1->address_3.kind = String;
-              strcpy(quad1->address_3.name, tree->attr.name);
-              if (!strcmp(quad1->address_3.name,"output") {
+            }else{
+              quad1->address_2.kind = Empty;
+            }
+              quad1->address_1.kind = IntConst;
+              quad1->address_1.value = count;
+              // quad1->address_2.kind = Temp;
+              // quad1->address_2.value = temporary;
+
+              if (!strcmp(quad1->address_3.name,"output")) {
                 quad1->op = OutK;
               }else{
                 quad1->op = CalK;
@@ -1557,34 +1589,34 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
   }
 }
 
-void generate_intermediate_code(list_quadruple *quad_list, TreeNode *tree){
+void generate_intermediate_code(list_quadruple *quad_list, TreeNode *tree, TipoLista *table){
   if(tree!=NULL){
     switch (tree->nodekind) {
       case StmtK:
         // printf("statement\n");
-        generate_statement(quad_list, tree);
+        generate_statement(quad_list, tree, table);
         break;
       case ExpK:
         // printf("expression\n");
-        generate_expression(quad_list, tree);
+        generate_expression(quad_list, tree, table);
         break;
       default:
         break;
     }
-    generate_intermediate_code(quad_list, tree->sibling);
+    generate_intermediate_code(quad_list, tree->sibling, table);
   }
 }
 
-void generate_children_code(list_quadruple *quad_list, TreeNode *tree){
+void generate_children_code(list_quadruple *quad_list, TreeNode *tree, TipoLista *table){
   if(tree!=NULL){
     switch (tree->nodekind) {
       case StmtK:
         // printf("statement\n");
-        generate_statement(quad_list, tree);
+        generate_statement(quad_list, tree, table);
         break;
       case ExpK:
         // printf("expression\n");
-        generate_expression(quad_list, tree);
+        generate_expression(quad_list, tree, table);
         break;
       default:
         break;
@@ -1605,7 +1637,7 @@ void generate_icode_launcher(list_quadruple *quad_list, TreeNode *tree, TipoList
     quad->op = GtoK;
     insert_quadruple(quad_list, quad);
 
-    generate_intermediate_code(quad_list, tree);
+    generate_intermediate_code(quad_list, tree, vetor);
     quad->address_3.kind = Empty;
     quad->op = HltK;
     insert_quadruple(quad_list, quad);

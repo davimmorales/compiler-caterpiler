@@ -839,10 +839,10 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					}
 					break;
 				case InnK:
-					printf("in here!\n");
+					printf("IN HERE!\n");
 					break;
 				case OutK:
-					printf("out here!\n");
+					printf("OUT HERE!\n");
 				  break;
 				case CalK:
 						//consume parameters

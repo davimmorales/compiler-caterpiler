@@ -60,9 +60,9 @@ void printWTable(TipoLista *lista, int index);
 
 void generate_icode_launcher(list_quadruple *quad_list, TreeNode *tree, TipoLista *vetor);
 
-static void generate_statement(list_quadruple *quad_list, TreeNode *tree);
+static void generate_statement(list_quadruple *quad_list, TreeNode *tree, TipoLista *table);
 
-void generate_intermediate_code(list_quadruple *quad_list, TreeNode *tree);
+void generate_intermediate_code(list_quadruple *quad_list, TreeNode *tree, TipoLista *table);
 
 void add_parameters_to_table(TipoLista *table, list_quadruple *quad_list);
 
@@ -74,7 +74,7 @@ void store_quadruple(OpKind o, AddrKind k1, AddrKind k2, AddrKind k3,
 
 void add_indexes_to_table(TipoLista *table, list_quadruple *quad_list);
 
-void generate_children_code(list_quadruple *quad_list, TreeNode *tree);
+void generate_children_code(list_quadruple *quad_list, TreeNode *tree, TipoLista *table);
 
 
 
