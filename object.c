@@ -838,6 +838,12 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 						par->next->next = NULL;
 					}
 					break;
+				case InnK:
+					printf("in here!\n");
+					break;
+				case OutK:
+					printf("out here!\n");
+				  break;
 				case CalK:
 						//consume parameters
 						consume_parameters(table, instructions_list, parameters_list, variables_list, p->address_3.name);

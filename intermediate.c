@@ -1459,7 +1459,11 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
       count = 0;
       quad0->address_3.kind = String;
       strcpy(quad0->address_3.name, tree->attr.name);
-      quad0->op = CalK;
+      if (!strcmp(quad0->address_3.name, "input")) {
+        quad0->op = InnK;
+      }else{
+        quad0->op = CalK;
+      }
 
       if (!c0) {
         store_quadruple(quad0->op, quad0->address_1.kind, quad0->address_2.kind, quad0->address_3.kind,
@@ -1528,7 +1532,11 @@ static void generate_expression(list_quadruple *quad_list, TreeNode *tree) {
               quad1->address_2.value = temporary;
               quad1->address_3.kind = String;
               strcpy(quad1->address_3.name, tree->attr.name);
-              quad1->op = CalK;
+              if (!strcmp(quad1->address_3.name,"output") {
+                quad1->op = OutK;
+              }else{
+                quad1->op = CalK;
+              }
 
               insert_quadruple(quad_list, quad1);
               store_quadruple(quad1->op, quad1->address_1.kind, quad1->address_2.kind, quad1->address_3.kind,
