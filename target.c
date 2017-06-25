@@ -27,12 +27,33 @@ char *decimal_to_binary(int decimal, int lenght){
   return pointer;
 }
 
+int count_instructions(list_instructions *instructions_list){
+  type_instruction *instruction = instructions_list->start;
+  int count;
+  count = 0;
+
+  while (instruction!=NULL) {
+    count++;
+    instruction = instruction->next;
+  }
+
+  return count;
+}
+
 void print_target_code(list_instructions *instructions_list){
-  file_target_code = fopen("target_code.gc", "w");
+  file_target_code = fopen("simpleInstructionsRam.v", "w");
 
   type_instruction *instruction = instructions_list->start;
 
-  char *number;
+  fprintf(file_target_code, "module simpleInstructionsRam(clock, address, iRAMOutput);\n");
+  fprintf(file_target_code, "\t input [9:0] address;\n");
+  fprintf(file_target_code, "\t input clock;\n");
+  fprintf(file_target_code, "\t output [31:0] iRAMOutput;\n");
+  fprintf(file_target_code, "\t integer firstClock = 0;\n");
+  fprintf(file_target_code, "\t reg [31:0] instructionsRAM[%d:0];\n", count_instructions(instructions_list));
+  fprintf(file_target_code, "\n");
+  fprintf(file_target_code, "\t always @ ( posedge clock ) begin\n");
+  fprintf(file_target_code, "\t \t if (firstClock==0) begin\n \n");
 
   while (instruction!=NULL) {
     fprintf(file_target_code, "\t \t instructionsRAM[%d] = 32'b", instruction->line);
@@ -156,21 +177,21 @@ void print_target_code(list_instructions *instructions_list){
         instruction->register_a, instruction->register_b, instruction->register_c, instruction->register_c);
       break;
       case G_LD:
-        fprintf(file_target_code, "%s%s%s;//Load M[#%d] to R[%d]\n",
+        fprintf(file_target_code, "%s%s%s;//Load m[#%d] to r[%d]\n",
         decimal_to_binary(instruction->type, 6),
         decimal_to_binary(instruction->register_a, 5),
         decimal_to_binary(instruction->immediate, 21),
         instruction->immediate, instruction->register_a);
       break;
       case G_ST:
-        fprintf(file_target_code, "%s%s%s;//Store R[%d] in M[#%d]\n",
+        fprintf(file_target_code, "%s%s%s;//Store r[%d] in m[#%d]\n",
         decimal_to_binary(instruction->type, 6),
         decimal_to_binary(instruction->register_a, 5),
         decimal_to_binary(instruction->immediate, 21),
         instruction->register_a, instruction->immediate);
       break;
       case G_LDI:
-        fprintf(file_target_code, "%s%s%s;//Loadi #%d to R[%d]\n",
+        fprintf(file_target_code, "%s%s%s;//Loadi #%d to r[%d]\n",
         decimal_to_binary(instruction->type, 6),
         decimal_to_binary(instruction->register_a, 5),
         decimal_to_binary(instruction->immediate, 21),
@@ -180,7 +201,7 @@ void print_target_code(list_instructions *instructions_list){
         fprintf(file_target_code, "forgot %d\n", instruction->type);
       break;
       case G_IN:
-        fprintf(file_target_code, "%s%s%s;//Input to R[%d]\n",
+        fprintf(file_target_code, "%s%s%s;//Input to r[%d]\n",
         decimal_to_binary(instruction->type, 6),
         decimal_to_binary(instruction->register_a, 5),
         decimal_to_binary(instruction->immediate, 21),
@@ -190,14 +211,14 @@ void print_target_code(list_instructions *instructions_list){
         fprintf(file_target_code, "forgot %d\n", instruction->type);
       break;
       case G_POUT:
-        fprintf(file_target_code, "%s%s%s;//Pre Output R[%d]\n",
+        fprintf(file_target_code, "%s%s%s;//Pre Output r[%d]\n",
         decimal_to_binary(instruction->type, 6),
         decimal_to_binary(instruction->register_a, 5),
         decimal_to_binary(instruction->immediate, 21),
         instruction->register_a);
       break;
       case G_OUT:
-        fprintf(file_target_code, "%s%s%s;//Output R[%d]\n",
+        fprintf(file_target_code, "%s%s%s;//Output r[%d]\n",
         decimal_to_binary(instruction->type, 6),
         decimal_to_binary(instruction->register_a, 5),
         decimal_to_binary(instruction->immediate, 21),
@@ -225,6 +246,12 @@ void print_target_code(list_instructions *instructions_list){
     }
     instruction = instruction->next;
   }
+
+  fprintf(file_target_code, "\n\t \t firstClock <= 0;\n");
+  fprintf(file_target_code, "\t \t end\n");
+  fprintf(file_target_code, "\t end\n\n");
+  fprintf(file_target_code, "\t assign iRAMOutput = instructionsRAM[address];\n");
+  fprintf(file_target_code, "endmodule // simpleInstructionsRAM\n");
 
   fclose( file_target_code );
 }

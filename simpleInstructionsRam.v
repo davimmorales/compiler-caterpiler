@@ -3,7 +3,7 @@ module simpleInstructionsRam(clock, address, iRAMOutput);
 	 input clock;
 	 output [31:0] iRAMOutput;
 	 integer firstClock = 0;
-	 reg [31:0] instructionsRAM[75:0];
+	 reg [31:0] instructionsRAM[55:0];
 
 	 always @ ( posedge clock ) begin
 	 	 if (firstClock==0) begin
@@ -63,3 +63,10 @@ module simpleInstructionsRam(clock, address, iRAMOutput);
 	 	 instructionsRAM[52] = 32'b00000100001001110000000000000000;//ADDi r[1], #0 to r[7]
 	 	 instructionsRAM[53] = 32'b01010100111000000000000000000010;//Store r[7] in m[#2]
 	 	 instructionsRAM[54] = 32'b01001000000000000000000000101100;//Jump to #44
+
+	 	 firstClock <= 0;
+	 	 end
+	 end
+
+	 assign iRAMOutput = instructionsRAM[address];
+endmodule // simpleInstructionsRAM
