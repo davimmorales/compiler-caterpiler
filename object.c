@@ -67,6 +67,37 @@ int search_temporary(int index_temporary){
 	}
 }
 
+// void copy_list_parameters(list_parameters *source_list, list_parameters *target_list){
+// 	type_parameter *source_parameter = source_list->start;
+// 	type_parameter *target_parameter;
+//
+// 	while (source_parameter!=NULL) {
+//
+// 		target_parameter = target_list->start;
+//
+// 		type_parameter *new_parameter = malloc(sizeof(type_parameter));
+//
+// 		new_parameter->kind = source_parameter->kind;
+// 		new_parameter->value = source_parameter->value;
+// 		strcpy(new_parameter->name, source_parameter->name);
+// 		strcpy(new_parameter->scope, source_parameter->scope);
+//
+// 		if(target_parameter==NULL){
+// 			target_list->start = new_parameter;
+// 			target_list->start->next = NULL;
+// 		}
+// 		else{
+// 			while(target_parameter->next!=NULL){
+// 				target_parameter = target_parameter->next;
+// 			}
+// 			target_parameter->next = new_parameter;
+// 			target_parameter->next->next = NULL;
+// 		}
+//
+// 		source_parameter = source_parameter->next;
+// 	}
+// }
+
 void treat_jumps_n_branches(list_instructions *instructions_list, list_labels *labels_list, list_labels *calls_list){
 	type_label *label = labels_list->start;
 	type_label *call = calls_list->start;
@@ -84,7 +115,7 @@ void treat_jumps_n_branches(list_instructions *instructions_list, list_labels *l
 								instruction->immediate = label->line-instruction->line;
 							}else if(instruction->type==G_JMP){
 								instruction->immediate = label->line;
-								printf("LL: %d, LI: %d LK: %d LN: %s\n", label->line, label->index, label->type, instruction->label_name);
+								// printf("LL: %d, LI: %d LK: %d LN: %s\n", label->line, label->index, label->type, instruction->label_name);
 							}
 							}
 						}
@@ -197,8 +228,77 @@ void consume_parameters(TipoLista *table, list_instructions *instructions_list, 
 			parameter_index++;
 			parameter = parameter->next;
 		}
-		parameters_list->start = NULL;
+		// parameters_list->start = NULL;
 		release_temporary(temp_from);
+}
+
+void restore_arrays(TipoLista *table, list_instructions *instructions_list, list_parameters *parameters_list, list_variables *variables_list, char function[]){
+		type_variable *variable = variables_list->start;
+		type_instruction *instruction = instructions_list->start;
+		type_parameter *parameter = parameters_list->start;
+		TipoID *table_item;
+
+		int memory_from;
+		int memory_to;
+		int temp_from;
+		int parameter_index = 1;
+		int i;
+		int array_index;
+
+		while(parameter!=NULL){
+
+			//load variable from memory to register result
+			for ( i = 0; i < 211; i++) {
+				if(&table[i]!=NULL){
+					table_item = table[i].start;
+					while (table_item!=NULL) {
+						if (!strcmp(table_item->escopo, function)) {
+							if (table_item->indice_parametro==parameter_index) {
+								if (!strcmp(table_item->tipoID,"vet")) {
+									//goes through 'from' array and stores values into 'to' array
+									for (array_index = 0; array_index <= table_item->array_size; array_index++) {
+										//search for variable in memory
+										memory_from = search_variable(variables_list, table_item->nomeID, array_index, table_item->escopo);
+										//load from memory to register result
+										format_one(instructions_list, G_LD, register_result, memory_from);
+										//search for position in memory to store variable
+										memory_to = search_variable(variables_list, parameter->name, array_index, parameter->scope);
+										//store value from register result into memory
+										format_one(instructions_list, G_ST, register_result, memory_to);
+									}
+								}
+							}
+						}
+						table_item = table_item->prox;
+					}
+				}
+			}
+
+			//loading parameter to register result
+			// switch (parameter->kind){
+			// 	case String:
+			// 		//search for parameter in memory
+			// 		memory_from = search_variable(variables_list, parameter->name, 0, parameter->scope);
+			// 		//load from memory to register result
+			// 		format_one(instructions_list, G_LD, register_result, memory_from);
+			// 		break;
+			// 	case IntConst:
+			// 	  //load parameter as immediate to register result
+			// 		format_one(instructions_list, G_LDI, register_result, parameter->value);
+			// 		break;
+			// 	case Temp:
+			// 		//search for register that stores parameter
+			// 		temp_from = search_temporary(parameter->value);
+			// 		//load parameter from temporary to register result
+			// 		format_two(instructions_list, G_ADDI, temp_from, register_result, 0, "none");
+			// 		break;
+			// }
+
+
+			parameter_index++;
+			parameter = parameter->next;
+		}
+		parameters_list->start = NULL;
 }
 
 //insertion function for variables
@@ -251,6 +351,58 @@ void insert_label(list_labels *labels_list, AddrKind type, char name[], int inde
 					l->next->next = NULL;
 				}
 			}
+
+// void insert_call(list_parameters *parameters_list, list_calls *returner_calls_list, char name[], int index, int line){
+// 	type_call *call = returner_calls_list->start;
+// 	type_call *new_call = malloc(sizeof(type_call));//malloc(sizeof(type_call));
+// 	type_parameter *source_parameter = parameters_list->start;
+// 	type_parameter *target_parameter;
+// 	type_parameter *aux;
+//
+// 	strcpy(new_call->name, name);
+// 	new_call->index = index;
+// 	new_call->line = line;
+// 	new_call->parameters = malloc(sizeof(type_parameter));
+// 	new_call->parameters = NULL;
+// 	// printf("here\n");
+//
+// 	while (source_parameter!=NULL) {
+//
+//
+// 		target_parameter = new_call->parameters;
+//
+// 		type_parameter *new_parameter = malloc(sizeof(type_parameter));
+//
+// 		new_parameter->kind = source_parameter->kind;
+// 		new_parameter->value = source_parameter->value;
+// 		strcpy(new_parameter->name, source_parameter->name);
+// 		strcpy(new_parameter->scope, source_parameter->scope);
+//
+// 		// printf("AUX: %s %d\n", source_parameter->name, source_parameter->value);
+//
+// 		if(target_parameter==NULL){
+// 			new_call->parameters = new_parameter;
+// 			new_call->parameters->next = NULL;
+// 		}
+// 		else{
+// 			while(target_parameter->next!=NULL){
+// 				target_parameter = target_parameter->next;
+// 			}
+// 			target_parameter->next = new_parameter;
+// 			target_parameter->next->next = NULL;
+// 		}
+// 		source_parameter = source_parameter->next;
+// 	}
+//
+// 	// printf("%d\n", new_call->parameters->start->value);
+// 	// aux = parameters_list->start;
+// 	// while (aux!=NULL) {
+// 	// 	printf("AUX: %s %d\n", aux->name, aux->value);
+// 	// 	aux = aux->next;
+// 	// }
+//
+// }
+
 
 void print_parameters(list_parameters *parameters_list) {
 	type_parameter *p = parameters_list->start;
@@ -494,7 +646,14 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 	type_instruction *instruction;
 	type_variable *v = variables_list->start;
 	type_parameter *par;
+	list_calls *returner_calls_list;
+	// list_parameters *parameters_list_aux;
 
+	returner_calls_list = (list_calls*) malloc(sizeof(list_calls));
+	// parameters_list_aux = (list_parameters*) malloc(sizeof(list_parameters));
+
+	returner_calls_list->start = NULL;
+	// parameters_list_aux->start = NULL;
 
 	char current_scope[50];
 	int i;
@@ -876,7 +1035,13 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 
 				  break;
 				case CalK:
-						//consume parameters
+
+						// copy_list_parameters(parameters_list, parameters_list_aux);
+
+						// print_parameters(parameters_list_aux);
+
+
+						//takes parameters and stores them in memory for the function to use
 						consume_parameters(table, instructions_list, parameters_list, variables_list, p->address_3.name);
 
 						format_zero(instructions_list, G_JMP, 0, String, p->address_3.name, label_kind);
@@ -884,6 +1049,10 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 						//counter is intended to work with various calls for a same function
 						counter = 0;
 						insert_label(calls_list, String, p->address_3.name, counter, line_counter);
+						//picks altered arrays from function and stores their value back to parameters' positions
+						restore_arrays(table, instructions_list, parameters_list, variables_list, p->address_3.name);
+						// insert_call(parameters_list_aux, returner_calls_list, p->address_3.name, counter, line_counter);
+						// parameters_list_aux->start = NULL;
 
 						//map temporary from return
 						if (p->address_2.kind==Temp) {
@@ -1051,9 +1220,9 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				treat_jumps_n_branches(instructions_list, labels_list, calls_list);
 
 
-				print_variables(variables_list);
-				print_instructions(instructions_list);
-				print_labels(labels_list);
+				// print_variables(variables_list);
+				// print_instructions(instructions_list);
+				// print_labels(labels_list);
 				print_target_code(instructions_list);
 
 				// print_parameters(parameters_list);

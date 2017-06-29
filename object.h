@@ -99,6 +99,20 @@ typedef struct type_label{
   struct type_label *next;
 }type_label;
 
+
+
+typedef struct{
+  int index;
+  int line;
+  char name[50];
+  struct type_call *next;
+  type_parameter *parameters;
+}type_call;
+
+typedef struct{
+  type_call *start;
+}list_calls;
+
 typedef struct{
   type_parameter *start;
 }list_parameters;
@@ -115,6 +129,9 @@ typedef struct{
     type_label *start;
 }list_labels;
 
+
+
+
 //reserves spaces in memory for variables of a given function
 void declaration_variables(list_variables *variables_list, TipoLista *table, char scope[]);
 
@@ -122,6 +139,9 @@ void declaration_variables(list_variables *variables_list, TipoLista *table, cha
 void insert_variable(list_variables *variables_list, int index, int index_array, kind_variable kind, char id[], char scope[]);
 
 void insert_label(list_labels *labels_list, AddrKind type, char name[], int index, int line);
+
+void insert_call(list_parameters *parameters_list, list_calls *returner_calls_list, char name[], int index, int line);
+
 
 
 //searches the position in memory of a variable given its name, scope and array index
@@ -141,8 +161,11 @@ void generate_code_launcher(list_quadruple *quad_list, TipoLista *table);
 
 void consume_parameters(TipoLista *table, list_instructions *instructions_list, list_parameters *parameters_list,list_variables *variables_list, char function[]);
 
+void restore_arrays(TipoLista *table, list_instructions *instructions_list, list_parameters *parameters_list, list_variables *variables_list, char function[]);
+
 void treat_jumps_n_branches(list_instructions *instructions_list, list_labels *labels_list, list_labels *calls_list);
 
+void print_parameters(list_parameters *parameters_list);
 
 
 
