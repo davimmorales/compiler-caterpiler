@@ -1635,6 +1635,10 @@ void generate_icode_launcher(list_quadruple *quad_list, TreeNode *tree, TipoList
     quadruple *quad = malloc(sizeof(quadruple));
     quad->address_1.kind = Empty;
     quad->address_2.kind = Empty;
+    quad->address_3.kind = Empty;
+    quad->op = NopK;
+    insert_quadruple(quad_list, quad);
+
     quad->address_3.kind = String;
     strcpy(quad->address_3.name, "main");
     quad->op = GtoK;

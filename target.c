@@ -168,12 +168,16 @@ void print_target_code(list_instructions *instructions_list){
         decimal_to_binary(instruction->immediate, 26),
         instruction->immediate);
       break;
-      case G_JMPR:      
+      case G_JMPR:
         fprintf(file_target_code, "%s%s%s;//Jump to r[%d]\n",
         decimal_to_binary(instruction->type, 6),
         decimal_to_binary(instruction->register_a, 5),
         decimal_to_binary(instruction->immediate, 21),
         instruction->register_a);
+      break;
+      case G_NOP:
+        fprintf(file_target_code, "%s00000000000000000000000000;//Nop\n",
+        decimal_to_binary(instruction->type, 6));
       break;
       case G_SLT:
         fprintf(file_target_code, "%s%s%s%s00000000000;//SLT if r[%d] < r[%d], r[%d] = 1 else r[%d] = 0\n",
@@ -203,9 +207,6 @@ void print_target_code(list_instructions *instructions_list){
         decimal_to_binary(instruction->register_a, 5),
         decimal_to_binary(instruction->immediate, 21),
         instruction->immediate, instruction->register_a);
-      break;
-      case G_NOP:
-        fprintf(file_target_code, "forgot %d\n", instruction->type);
       break;
       case G_IN:
         fprintf(file_target_code, "%s%s%s;//Input to r[%d]\n",

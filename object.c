@@ -1088,6 +1088,9 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					//jump to position in register result
 					format_one(instructions_list, G_JMPR, register_result, 0);
 					break;
+				case NopK:
+					format_zero(instructions_list, G_NOP, 0, IntConst, "none", label_kind);
+					break;
 				case RetK:
 
 				if(p->address_3.kind!=Empty){
