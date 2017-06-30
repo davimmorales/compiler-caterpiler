@@ -12,8 +12,10 @@ int register_operator_right = 4;
 int register_context_offset = 5;
 int register_operator_offset = 6;
 int register_return = 30;
+int register_top = 31;
 int line_counter = 0;
 int memory_index = 0;
+int flag_first_call = 0;
 
 
 /* macro to control processor register file overflow */
@@ -1044,11 +1046,27 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 						//takes parameters and stores them in memory for the function to use
 						consume_parameters(table, instructions_list, parameters_list, variables_list, p->address_3.name);
 
+
+						//cheks if it's the first call and initializes calls stack
+						if(!flag_first_call){
+							format_one(instructions_list, G_LDI, register_top, memory_index);
+							flag_first_call = 1;
+						}
+						//increases stack top
+						format_two(instructions_list, G_ADDI, register_top, register_top, 1, "none");
+						//loads line number to register
+						format_one(instructions_list, G_LDI, register_result, line_counter+3);
+						//adds line to memory
+						format_two(instructions_list, G_STR, register_top, register_result, 0, "none");
+						//jumps to function
 						format_zero(instructions_list, G_JMP, 0, String, p->address_3.name, label_kind);
+						//decreases top
+						format_two(instructions_list, G_SUBI, register_top, register_top, 1, "none");
 
 						//counter is intended to work with various calls for a same function
-						counter = 0;
-						insert_label(calls_list, String, p->address_3.name, counter, line_counter);
+						// counter = 0;
+						// insert_label(calls_list, String, p->address_3.name, counter, line_counter);
+
 						//picks altered arrays from function and stores their value back to parameters' positions
 						restore_arrays(table, instructions_list, parameters_list, variables_list, p->address_3.name);
 						// insert_call(parameters_list_aux, returner_calls_list, p->address_3.name, counter, line_counter);
@@ -1064,7 +1082,11 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					break;
 
 				case EofK:
-					format_zero(instructions_list, G_JMP, 0, String, current_scope, call_kind);
+					// format_zero(instructions_list, G_JMP, 0, String, current_scope, call_kind);
+					//loads to register result the value in top position
+					format_two(instructions_list, G_LDR, register_top, register_result, 0, "none");
+					//jump to position in register result
+					format_one(instructions_list, G_JMPR, register_result, 0);
 					break;
 				case RetK:
 
@@ -1089,7 +1111,11 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					format_two(instructions_list, G_ADDI, register_result, register_return, 0, current_scope);
 				}
 
-					format_zero(instructions_list, G_JMP, 0, String, current_scope, call_kind);
+					// format_zero(instructions_list, G_JMP, 0, String, current_scope, call_kind);
+					//loads to register result the value in top position
+					format_two(instructions_list, G_LDR, register_top, register_result, 0, "none");
+					//jump to position in register result
+					format_one(instructions_list, G_JMPR, register_result, 0);
 
 				break;
 				case IffK:

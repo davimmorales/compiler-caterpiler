@@ -45,7 +45,9 @@ typedef enum{
   /*26 Pré Saída  011110 &*/ G_POUT, // Displays <- R[SA]
   /*27 Saída  100000 &*/ G_OUT, // Displays <- R[SA]
   /*28 Load Registrador 1000001*/ G_LDR, // R[DR] <- M[R[SA]]
-  /*29 Store Registrador 100010*/ G_STR // M[R[SA]] -> R[DR]
+  /*29 Store Registrador 100010*/ G_STR, // M[R[SA]] -> R[DR]
+  /*30 Jump Registrador  100011 &*/ G_JMPR // PC <- R[SA]
+
 }galetype;
 
 typedef enum{
