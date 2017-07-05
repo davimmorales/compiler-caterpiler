@@ -1286,10 +1286,11 @@ static void generate_statement(list_quadruple *quad_list, TreeNode *tree, TipoLi
             printf("Return %d\n", c0->attr.value);
             quad0->address_3.kind = IntConst;
             quad0->address_3.value = c0->attr.value;
-          }else
+          }else{
             printf("Return %s\n", c0->attr.name);
             quad0->address_3.kind = String;
             strcpy(quad0->address_3.name, c0->attr.name);
+          }
         }
       }
       quad0->op = RetK;

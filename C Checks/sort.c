@@ -1,3 +1,5 @@
+#include "stdio.h"
+
 void sort(int num[], int tam){
     int i;
     int j;
@@ -20,15 +22,16 @@ void sort(int num[], int tam){
         i = i + 1;
     }
 }
-void main(void){
-    int i;
+int main(){
     int vetor[4];
+    int i;
     vetor[0] = 9;
     vetor[1] = 6;
     vetor[2] = 8;
     vetor[3] = 7;
     sort(vetor, 4);
-    i = input();
-    output(vetor[i]);
+    scanf("%d", &i);
+    printf("%d\n", vetor[i]);
+    return 0;
 }
 

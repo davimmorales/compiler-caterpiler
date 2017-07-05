@@ -1,4 +1,4 @@
-void sort(int num[], int tam){
+void sort(int num[10], int tam){
     int i;
     int j;
     int min;
@@ -21,14 +21,14 @@ void sort(int num[], int tam){
     }
 }
 void main(void){
-    int i;
     int vetor[4];
+    int i;
     vetor[0] = 9;
     vetor[1] = 6;
     vetor[2] = 8;
     vetor[3] = 7;
     sort(vetor, 4);
-    i = input();
+    i = 1;
     output(vetor[i]);
 }
 

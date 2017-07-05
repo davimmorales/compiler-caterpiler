@@ -16,6 +16,7 @@ int register_top = 31;
 int line_counter = 0;
 int memory_index = 0;
 int flag_first_call = 0;
+int absolute_size = 0;
 
 
 /* macro to control processor register file overflow */
@@ -114,7 +115,7 @@ void treat_jumps_n_branches(list_instructions *instructions_list, list_labels *l
 						if (instruction->jump==label_kind) {
 							if (!strcmp(instruction->label_name, "none")) {
 							if (instruction->type==G_BOZ) {
-								instruction->immediate = label->line-instruction->line;
+								instruction->immediate = label->line-instruction->line-1;
 							}else if(instruction->type==G_JMP){
 								instruction->immediate = label->line;
 								// printf("LL: %d, LI: %d LK: %d LN: %s\n", label->line, label->index, label->type, instruction->label_name);
@@ -174,8 +175,10 @@ void consume_parameters(TipoLista *table, list_instructions *instructions_list, 
 		int parameter_index = 1;
 		int i;
 		int array_index;
+		int arr_size;
 
 		while(parameter!=NULL){
+			arr_size = 0;
 			//loading parameter to register result
 			switch (parameter->kind){
 				case String:
@@ -195,6 +198,7 @@ void consume_parameters(TipoLista *table, list_instructions *instructions_list, 
 					format_two(instructions_list, G_ADDI, temp_from, register_result, 0, "none");
 					break;
 			}
+
 			//storing parameter in memory
 			for ( i = 0; i < 211; i++) {
 				if(&table[i]!=NULL){
@@ -232,6 +236,41 @@ void consume_parameters(TipoLista *table, list_instructions *instructions_list, 
 		}
 		// parameters_list->start = NULL;
 		release_temporary(temp_from);
+}
+
+void array_size_placer(TipoLista *table){
+	//find array size
+	int i;
+	int array_memory_index;
+	TipoID *table_item;
+	for(i = 0;i<211;i++){
+		if(&table[i]!=NULL){
+			table_item = table[i].start;
+			while (table_item!=NULL) {
+					if(!strcmp(table_item->tipoID, "vet")){
+						if (table_item->array_size>0) {
+							absolute_size = table_item->array_size;
+						}
+					}
+				table_item = table_item->prox;
+			}
+		}
+	}
+
+	//place array size
+	for(i = 0;i<211;i++){
+		if(&table[i]!=NULL){
+			table_item = table[i].start;
+			while (table_item!=NULL) {
+					if(!strcmp(table_item->tipoID, "vet")){
+						if (table_item->array_size==0) {
+							table_item->array_size = absolute_size;
+						}
+					}
+				table_item = table_item->prox;
+			}
+		}
+	}
 }
 
 void restore_arrays(TipoLista *table, list_instructions *instructions_list, list_parameters *parameters_list, list_variables *variables_list, char function[]){
@@ -673,6 +712,10 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 	int counter;
 
 	while (p!=NULL) {
+		flag_temp_left = 0;
+		flag_temp_right = 0;
+		flag_immediate_left = 0;
+		flag_immediate_right = 0;
 
 		//the following procedures retrieve the scope of the possible variable/array
 		for(i = 0;i<211;i++){
@@ -695,6 +738,8 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 			switch (p->op) {
 				case AddK:
 				case SubK:
+
+
 				//left operand
 				if (p->address_1.kind==Temp) {
 					register_temporary_left = search_temporary(p->address_1.value);
@@ -884,7 +929,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 						flag_immediate_left = 0;
 						flag_immediate_right = 0;
 					}else{
-						format_three(instructions_list, G_SLT, register_operator_right, register_operator_left, register_operator_left);
+						format_three(instructions_list, G_SLT, register_operator_right, register_operator_left, register_result);
 					}
 					break;
 					case GeqK:
@@ -913,7 +958,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 						flag_immediate_right = 0;
 					}else{
 						format_three(instructions_list, G_SLT, register_operator_right, register_operator_left, register_operator_left);
-						format_two(instructions_list, G_NOT, register_result, register_result, 0, "none");
+						format_two(instructions_list, G_NOT, register_operator_left, register_result, 0, "none");
 					}
 					break;
 				}
@@ -1034,6 +1079,8 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 
 					format_one(instructions_list, G_POUT, register_result, 0);
 					format_one(instructions_list, G_OUT, register_result, 0);
+					format_one(instructions_list, G_OUT, register_result, 0);
+
 
 				  break;
 				case CalK:
@@ -1053,19 +1100,19 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 							flag_first_call = 1;
 						}
 						//increases stack top
-						format_two(instructions_list, G_ADDI, register_top, register_top, 1, "none");
+						// format_two(instructions_list, G_ADDI, register_top, register_top, 1, "none");
 						//loads line number to register
-						format_one(instructions_list, G_LDI, register_result, line_counter+3);
+						// format_one(instructions_list, G_LDI, register_result, line_counter+3);
 						//adds line to memory
-						format_two(instructions_list, G_STR, register_top, register_result, 0, "none");
+						// format_two(instructions_list, G_STR, register_top, register_result, 0, "none");
 						//jumps to function
 						format_zero(instructions_list, G_JMP, 0, String, p->address_3.name, label_kind);
 						//decreases top
-						format_two(instructions_list, G_SUBI, register_top, register_top, 1, "none");
+						// format_two(instructions_list, G_SUBI, register_top, register_top, 1, "none");
 
 						//counter is intended to work with various calls for a same function
-						// counter = 0;
-						// insert_label(calls_list, String, p->address_3.name, counter, line_counter);
+						counter = 0;
+						insert_label(calls_list, String, p->address_3.name, counter, line_counter);
 
 						//picks altered arrays from function and stores their value back to parameters' positions
 						restore_arrays(table, instructions_list, parameters_list, variables_list, p->address_3.name);
@@ -1082,11 +1129,11 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					break;
 
 				case EofK:
-					// format_zero(instructions_list, G_JMP, 0, String, current_scope, call_kind);
+					format_zero(instructions_list, G_JMP, 0, String, current_scope, call_kind);
 					//loads to register result the value in top position
-					format_two(instructions_list, G_LDR, register_top, register_result, 0, "none");
+					// format_two(instructions_list, G_LDR, register_top, register_result, 0, "none");
 					//jump to position in register result
-					format_one(instructions_list, G_JMPR, register_result, 0);
+					// format_one(instructions_list, G_JMPR, register_result, 0);
 					break;
 				case NopK:
 					format_zero(instructions_list, G_NOP, 0, IntConst, "none", label_kind);
@@ -1114,11 +1161,11 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					format_two(instructions_list, G_ADDI, register_result, register_return, 0, current_scope);
 				}
 
-					// format_zero(instructions_list, G_JMP, 0, String, current_scope, call_kind);
+					format_zero(instructions_list, G_JMP, 0, String, current_scope, call_kind);
 					//loads to register result the value in top position
-					format_two(instructions_list, G_LDR, register_top, register_result, 0, "none");
+					// format_two(instructions_list, G_LDR, register_top, register_result, 0, "none");
 					//jump to position in register result
-					format_one(instructions_list, G_JMPR, register_result, 0);
+					// format_one(instructions_list, G_JMPR, register_result, 0);
 
 				break;
 				case IffK:
@@ -1140,7 +1187,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				}
 				break;
 				case HltK:
-					// format_zero(instructions_list, G_HLT, 0, IntConst, "none", label_kind);
+					 format_zero(instructions_list, G_HLT, 0, IntConst, "none", label_kind);
 				break;
 				case LblK:
 
@@ -1226,6 +1273,8 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				labels_list->start = NULL;
 				calls_list->start = NULL;
 
+				array_size_placer(table);
+
 
 				//global and main variables' memory allocation
 				TipoID *table_item;
@@ -1245,12 +1294,13 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				declaration_variables(variables_list, table, "global");
 				// declaration_variables(variables_list, table, "main");
 
+
 				printf("\n");
 				generate_code(instructions_list, quad_list, table, variables_list, parameters_list, labels_list, calls_list);
 				treat_jumps_n_branches(instructions_list, labels_list, calls_list);
 
 
-				// print_variables(variables_list);
+				print_variables(variables_list);
 				// print_instructions(instructions_list);
 				// print_labels(labels_list);
 				print_target_code(instructions_list);
