@@ -823,7 +823,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				}
 				if (flag_temp_right) {
 					release_temporary(register_temporary_right);
-					flag_temp_right;
+					flag_temp_right = 0;
 				}
 				map_temporary(instructions_list, p->address_3.value, register_result);
 
@@ -925,7 +925,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					break;
 					case GtrK:
 					if(flag_immediate_left&&flag_immediate_right){
-						format_one(instructions_list, G_LDI, register_result, immediate_left!=immediate_right);
+						format_one(instructions_list, G_LDI, register_result, immediate_left>immediate_right);
 						flag_immediate_left = 0;
 						flag_immediate_right = 0;
 					}else{
@@ -934,7 +934,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					break;
 					case GeqK:
 					if(flag_immediate_left&&flag_immediate_right){
-						format_one(instructions_list, G_LDI, register_result, immediate_left!=immediate_right);
+						format_one(instructions_list, G_LDI, register_result, immediate_left>=immediate_right);
 						flag_immediate_left = 0;
 						flag_immediate_right = 0;
 					}else{
@@ -944,7 +944,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					break;
 					case LsrK:
 					if(flag_immediate_left&&flag_immediate_right){
-						format_one(instructions_list, G_LDI, register_result, immediate_left!=immediate_right);
+						format_one(instructions_list, G_LDI, register_result, immediate_left<immediate_right);
 						flag_immediate_left = 0;
 						flag_immediate_right = 0;
 					}else{
@@ -953,7 +953,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					break;
 					case LeqK:
 					if(flag_immediate_left&&flag_immediate_right){
-						format_one(instructions_list, G_LDI, register_result, immediate_left!=immediate_right);
+						format_one(instructions_list, G_LDI, register_result, immediate_left<=immediate_right);
 						flag_immediate_left = 0;
 						flag_immediate_right = 0;
 					}else{
@@ -969,7 +969,7 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 				}
 				if (flag_temp_right) {
 					release_temporary(register_temporary_right);
-					flag_temp_right;
+					flag_temp_right = 0;
 				}
 				map_temporary(instructions_list, p->address_3.value, register_result);
 				break;
@@ -1100,15 +1100,15 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 							flag_first_call = 1;
 						}
 						//increases stack top
-						// format_two(instructions_list, G_ADDI, register_top, register_top, 1, "none");
+						format_two(instructions_list, G_ADDI, register_top, register_top, 1, "none");
 						//loads line number to register
-						// format_one(instructions_list, G_LDI, register_result, line_counter+3);
+						format_one(instructions_list, G_LDI, register_result, line_counter+3);
 						//adds line to memory
-						// format_two(instructions_list, G_STR, register_top, register_result, 0, "none");
+						format_two(instructions_list, G_STR, register_top, register_result, 0, "none");
 						//jumps to function
 						format_zero(instructions_list, G_JMP, 0, String, p->address_3.name, label_kind);
 						//decreases top
-						// format_two(instructions_list, G_SUBI, register_top, register_top, 1, "none");
+						format_two(instructions_list, G_SUBI, register_top, register_top, 1, "none");
 
 						//counter is intended to work with various calls for a same function
 						counter = 0;
@@ -1129,11 +1129,11 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					break;
 
 				case EofK:
-					format_zero(instructions_list, G_JMP, 0, String, current_scope, call_kind);
+					// format_zero(instructions_list, G_JMP, 0, String, current_scope, call_kind);
 					//loads to register result the value in top position
-					// format_two(instructions_list, G_LDR, register_top, register_result, 0, "none");
+					format_two(instructions_list, G_LDR, register_top, register_result, 0, "none");
 					//jump to position in register result
-					// format_one(instructions_list, G_JMPR, register_result, 0);
+					format_one(instructions_list, G_JMPR, register_result, 0);
 					break;
 				case NopK:
 					format_zero(instructions_list, G_NOP, 0, IntConst, "none", label_kind);
@@ -1161,11 +1161,11 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 					format_two(instructions_list, G_ADDI, register_result, register_return, 0, current_scope);
 				}
 
-					format_zero(instructions_list, G_JMP, 0, String, current_scope, call_kind);
+					// format_zero(instructions_list, G_JMP, 0, String, current_scope, call_kind);
 					//loads to register result the value in top position
-					// format_two(instructions_list, G_LDR, register_top, register_result, 0, "none");
+					format_two(instructions_list, G_LDR, register_top, register_result, 0, "none");
 					//jump to position in register result
-					// format_one(instructions_list, G_JMPR, register_result, 0);
+					format_one(instructions_list, G_JMPR, register_result, 0);
 
 				break;
 				case IffK:

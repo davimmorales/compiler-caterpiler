@@ -21,8 +21,8 @@ void sort(int num[], int tam){
     }
 }
 void main(void){
-    int i;
     int vetor[4];
+    int i;
     vetor[0] = 9;
     vetor[1] = 6;
     vetor[2] = 8;
