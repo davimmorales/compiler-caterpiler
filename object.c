@@ -1077,8 +1077,8 @@ void generate_code(list_instructions *instructions_list, list_quadruple *quad_li
 
 					parameters_list->start = NULL;
 
-					format_one(instructions_list, G_POUT, register_result, 0);
-					format_one(instructions_list, G_OUT, register_result, 0);
+					//format_one(instructions_list, G_POUT, register_result, 0);
+					//format_one(instructions_list, G_OUT, register_result, 0);
 					format_one(instructions_list, G_OUT, register_result, 0);
 
 

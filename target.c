@@ -56,7 +56,7 @@ void print_target_code(list_instructions *instructions_list){
   fprintf(file_target_code, "\t \t if (firstClock==0) begin\n \n");
 
   while (instruction!=NULL) {
-    fprintf(file_target_code, "\t \t instructionsRAM[%d] = 32'b", instruction->line);
+    fprintf(file_target_code, "\t \t instructionsRAM[%d] <= 32'b", instruction->line);
     switch (instruction->type) {
       case G_ADD:
         fprintf(file_target_code, "000000%s%s%s00000000000;//ADD r[%d],r[%d] to r[%d]\n",
