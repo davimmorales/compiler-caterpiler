@@ -1,0 +1,42 @@
+int floorSqrt(int n)
+{
+    int start;
+    int end;
+    int mid;
+    int ans;
+
+    if (n == 0){
+        return n;
+    }
+
+    if (n == 1){
+      return n;
+      }
+
+    start = 1;
+    end = n / 2;
+    while (start <= end)
+    {
+        mid = start + ((end - start) / 2);
+
+        if (mid * mid == n)
+            return mid;
+
+        if (mid * mid < n)
+        {
+            start = mid + 1;
+            ans = mid;
+        }
+        else
+            end = mid - 1;
+    }
+    return ans;
+}
+
+void main(void)
+{
+    int number;
+
+    number = input();
+    output(floorSqrt(number));
+}

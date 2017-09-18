@@ -1,0 +1,23 @@
+int pow(int x, int y)
+{
+    int temp;
+
+    if (y == 0)
+        return 1;
+
+    temp = pow(x, y / 2);
+    if (y % 2 == 0)
+        return temp * temp;
+    else
+        return x * temp * temp;
+}
+
+void main(void)
+{
+    int x;
+    int y;
+
+    x = input();
+    y = input();
+    output(pow(x, y));
+}

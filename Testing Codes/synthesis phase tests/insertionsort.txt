@@ -1,0 +1,49 @@
+void insertionsort(int array[], int n)
+{
+    int i;
+    int key;
+    int j;
+
+    i = 1;
+    while (i < n)
+    {
+        key = array[i];
+        j = i - 1;
+        while (j >= 0 && array[j] > key)
+        {
+            array[j + 1] = array[j];
+            j = j - 1;
+        }
+        array[j + 1] = key;
+
+        i = i + 1;
+    }
+}
+
+void outputArray(int array[], int length)
+{
+    int index;
+
+    index = 0;
+    while (index < length)
+    {
+        output(array[index]);
+        index = index + 1;
+    }
+}
+
+void main(void)
+{
+    int array[5];
+    int length;
+
+    array[0] = 12;
+    array[1] = 11;
+    array[2] = 13;
+    array[3] = 5;
+    array[4] = 6;
+    length = 5;
+
+    insertionsort(array, length);
+    outputArray(array, length);
+}
